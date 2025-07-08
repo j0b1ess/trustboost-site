@@ -285,27 +285,49 @@ const stripePublishableKey = 'pk_live_51RiNkBIWMwthhBDibOG7rnNMpliRBuq1dgrVmiupA
 
 // On DOMContentLoaded, attach checkout button handlers
 document.addEventListener("DOMContentLoaded", function() {
+  // Ensure Stripe.js is loaded before attaching handlers
+  function isStripeLoaded() {
+    return typeof window.Stripe === 'function';
+  }
+
+  function attachStripeHandlers() {
+    document.querySelectorAll('.pricing-card .btn, .pricing-card.btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const card = btn.closest('.pricing-card');
+        let plan = 'starter';
+        if (card) {
+          if (card.classList.contains('popular')) plan = 'pro';
+          else if (card.querySelector('h3') && /enterprise/i.test(card.querySelector('h3').innerText)) plan = 'enterprise';
+          else plan = 'starter';
+        }
+        let period = 'monthly';
+        const billingToggle = document.getElementById("billing-toggle");
+        if (billingToggle && billingToggle.checked) period = "yearly";
+        launchStripeCheckout(plan, period);
+      });
+    });
+  }
+
+  // If Stripe.js is not loaded yet, wait for it
+  function waitForStripeAndAttachHandlers(retries = 10) {
+    if (isStripeLoaded()) {
+      attachStripeHandlers();
+    } else if (retries > 0) {
+      setTimeout(() => waitForStripeAndAttachHandlers(retries - 1), 300);
+    } else {
+      // Optionally, show a message or fallback
+      console.error('Stripe.js failed to load.');
+    }
+  }
+
+  waitForStripeAndAttachHandlers();
+
   // Remove the Stripe iframe if present (for dynamic checkout)
   const stripeCheckoutSection = document.querySelector('.stripe-checkout');
   if (stripeCheckoutSection) {
-    stripeCheckoutSection.innerHTML = ''; // Remove the static iframe
+    stripeCheckoutSection.innerHTML = '';
   }
-  document.querySelectorAll('.pricing-card .btn, .pricing-card.btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const card = btn.closest('.pricing-card');
-      let plan = 'starter';
-      if (card) {
-        if (card.classList.contains('popular')) plan = 'pro';
-        else if (card.querySelector('h3') && /enterprise/i.test(card.querySelector('h3').innerText)) plan = 'enterprise';
-        else plan = 'starter';
-      }
-      let period = 'monthly';
-      const billingToggle = document.getElementById("billing-toggle");
-      if (billingToggle && billingToggle.checked) period = "yearly";
-      launchStripeCheckout(plan, period);
-    });
-  });
 });
 
 // Stripe Checkout logic
