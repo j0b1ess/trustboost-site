@@ -337,17 +337,22 @@ function launchStripeCheckout(plan, period) {
     alert('Invalid plan or billing period selected.');
     return;
   }
-  if (window.Stripe) {
-    const stripe = window.Stripe(stripePublishableKey);
-    stripe.redirectToCheckout({
-      lineItems: [{ price: priceId, quantity: 1 }],
-      mode: 'subscription',
-      successUrl: window.location.origin + '/success',
-      cancelUrl: window.location.origin + '/cancel'
-    }).then(function(result) {
-      if (result.error) alert(result.error.message);
-    });
-  } else {
-    alert('Stripe.js failed to load. Please try again later.');
+  // Ensure Stripe.js is loaded and available
+  if (typeof window.Stripe !== 'function') {
+    alert('Stripe.js failed to load. Please check your internet connection and try again.');
+    return;
   }
+  // Create Stripe instance only once
+  if (!window._stripeInstance) {
+    window._stripeInstance = window.Stripe(stripePublishableKey);
+  }
+  const stripe = window._stripeInstance;
+  stripe.redirectToCheckout({
+    lineItems: [{ price: priceId, quantity: 1 }],
+    mode: 'subscription',
+    successUrl: window.location.origin + '/success',
+    cancelUrl: window.location.origin + '/cancel'
+  }).then(function(result) {
+    if (result.error) alert(result.error.message);
+  });
 }
