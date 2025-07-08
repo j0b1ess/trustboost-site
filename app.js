@@ -265,27 +265,31 @@ document.addEventListener('keydown', function(e) {
 
 // === Stripe Checkout Price ID Map & Dynamic Logic ===
 
-// Update these with your actual Stripe Price IDs for each plan/interval
 const stripePriceMap = {
   starter: {
-    monthly: 'price_starter_monthly_id',    // <-- replace with your real Stripe Price ID
-    yearly:  'price_starter_yearly_id'
+    monthly: 'price_1RijnRIWMwthhBDiHrhqCvQ4',
+    yearly:  'price_1RijoaIWMwthhBDifmahfFT7'
   },
   pro: {
-    monthly: 'price_pro_monthly_id',
-    yearly:  'price_pro_yearly_id'
+    monthly: 'price_1RijnnIWMwthhBDimSQXVzlB',
+    yearly:  'price_1RijpDIWMwthhBDi4NXNMHPc'
   },
   enterprise: {
-    monthly: 'price_enterprise_monthly_id',
-    yearly:  'price_enterprise_yearly_id'
+    monthly: 'price_1RijoAIWMwthhBDi9lWM7iK0',
+    yearly:  'price_1RijpZIWMwthhBDivqeWP8Ru'
   }
 };
 
-// Stripe publishable key (provided by you)
+// Stripe publishable key (test or live as needed)
 const stripePublishableKey = 'pk_test_51RfmdIPJRBEcEiwCkYcSTkfT8Ct6sbQc14uED5hxNHbn80tkzdeV2A45ruhjFaTB45q5a9ypMLuiw1S7Z5c99G2r00QnKeOwyV';
 
 // On DOMContentLoaded, attach checkout button handlers
 document.addEventListener("DOMContentLoaded", function() {
+  // Remove the Stripe iframe if present (for dynamic checkout)
+  const stripeCheckoutSection = document.querySelector('.stripe-checkout');
+  if (stripeCheckoutSection) {
+    stripeCheckoutSection.innerHTML = ''; // Remove the static iframe
+  }
   document.querySelectorAll('.pricing-card .btn, .pricing-card.btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
@@ -322,6 +326,6 @@ function launchStripeCheckout(plan, period) {
       if (result.error) alert(result.error.message);
     });
   } else {
-    window.open('https://buy.stripe.com/test_dR6eVA4V3aH2fAAcMM', '_blank');
+    alert('Stripe.js failed to load. Please try again later.');
   }
 }
