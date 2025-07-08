@@ -265,18 +265,19 @@ document.addEventListener('keydown', function(e) {
 
 // === Stripe Checkout Price ID Map & Dynamic Logic ===
 
+// Update these with your actual Stripe Price IDs for each plan/interval
 const stripePriceMap = {
   starter: {
-    monthly: 'price_1RfmhMPJRBEcEiwCd4redXTe',
-    yearly:  'price_1Rfmk8PJRBEcEiwCNtXmGhr3'
+    monthly: 'price_starter_monthly_id',    // <-- replace with your real Stripe Price ID
+    yearly:  'price_starter_yearly_id'
   },
   pro: {
-    monthly: 'price_1RfmiJPJRBEcEiwCbTTCuQWv',
-    yearly:  'price_1RfmkrPJRBEcEiwCUjNT9NE9'
+    monthly: 'price_pro_monthly_id',
+    yearly:  'price_pro_yearly_id'
   },
   enterprise: {
-    monthly: 'price_1RfmjHPJRBEcEiwCN0LlMdWO',
-    yearly:  'price_1RfmlYPJRBEcEiwCR4c2kgMO'
+    monthly: 'price_enterprise_monthly_id',
+    yearly:  'price_enterprise_yearly_id'
   }
 };
 
