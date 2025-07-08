@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TrustBoost AI – Automate Reviews & Reputation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="AI-powered SaaS for modern businesses: automate reviews, reply with AI, and boost your online reputation."/>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="icon" href="public/logo.png"/>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" as="style"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <a href="#main" class="skip-link" id="skip-link">Skip to main content</a>
+  <header class="main-header" aria-label="Main navigation">
+    <div class="container nav">
+      <div class="logo-group">
+        <img src="public/logo.png" alt="TrustBoost AI Logo" class="logo"/>
+        <span class="site-title" aria-label="TrustBoost AI">TrustBoost <span class="ai-badge">AI</span></span>
+      </div>
+      <nav aria-label="Main menu">
+        <ul id="nav-links">
+          <li><a href="#features" data-i18n="nav.features">Features</a></li>
+          <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
+          <li><a href="#testimonials" data-i18n="nav.testimonials">Testimonials</a></li>
+          <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="nav-ctas">
+        <button id="theme-toggle" aria-label="Toggle Dark/Light"><i class="fa-solid fa-moon"></i></button>
+        <select id="lang-toggle" aria-label="Language">
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="hi">हिन्दी</option>
+          <option value="es">Español</option>
+          <option value="ar">العربية</option>
+        </select>
+        <a href="#pricing" class="btn btn-primary" data-i18n="nav.cta">Start Free</a>
+      </div>
+      <button id="mobile-nav-toggle" aria-label="Open Menu"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-bg"></div>
+      <div class="container hero-content">
+        <div class="hero-left">
+          <h1 id="hero-title" class="section-title gradient-text hero-header">
+            <span class="hero-contrast" data-i18n="hero.title1">Grow Your Reputation</span><br>
+            <span data-i18n="hero.title2">Effortlessly, With AI</span>
+          </h1>
+          <p data-i18n="hero.subtitle">
+            Win more reviews, delight your customers, and dominate local search results – all from one playful, powerful dashboard.
+          </p>
+          <div class="hero-ctas">
+            <a href="#pricing" class="btn btn-gradient big" data-i18n="hero.cta1">Start Free Trial</a>
+            <a href="#features" class="btn btn-outline" data-i18n="hero.cta2">See How It Works</a>
+          </div>
+          <div class="hero-stats" role="group" aria-label="Stats">
+            <div>
+              <span class="stat-num" data-animate="5000">0</span>+
+              <span class="stat-label" data-i18n="hero.stat1">5-Star Reviews</span>
+            </div>
+            <div>
+              <span class="stat-num" data-animate="92">0</span>%
+              <span class="stat-label" data-i18n="hero.stat2">Avg. Google Rank Boost</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-right hero-media-wrapper">
+          <video class="hero-video" autoplay muted loop playsinline poster="public/ai-human-touch.jpg" aria-label="TrustBoost AI in action">
+            <source src="public/hero.mp4" type="video/mp4"/>
+          </video>
+          <img class="hero-image" src="public/ai-human-touch.jpg" alt="AI Human Touch" />
+          <div id="lottie-hero" class="lottie-hero" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features" aria-labelledby="features-title">
+      <div class="container">
+        <h2 class="section-title gradient-text features-header" id="features-title" data-i18n="features.title">What Makes Us Different</h2>
+        <div class="features-grid">
+          <div class="feature-card" tabindex="0" aria-labelledby="feature1-title">
+            <div class="feature-lottie" id="lottie-review"></div>
+            <h3 id="feature1-title" data-i18n="features.automated">Automated Review Requests</h3>
+            <p data-i18n="features.automated-desc">Send beautiful, personalized review requests via email or SMS in a single click. No chasing, just results.</p>
+          </div>
+          <div class="feature-card" tabindex="0" aria-labelledby="feature2-title">
+            <div class="feature-lottie" id="lottie-response"></div>
+            <h3 id="feature2-title" data-i18n="features.ai">AI-Powered Replies</h3>
+            <p data-i18n="features.ai-desc">Copy-paste any review, get a dazzling, on-brand response instantly – and boost customer happiness.</p>
+          </div>
+          <div class="feature-card" tabindex="0" aria-labelledby="feature3-title">
+            <div class="feature-lottie" id="lottie-seo"></div>
+            <h3 id="feature3-title" data-i18n="features.seo">SEO Booster</h3>
+            <p data-i18n="features.seo-desc">Weekly Google posts, AI-written and scheduled for you. Outrank the competition while you sleep.</p>
+          </div>
+          <div class="feature-card" tabindex="0" aria-labelledby="feature4-title">
+            <div class="feature-lottie" id="lottie-analytics"></div>
+            <h3 id="feature4-title" data-i18n="features.analytics">Live Analytics</h3>
+            <p data-i18n="features.analytics-desc">Animated dashboards: see your review growth, SEO ranking, and more – always up to date.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing" id="pricing" aria-labelledby="pricing-title">
+      <div class="container">
+        <h2 class="section-title gradient-text pricing-header" id="pricing-title" data-i18n="pricing.title">Simple, Honest Pricing</h2>
+        <div class="billing-toggle-row" role="group" aria-label="Toggle billing period">
+          <span data-i18n="pricing.monthly">Monthly</span>
+          <label class="switch">
+            <input type="checkbox" id="billing-toggle"/>
+            <span class="slider"></span>
+          </label>
+          <span data-i18n="pricing.yearly">Yearly</span>
+        </div>
+        <div class="pricing-grid">
+          <div class="pricing-card" tabindex="0" aria-labelledby="pricing-starter-title">
+            <h3 id="pricing-starter-title">Starter</h3>
+            <div class="price">
+              <span class="monthly">$29</span>
+              <span class="yearly">$299</span>
+              <span class="interval" data-i18n="pricing.interval">/mo</span>
+            </div>
+            <ul>
+              <li data-i18n="pricing.starter1">Automated Review Requests</li>
+              <li data-i18n="pricing.starter2">Basic Analytics</li>
+              <li data-i18n="pricing.starter3">Email Support</li>
+            </ul>
+            <a href="#checkout" class="btn btn-outline" data-i18n="pricing.cta">Select</a>
+          </div>
+          <div class="pricing-card popular" tabindex="0" aria-labelledby="pricing-pro-title">
+            <div class="badge" data-i18n="pricing.popular">Most Popular</div>
+            <h3 id="pricing-pro-title">Pro</h3>
+            <div class="price">
+              <span class="monthly">$79</span>
+              <span class="yearly">$799</span>
+              <span class="interval" data-i18n="pricing.interval">/mo</span>
+            </div>
+            <ul>
+              <li data-i18n="pricing.pro1">AI Review Replies</li>
+              <li data-i18n="pricing.pro2">SEO Automation</li>
+              <li data-i18n="pricing.pro3">Advanced Analytics</li>
+              <li data-i18n="pricing.pro4">Priority Support</li>
+            </ul>
+            <a href="#checkout" class="btn btn-primary" data-i18n="pricing.cta">Choose Pro</a>
+          </div>
+          <div class="pricing-card" tabindex="0" aria-labelledby="pricing-ent-title">
+            <h3 id="pricing-ent-title">Enterprise</h3>
+            <div class="price">
+              <span class="monthly">$179</span>
+              <span class="yearly">$1799</span>
+              <span class="interval" data-i18n="pricing.interval">/mo</span>
+            </div>
+            <ul>
+              <li data-i18n="pricing.ent1">Unlimited Locations</li>
+              <li data-i18n="pricing.ent2">Custom Integrations</li>
+              <li data-i18n="pricing.ent3">Dedicated Manager</li>
+              <li data-i18n="pricing.ent4">Custom Onboarding</li>
+            </ul>
+            <a href="#checkout" class="btn btn-outline" data-i18n="pricing.cta">Contact Sales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials" id="testimonials" aria-labelledby="testimonials-title">
+      <div class="container">
+        <h2 class="section-title gradient-text testimonials-header" id="testimonials-title" data-i18n="testimonials.title">What Our Customers Say</h2>
+        <div class="testimonials-carousel" id="testimonials-carousel" tabindex="0">
+          <div class="testimonial" tabindex="0">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p data-i18n="testimonials.t1">TrustBoost made getting reviews so easy—now we get 10x more, and customers love our replies!</p>
+            <div class="user">— Sarah L., Spa Owner</div>
+          </div>
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p data-i18n="testimonials.t2">We show up #1 on Google Maps now, and the analytics are so fun and clear!</p>
+            <div class="user">— James M., Dental Practice</div>
+          </div>
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p data-i18n="testimonials.t3">The AI responses are better than what I’d write. My team saves hours every week!</p>
+            <div class="user">— Tanya R., Marketing Director</div>
+          </div>
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p>As a restaurant owner, TrustBoost AI helped us recover from a bad streak—our online reputation is stronger than ever!</p>
+            <div class="user">— Diego G., Restauranteur</div>
+          </div>
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p>Our dental clinic gets daily 5-star reviews thanks to the automated requests. The support team is amazing!</p>
+            <div class="user">— Priya S., Dental Clinic</div>
+          </div>
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p>The insights dashboard helped us spot trends and respond faster. Customer trust is way up!</p>
+            <div class="user">— Liam T., Auto Shop Owner</div>
+          </div>
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p>We doubled our positive review rate in 3 months. The AI replies are a lifesaver for busy teams!</p>
+            <div class="user">— Laura B., Fitness Studio</div>
+          </div>
+          <div class="testimonial">
+            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p>Managing multiple locations is so simple now. Our ranking and reputation both skyrocketed!</p>
+            <div class="user">— Omar H., Franchise Manager</div>
+          </div>
+        </div>
+        <div class="carousel-controls">
+          <button id="testimonial-prev" aria-label="Previous"><i class="fa-solid fa-arrow-left"></i></button>
+          <button id="testimonial-next" aria-label="Next"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-gradient" aria-labelledby="cta-title">
+      <div class="container cta-flex">
+        <h2 id="cta-title" class="section-title gradient-text cta-header" data-i18n="cta.title">Ready to Boost Your Trust?</h2>
+        <a href="#pricing" class="btn btn-gradient big" data-i18n="cta.cta">Start My Free Trial</a>
+      </div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="container contact-flex">
+        <div class="contact-form" tabindex="0">
+          <h3 id="contact-title" class="section-title gradient-text contact-header" data-i18n="contact.title">Contact Us</h3>
+          <form action="mailto:trustboostaicontact@gmail.com" method="POST" enctype="text/plain">
+            <input type="text" name="name" placeholder="Your Name" required/>
+            <input type="email" name="email" placeholder="Your Email" required/>
+            <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+            <button type="submit" class="btn btn-gradient" data-i18n="contact.submit">Send Message</button>
+          </form>
+          <p class="contact-info">
+            <strong>Support Email:</strong> <a href="mailto:trustboostaihelp@gmail.com">trustboostaihelp@gmail.com</a><br/>
+            <strong>Contact Email:</strong> <a href="mailto:trustboostaicontact@gmail.com">trustboostaicontact@gmail.com</a>
+          </p>
+        </div>
+        <div class="newsletter" tabindex="0">
+          <h3 class="section-title gradient-text newsletter-header" data-i18n="newsletter.title">Join Our Newsletter</h3>
+          <form class="newsletter-form" action="https://your-mailchimp-url.com" method="post" target="_blank">
+            <input type="email" name="EMAIL" placeholder="Enter your email" required/>
+            <button type="submit" class="btn btn-outline" data-i18n="newsletter.cta">Subscribe</button>
+          </form>
+          <p class="newsletter-desc" data-i18n="newsletter.desc">Get tips, tricks & growth hacks—no spam.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="checkout" id="checkout" aria-labelledby="checkout-title">
+      <div class="container">
+        <h2 class="section-title gradient-text checkout-header" id="checkout-title" data-i18n="checkout.title">Secure Stripe Checkout</h2>
+        <div class="stripe-checkout">
+          <iframe src="https://buy.stripe.com/test_dR6eVA4V3aH2fAAcMM" title="Stripe Checkout" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
+        </div>
+        <p class="stripe-note" data-i18n="checkout.note">Powered by <b>Stripe</b>—trusted by millions.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" aria-label="Footer">
+    <div class="container">
+      <div class="footer-content">
+        <img src="public/logo.png" alt="TrustBoost AI" class="footer-logo"/>
+        <div>© 2025 TrustBoost AI. All rights reserved.</div>
+        <div>
+          <strong>Support:</strong> <a href="mailto:trustboostaihelp@gmail.com">trustboostaihelp@gmail.com</a><br/>
+          <strong>Contact:</strong> <a href="mailto:trustboostaicontact@gmail.com">trustboostaicontact@gmail.com</a>
+          <span class="footer-socials">
+            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
