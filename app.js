@@ -293,6 +293,11 @@ document.addEventListener("DOMContentLoaded", function() {
   function attachStripeHandlers() {
     document.querySelectorAll('.pricing-card .btn, .pricing-card.btn').forEach(btn => {
       btn.addEventListener('click', function(e) {
+        // Only trigger Stripe checkout if the button is NOT an anchor with href="#checkout"
+        if (btn.getAttribute('href') === '#checkout') {
+          // Let the anchor scroll to the checkout section as normal
+          return;
+        }
         e.preventDefault();
         const card = btn.closest('.pricing-card');
         let plan = 'starter';

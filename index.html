@@ -126,7 +126,8 @@
               <li data-i18n="pricing.starter2">Basic Analytics</li>
               <li data-i18n="pricing.starter3">Email Support</li>
             </ul>
-            <a href="#checkout" class="btn btn-outline" data-i18n="pricing.cta">Select</a>
+            <!-- CHANGED: Use button for Stripe checkout -->
+            <button type="button" class="btn btn-outline" data-i18n="pricing.cta">Select</button>
           </div>
           <div class="pricing-card popular" tabindex="0" aria-labelledby="pricing-pro-title">
             <div class="badge" data-i18n="pricing.popular">Most Popular</div>
@@ -142,7 +143,8 @@
               <li data-i18n="pricing.pro3">Advanced Analytics</li>
               <li data-i18n="pricing.pro4">Priority Support</li>
             </ul>
-            <a href="#checkout" class="btn btn-primary" data-i18n="pricing.cta">Choose Pro</a>
+            <!-- CHANGED: Use button for Stripe checkout -->
+            <button type="button" class="btn btn-primary" data-i18n="pricing.cta">Choose Pro</button>
           </div>
           <div class="pricing-card" tabindex="0" aria-labelledby="pricing-ent-title">
             <h3 id="pricing-ent-title">Enterprise</h3>
@@ -157,7 +159,11 @@
               <li data-i18n="pricing.ent3">Dedicated Manager</li>
               <li data-i18n="pricing.ent4">Custom Onboarding</li>
             </ul>
+            <!-- CHANGED: Use button for Stripe checkout (if you want "Contact Sales" to trigger Stripe, otherwise use anchor as before) -->
+            <button type="button" class="btn btn-outline" data-i18n="pricing.cta">Contact Sales</button>
+            <!-- If you want "Contact Sales" to scroll to checkout section instead, use:
             <a href="#checkout" class="btn btn-outline" data-i18n="pricing.cta">Contact Sales</a>
+            -->
           </div>
         </div>
       </div>
