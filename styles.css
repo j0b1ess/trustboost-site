@@ -161,10 +161,9 @@ nav .btn { margin-left: .5rem; }
 }
 .hero-image { margin-top: 0.6rem; }
 .lottie-hero {
-  width: 110px;
-  height: 110px;
-  margin-top: 0;
-  margin-bottom: 0;
+  width: 250px;
+  height: 250px;
+  margin: 1rem auto;
 }
 .hero-left h1 { font-size: 2.8rem; font-weight: 900; line-height: 1.07; margin-bottom: 1rem;}
 .hero-contrast {
@@ -225,6 +224,7 @@ nav .btn { margin-left: .5rem; }
 .pricing-card h3 { font-size: 1.17rem; font-weight: 700; margin-bottom: 1rem;}
 .price { font-size: 1.9rem; font-weight: 800; margin-bottom: .7rem; color: var(--primary);}
 .price .yearly { display: none; }
+.price .monthly { display: inline; }
 .price .interval { font-size: 1rem; color: #666;}
 .pricing-card ul { margin: 1.1rem 0 1.7rem 0; padding: 0;}
 .pricing-card ul li { font-size: 1.02rem; padding: .37rem 0; color: #666;}
@@ -250,6 +250,11 @@ nav .btn { margin-left: .5rem; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 2rem;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin: 0 1rem;
 }
 .testimonial.active { 
   opacity: 1; 
