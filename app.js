@@ -280,8 +280,8 @@ const stripePriceMap = {
   }
 };
 
-// Stripe publishable key (test or live as needed)
-const stripePublishableKey = 'pk_test_51RfmdIPJRBEcEiwCkYcSTkfT8Ct6sbQc14uED5hxNHbn80tkzdeV2A45ruhjFaTB45q5a9ypMLuiw1S7Z5c99G2r00QnKeOwyV';
+// Stripe publishable key (LIVE)
+const stripePublishableKey = 'pk_live_51RiNkBIWMwthhBDibOG7rnNMpliRBuq1dgrVmiupA3AJ58tjIlbjSpubcfGCRKwDvBMdYfKr3L7yRPziMdKyU95u00GP5wdtbg';
 
 // On DOMContentLoaded, attach checkout button handlers
 document.addEventListener("DOMContentLoaded", function() {
