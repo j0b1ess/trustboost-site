@@ -333,20 +333,24 @@ function launchStripeCheckout(plan, period) {
 
 // === Initialize Stripe handlers ===
 function initStripeHandlers() {
-  document.querySelectorAll('.pricing-card .btn').forEach(btn => {
+  document.querySelectorAll('.pricing-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
       
-      const card = btn.closest('.pricing-card');
-      let plan = 'starter';
+      // Get plan from data attribute
+      let plan = btn.getAttribute('data-plan') || 'starter';
       
-      if (card) {
-        if (card.classList.contains('popular')) {
-          plan = 'pro';
-        } else if (card.querySelector('h3') && /enterprise/i.test(card.querySelector('h3').innerText)) {
-          plan = 'enterprise';
-        } else {
-          plan = 'starter';
+      // Fallback to detecting from card structure if data attribute is missing
+      if (!plan || plan === '') {
+        const card = btn.closest('.pricing-card');
+        if (card) {
+          if (card.classList.contains('popular')) {
+            plan = 'pro';
+          } else if (card.querySelector('h3') && /enterprise/i.test(card.querySelector('h3').innerText)) {
+            plan = 'enterprise';
+          } else {
+            plan = 'starter';
+          }
         }
       }
       
