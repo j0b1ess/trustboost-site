@@ -193,6 +193,16 @@ nav .btn { margin-left: .5rem; }
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
+
+/* Override gradient-text for hero-contrast specifically */
+.hero-header .hero-contrast {
+  background: none !important;
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #ffd700 !important;
+  color: #ffd700 !important;
+  text-shadow: 0 2px 14px rgba(255,215,0,0.3), 0 1px 1px rgba(0,0,0,0.2);
+}
 .features-header, .pricing-header, .testimonials-header, .contact-header, .newsletter-header, .checkout-header {
   font-family: 'Inter', sans-serif;
   font-weight: 900;

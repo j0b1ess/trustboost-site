@@ -96,6 +96,26 @@ function animateStats() {
   });
 }
 
+// === Calendly Integration ===
+function initCalendly() {
+  const calendlyBtn = document.getElementById('calendly-btn');
+  if (calendlyBtn) {
+    calendlyBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Check if Calendly is loaded
+      if (typeof Calendly !== 'undefined') {
+        Calendly.initPopupWidget({
+          url: 'https://calendly.com/jyehezkel10/30min'
+        });
+      } else {
+        // Fallback: open in new tab if Calendly widget fails to load
+        window.open('https://calendly.com/jyehezkel10/30min', '_blank');
+      }
+    });
+  }
+}
+
 // === Theme Toggle ===
 function initThemeToggle() {
   const themeBtn = document.getElementById("theme-toggle");
@@ -543,6 +563,7 @@ document.addEventListener("DOMContentLoaded", function() {
   addAriaLiveStyles();
   
   // Initialize all components
+  initCalendly();
   initThemeToggle();
   initMobileNav();
   initSmoothScroll();

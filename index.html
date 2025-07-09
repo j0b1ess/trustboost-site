@@ -35,10 +35,45 @@
     .hero-contrast {
       color: #ffd700 !important;
     }
+    #calendly-btn {
+      font-size: 0.9rem;
+      padding: 0.6rem 1.2rem;
+      white-space: nowrap;
+      font-weight: 700;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0 0.5rem;
+    }
+    #calendly-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 900px) {
+      #calendly-btn {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+      }
+      .nav-ctas {
+        gap: 0.5rem;
+      }
+    }
+    @media (max-width: 768px) {
+      #calendly-btn {
+        display: none;
+      }
+    }
   </style>
   <!-- Load Lottie first, then Stripe, then our app -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
   <script src="https://js.stripe.com/v3/"></script>
+  <!-- Calendly widget script -->
+  <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js"></script>
 </head>
 <body>
   <a href="#main" class="skip-link" id="skip-link">Skip to main content</a>
@@ -58,6 +93,7 @@
       </nav>
       <div class="nav-ctas">
         <button id="theme-toggle" aria-label="Toggle Dark/Light"><i class="fa-solid fa-moon"></i></button>
+        <button id="calendly-btn" class="btn btn-outline" aria-label="Schedule a Call">Schedule a Call</button>
         <a href="#pricing" class="btn btn-primary" data-i18n="nav.cta">Start Free</a>
       </div>
       <button id="mobile-nav-toggle" aria-label="Open Menu"><i class="fa-solid fa-bars"></i></button>
