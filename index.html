@@ -77,58 +77,65 @@
   <!-- Load Lottie first, then Stripe, then our app -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
   <script src="https://js.stripe.com/v3/"></script>
-  <!-- Calendly widget script with improved popup handling -->
+  <!-- Calendly widget script - Professional Implementation -->
   <script>
     (function() {
-      // Track if Calendly script loaded successfully
-      window.calendlyLoaded = false;
+      // Calendly integration state
+      window.calendlyState = {
+        loaded: false,
+        popupOpen: false,
+        observer: null,
+        closeButton: null
+      };
       
+      // Load Calendly script
       var script = document.createElement('script');
       script.type = 'text/javascript';
       script.async = true;
       script.src = 'https://assets.calendly.com/assets/external/widget.js';
       
       script.onload = function() {
-        window.calendlyLoaded = true;
+        window.calendlyState.loaded = true;
         console.log('Calendly widget loaded successfully');
       };
       
       script.onerror = function() {
         console.warn('Failed to load Calendly widget, fallback will be used');
-        window.calendlyLoaded = false;
+        window.calendlyState.loaded = false;
       };
       
       document.head.appendChild(script);
       
-      // Enhanced function to close Calendly popup
+      // Professional close function - only removes popup, preserves infrastructure
       window.closeCalendlyPopup = function() {
+        if (!window.calendlyState.popupOpen) return;
+        
         console.log('Closing Calendly popup...');
         
-        // Remove all possible Calendly overlay elements
-        const overlaySelectors = [
-          '.calendly-overlay',
-          '[data-calendly-popup]', 
-          '.calendly-popup',
-          '.calendly-inline-widget',
-          '[class*="calendly"]'
-        ];
-        
-        overlaySelectors.forEach(selector => {
-          const elements = document.querySelectorAll(selector);
-          elements.forEach(el => {
-            if (el && el.parentNode) {
-              el.parentNode.removeChild(el);
-            }
-          });
-        });
-        
-        // Remove close button
-        const closeBtn = document.querySelector('.calendly-close-btn');
-        if (closeBtn && closeBtn.parentNode) {
-          closeBtn.parentNode.removeChild(closeBtn);
+        // Use official Calendly close method first
+        try {
+          if (window.Calendly && window.Calendly.closePopupWidget) {
+            window.Calendly.closePopupWidget();
+          }
+        } catch (e) {
+          console.warn('Calendly official close failed:', e);
         }
         
-        // Reset body styles completely
+        // Remove only popup-specific elements (NOT the main script or infrastructure)
+        const popupElements = document.querySelectorAll('.calendly-overlay, [data-calendly-popup]');
+        popupElements.forEach(el => {
+          if (el && el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+        });
+        
+        // Remove our custom close button
+        if (window.calendlyState.closeButton && window.calendlyState.closeButton.parentNode) {
+          window.calendlyState.closeButton.parentNode.removeChild(window.calendlyState.closeButton);
+          window.calendlyState.closeButton = null;
+        }
+        
+        // Reset body styles and restore scroll position
         document.body.classList.remove('calendly-overlay-is-open');
         document.body.style.overflow = '';
         document.body.style.position = '';
@@ -137,21 +144,27 @@
         document.body.style.top = '';
         document.body.style.left = '';
         
-        // Use Calendly's close function if available
-        try {
-          if (window.Calendly && window.Calendly.closePopupWidget) {
-            window.Calendly.closePopupWidget();
-          }
-        } catch (e) {
-          console.warn('Calendly close function error:', e);
+        // Restore scroll position
+        if (window.calendlyState.scrollY !== undefined) {
+          window.scrollTo(0, window.calendlyState.scrollY);
+          window.calendlyState.scrollY = undefined;
         }
+        
+        // Disconnect observer
+        if (window.calendlyState.observer) {
+          window.calendlyState.observer.disconnect();
+          window.calendlyState.observer = null;
+        }
+        
+        // Update state
+        window.calendlyState.popupOpen = false;
         
         console.log('Calendly popup closed successfully');
       };
       
-      // Add global close handler for Calendly popup
+      // Global escape key handler
       document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && document.body.classList.contains('calendly-overlay-is-open')) {
+        if (e.key === 'Escape' && window.calendlyState.popupOpen) {
           window.closeCalendlyPopup();
         }
       });

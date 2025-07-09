@@ -96,150 +96,296 @@ function animateStats() {
   });
 }
 
-// === Calendly Integration ===
+// === Professional Calendly Integration ===
 function initCalendly() {
   const calendlyBtn = document.getElementById('calendly-btn');
-  if (calendlyBtn) {
-    calendlyBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      console.log('Calendly button clicked');
-      
-      const calendlyUrl = 'https://calendly.com/jyehezkel10/30min';
-      
-      try {
-        // Check if Calendly widget is available
-        if (window.calendlyLoaded && window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
-          console.log('Using Calendly popup widget');
-          
-          // Prevent body scroll and fix position
-          document.body.classList.add('calendly-overlay-is-open');
-          document.body.style.overflow = 'hidden';
-          document.body.style.position = 'fixed';
-          document.body.style.width = '100%';
-          document.body.style.height = '100%';
-          document.body.style.top = '0';
-          document.body.style.left = '0';
-          
-          // Use Calendly widget API for proper popup
-          window.Calendly.initPopupWidget({
-            url: calendlyUrl,
-            parentElement: document.body,
-            prefill: {},
-            utm: {}
-          });
-          
-          // Create and add custom close button after popup is initialized
-          setTimeout(() => {
-            // Remove any existing close buttons first
-            const existingBtns = document.querySelectorAll('.calendly-close-btn');
-            existingBtns.forEach(btn => btn.remove());
-            
-            const closeBtn = document.createElement('button');
-            closeBtn.className = 'calendly-close-btn';
-            closeBtn.innerHTML = '×';
-            closeBtn.setAttribute('aria-label', 'Close Calendly popup');
-            closeBtn.onclick = function(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              window.closeCalendlyPopup();
-            };
-            
-            // Inline styles to ensure visibility
-            closeBtn.style.cssText = `
-              position: fixed !important;
-              top: 20px !important;
-              right: 20px !important;
-              width: 50px !important;
-              height: 50px !important;
-              background: rgba(255, 255, 255, 0.98) !important;
-              border: 2px solid #e0e0e0 !important;
-              border-radius: 50% !important;
-              cursor: pointer !important;
-              display: flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-              font-size: 24px !important;
-              color: #333 !important;
-              z-index: 10002 !important;
-              transition: all 0.2s ease !important;
-              box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
-              font-family: Arial, sans-serif !important;
-              line-height: 1 !important;
-              font-weight: bold !important;
-              outline: none !important;
-            `;
-            
-            document.body.appendChild(closeBtn);
-            
-            // Enhanced MutationObserver for better popup detection
-            const observer = new MutationObserver(function(mutations) {
-              let calendlyStillExists = false;
-              
-              // Check multiple selectors for Calendly elements
-              const calendlySelectors = [
-                '[data-calendly-popup]',
-                '.calendly-overlay', 
-                '.calendly-popup',
-                '.calendly-inline-widget',
-                '[class*="calendly"]'
-              ];
-              
-              calendlySelectors.forEach(selector => {
-                if (document.querySelectorAll(selector).length > 0) {
-                  calendlyStillExists = true;
-                }
-              });
-              
-              if (!calendlyStillExists) {
-                console.log('Calendly popup closed by user');
-                window.closeCalendlyPopup();
-                observer.disconnect();
-              }
-            });
-            
-            // Observe both body and document for changes
-            observer.observe(document.body, { 
-              childList: true, 
-              subtree: true, 
-              attributes: true,
-              attributeFilter: ['class', 'style']
-            });
-            
-            // Additional safety: auto-cleanup after 5 minutes
-            setTimeout(() => {
-              if (document.body.classList.contains('calendly-overlay-is-open')) {
-                console.log('Auto-closing Calendly popup after 5 minutes');
-                window.closeCalendlyPopup();
-              }
-              observer.disconnect();
-            }, 300000); // 5 minutes
-            
-          }, 300); // Reduced delay for faster close button appearance
-          
-          console.log('Calendly popup opened successfully');
-          
-        } else {
-          // Fallback: open in new tab if widget not available
-          console.log('Calendly widget not available, opening in new tab');
-          const newTab = window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
-          if (!newTab) {
-            // Final fallback if popup blocked
-            alert('Please allow popups for this site or visit: ' + calendlyUrl);
-          }
-        }
-      } catch (error) {
-        console.error('Error opening Calendly:', error);
-        // Clean up in case of error
-        window.closeCalendlyPopup();
-        // Final fallback: open in new tab
-        const newTab = window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
-        if (!newTab) {
-          alert('Please allow popups for this site or visit: ' + calendlyUrl);
-        }
+  if (!calendlyBtn) return;
+  
+  calendlyBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Prevent multiple popups
+    if (window.calendlyState.popupOpen) {
+      console.log('Calendly popup already open');
+      return;
+    }
+    
+    console.log('Opening Calendly popup...');
+    
+    const calendlyUrl = 'https://calendly.com/jyehezkel10/30min';
+    
+    try {
+      // Check if Calendly is loaded and available
+      if (window.calendlyState.loaded && window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
+        
+        // Set state
+        window.calendlyState.popupOpen = true;
+        
+        // Prevent body scrolling with enhanced positioning
+        document.body.classList.add('calendly-overlay-is-open');
+        const scrollY = window.scrollY;
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.height = '100%';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.left = '0';
+        
+        // Store scroll position for restoration
+        window.calendlyState.scrollY = scrollY;
+        
+        // Initialize Calendly popup with enhanced configuration
+        window.Calendly.initPopupWidget({
+          url: calendlyUrl,
+          parentElement: document.body,
+          prefill: {},
+          utm: {},
+          // Enhanced options for better loading
+          color: '6c47ff',
+          text_color: '333333',
+          primary_color: '6c47ff'
+        });
+        
+        // Wait for popup to be created, then enhance it
+        setTimeout(() => {
+          enhanceCalendlyPopup();
+          createCalendlyCloseButton();
+          setupCalendlyObserver();
+        }, 500); // Increased delay to ensure full loading
+        
+        console.log('Calendly popup opened successfully');
+        
+      } else {
+        // Fallback to new tab
+        console.log('Calendly not loaded, opening in new tab');
+        openCalendlyInNewTab(calendlyUrl);
       }
-    });
+      
+    } catch (error) {
+      console.error('Error opening Calendly:', error);
+      // Cleanup and fallback
+      window.closeCalendlyPopup();
+      openCalendlyInNewTab(calendlyUrl);
+    }
+  });
+}
+
+// Enhance Calendly popup for full content display
+function enhanceCalendlyPopup() {
+  // Find Calendly popup elements
+  const popupSelectors = ['.calendly-overlay', '[data-calendly-popup]', '.calendly-popup'];
+  let popupElement = null;
+  
+  for (const selector of popupSelectors) {
+    popupElement = document.querySelector(selector);
+    if (popupElement) break;
+  }
+  
+  if (popupElement) {
+    // Ensure popup fills the overlay properly
+    const overlayStyles = {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      zIndex: '9999',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'rgba(0, 0, 0, 0.8)',
+      backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)'
+    };
+    
+    Object.assign(popupElement.style, overlayStyles);
+    
+    // Find the inner popup container
+    const innerPopup = popupElement.querySelector('[data-calendly-popup], .calendly-popup, div[style*="width"], div[style*="height"]');
+    if (innerPopup) {
+      const popupStyles = {
+        width: '90%',
+        maxWidth: '1000px',
+        height: '85%',
+        maxHeight: '800px',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        background: '#ffffff',
+        boxShadow: '0 32px 64px rgba(0, 0, 0, 0.24), 0 16px 32px rgba(0, 0, 0, 0.16)',
+        position: 'relative'
+      };
+      
+      Object.assign(innerPopup.style, popupStyles);
+      
+      // Find and enhance the iframe
+      const iframe = innerPopup.querySelector('iframe');
+      if (iframe) {
+        const iframeStyles = {
+          width: '100%',
+          height: '100%',
+          border: 'none',
+          borderRadius: '20px',
+          background: '#ffffff',
+          display: 'block'
+        };
+        
+        Object.assign(iframe.style, iframeStyles);
+        
+        // Wait for iframe to load and add load event
+        iframe.addEventListener('load', function() {
+          console.log('Calendly iframe loaded successfully');
+          
+          // Ensure iframe content is visible
+          setTimeout(() => {
+            if (iframe.contentWindow) {
+              try {
+                // Try to access iframe content (if same-origin)
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                if (iframeDoc && iframeDoc.body) {
+                  iframeDoc.body.style.overflow = 'auto';
+                  iframeDoc.body.style.minHeight = '100%';
+                }
+              } catch (e) {
+                // Cross-origin iframe, can't access content
+                console.log('Calendly iframe is cross-origin (expected)');
+              }
+            }
+          }, 100);
+        });
+        
+        // Force iframe refresh if it seems empty
+        setTimeout(() => {
+          if (iframe.src && !iframe.src.includes('?')) {
+            // Add timestamp to force refresh
+            const separator = iframe.src.includes('?') ? '&' : '?';
+            iframe.src = iframe.src + separator + '_t=' + Date.now();
+          }
+        }, 1000);
+      }
+    }
+  }
+  
+  // Add a backup check to ensure content is loaded
+  setTimeout(() => {
+    const iframe = document.querySelector('.calendly-overlay iframe, [data-calendly-popup] iframe');
+    if (iframe && iframe.style.height !== '100%') {
+      iframe.style.height = '100%';
+      iframe.style.minHeight = '600px';
+    }
+  }, 2000);
+}
+
+// Create professional close button
+function createCalendlyCloseButton() {
+  // Remove any existing close button
+  if (window.calendlyState.closeButton) {
+    window.calendlyState.closeButton.remove();
+  }
+  
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'calendly-close-btn';
+  closeBtn.innerHTML = '×';
+  closeBtn.setAttribute('aria-label', 'Close Calendly popup');
+  closeBtn.setAttribute('type', 'button');
+  
+  // Professional inline styling
+  closeBtn.style.cssText = `
+    position: fixed !important;
+    top: 25px !important;
+    right: 25px !important;
+    width: 48px !important;
+    height: 48px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 2px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 28px !important;
+    color: #333 !important;
+    z-index: 10010 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    line-height: 1 !important;
+    font-weight: 400 !important;
+    outline: none !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  `;
+  
+  // Event handlers
+  closeBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    window.closeCalendlyPopup();
+  });
+  
+  closeBtn.addEventListener('mouseenter', function() {
+    this.style.transform = 'scale(1.05)';
+    this.style.background = 'rgba(255, 255, 255, 1)';
+    this.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.16), 0 6px 12px rgba(0, 0, 0, 0.12)';
+  });
+  
+  closeBtn.addEventListener('mouseleave', function() {
+    this.style.transform = 'scale(1)';
+    this.style.background = 'rgba(255, 255, 255, 0.98)';
+    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08)';
+  });
+  
+  closeBtn.addEventListener('focus', function() {
+    this.style.outline = '2px solid #6c47ff';
+    this.style.outlineOffset = '2px';
+  });
+  
+  closeBtn.addEventListener('blur', function() {
+    this.style.outline = 'none';
+  });
+  
+  // Add to DOM and store reference
+  document.body.appendChild(closeBtn);
+  window.calendlyState.closeButton = closeBtn;
+}
+
+// Setup observer to detect when popup closes naturally
+function setupCalendlyObserver() {
+  if (window.calendlyState.observer) {
+    window.calendlyState.observer.disconnect();
+  }
+  
+  window.calendlyState.observer = new MutationObserver(function(mutations) {
+    // Check if popup still exists
+    const popupExists = document.querySelector('.calendly-overlay, [data-calendly-popup]');
+    
+    if (!popupExists && window.calendlyState.popupOpen) {
+      console.log('Calendly popup closed naturally');
+      window.closeCalendlyPopup();
+    }
+  });
+  
+  // Observe changes to body
+  window.calendlyState.observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+  
+  // Safety timeout
+  setTimeout(() => {
+    if (window.calendlyState.popupOpen && !document.querySelector('.calendly-overlay, [data-calendly-popup]')) {
+      window.closeCalendlyPopup();
+    }
+  }, 10000); // 10 second safety check
+}
+
+// Fallback function
+function openCalendlyInNewTab(url) {
+  const newTab = window.open(url, '_blank', 'noopener,noreferrer');
+  if (!newTab) {
+    // Show user-friendly message
+    const message = 'Please allow popups for this site to schedule a call, or visit:\n' + url;
+    alert(message);
   }
 }
 
