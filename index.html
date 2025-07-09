@@ -270,8 +270,12 @@
         </div>
         <div class="newsletter" tabindex="0">
           <h3 class="section-title gradient-text newsletter-header" data-i18n="newsletter.title">Join Our Newsletter</h3>
-          <form class="newsletter-form" id="newsletter-form" action="https://trustboostai.us18.list-manage.com/subscribe/post-json?u=6ffecacb71a9b264660bf0919&amp;id=f01f0b9606&amp;f_id=001da9e6f0" method="post">
+          <form class="newsletter-form" id="newsletter-form" action="https://trustboostai.us18.list-manage.com/subscribe/post?u=6ffecacb71a9b264660bf0919&amp;id=f01f0b9606" method="post">
             <input type="email" name="EMAIL" id="newsletter-email" placeholder="Enter your email" required/>
+            <!-- Hidden honeypot field to prevent spam -->
+            <div style="position: absolute; left: -5000px;" aria-hidden="true">
+              <input type="text" name="b_6ffecacb71a9b264660bf0919_f01f0b9606" tabindex="-1" value="">
+            </div>
             <button type="submit" class="btn btn-outline newsletter-submit-btn" data-i18n="newsletter.cta">Subscribe</button>
           </form>
           <div id="newsletter-message" class="newsletter-message" style="display: none;"></div>

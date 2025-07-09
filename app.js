@@ -336,12 +336,12 @@ function initFormHandlers() {
       
       const emailInput = document.getElementById('newsletter-email');
       const submitBtn = document.querySelector('.newsletter-submit-btn');
-      const messageDiv = document.getElementById('newsletter-message');
       
       // Validate email
       const email = emailInput.value.trim();
       if (!email) {
         showNewsletterMessage('Please enter your email address.', 'error');
+        emailInput.focus();
         return;
       }
       
@@ -349,6 +349,7 @@ function initFormHandlers() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         showNewsletterMessage('Please enter a valid email address.', 'error');
+        emailInput.focus();
         return;
       }
       
@@ -356,12 +357,14 @@ function initFormHandlers() {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Subscribing...';
       
-      // Prepare form data for Mailchimp
-      const formData = new FormData();
-      formData.append('EMAIL', email);
-      
-      // Convert form action URL to JSONP format
-      const actionUrl = newsletterForm.action.replace('/post?', '/post-json?') + '&c=mailchimpCallback';
+      // Create the JSONP URL for Mailchimp
+      const baseUrl = 'https://trustboostai.us18.list-manage.com/subscribe/post-json';
+      const params = new URLSearchParams({
+        u: '6ffecacb71a9b264660bf0919',
+        id: 'f01f0b9606',
+        EMAIL: email,
+        c: 'mailchimpCallback'
+      });
       
       // Create JSONP callback
       window.mailchimpCallback = function(data) {
@@ -369,14 +372,18 @@ function initFormHandlers() {
         submitBtn.textContent = 'Subscribe';
         
         if (data.result === 'success') {
-          showNewsletterMessage('Thank you for subscribing! Check your email to confirm.', 'success');
+          showNewsletterMessage('Thank you for subscribing! Please check your email to confirm.', 'success');
           emailInput.value = '';
           setAriaLive('Successfully subscribed to newsletter!');
         } else {
           let errorMessage = 'Subscription failed. Please try again.';
           if (data.msg) {
             // Clean up Mailchimp error messages
-            errorMessage = data.msg.replace(/0 - /, '').replace(/<[^>]*>/g, '');
+            errorMessage = data.msg
+              .replace(/0 - /, '')
+              .replace(/1 - /, '')
+              .replace(/<[^>]*>/g, '')
+              .replace('Please enter a value', 'Please try again or contact support if the issue persists');
           }
           showNewsletterMessage(errorMessage, 'error');
           setAriaLive('Newsletter subscription failed.');
@@ -390,7 +397,15 @@ function initFormHandlers() {
       
       // Create script tag for JSONP request
       const script = document.createElement('script');
-      script.src = actionUrl + '&EMAIL=' + encodeURIComponent(email);
+      script.src = `${baseUrl}?${params.toString()}`;
+      script.onerror = function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Subscribe';
+        showNewsletterMessage('Network error. Please check your connection and try again.', 'error');
+        delete window.mailchimpCallback;
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+      
       document.head.appendChild(script);
     });
   }
