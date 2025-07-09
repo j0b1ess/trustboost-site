@@ -262,11 +262,86 @@ function initFormHandlers() {
     });
   }
   
-  const newsletterForm = document.querySelector('.newsletter-form');
+  // Enhanced Newsletter form handler with Mailchimp integration
+  const newsletterForm = document.getElementById('newsletter-form');
   if (newsletterForm) {
     newsletterForm.addEventListener('submit', function(e) {
-      setAriaLive('Thank you for subscribing to the newsletter!');
+      e.preventDefault();
+      
+      const emailInput = document.getElementById('newsletter-email');
+      const submitBtn = document.querySelector('.newsletter-submit-btn');
+      const messageDiv = document.getElementById('newsletter-message');
+      
+      // Validate email
+      const email = emailInput.value.trim();
+      if (!email) {
+        showNewsletterMessage('Please enter your email address.', 'error');
+        return;
+      }
+      
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showNewsletterMessage('Please enter a valid email address.', 'error');
+        return;
+      }
+      
+      // Disable submit button and show loading
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Subscribing...';
+      
+      // Prepare form data for Mailchimp
+      const formData = new FormData();
+      formData.append('EMAIL', email);
+      
+      // Convert form action URL to JSONP format
+      const actionUrl = newsletterForm.action.replace('/post?', '/post-json?') + '&c=mailchimpCallback';
+      
+      // Create JSONP callback
+      window.mailchimpCallback = function(data) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Subscribe';
+        
+        if (data.result === 'success') {
+          showNewsletterMessage('Thank you for subscribing! Check your email to confirm.', 'success');
+          emailInput.value = '';
+          setAriaLive('Successfully subscribed to newsletter!');
+        } else {
+          let errorMessage = 'Subscription failed. Please try again.';
+          if (data.msg) {
+            // Clean up Mailchimp error messages
+            errorMessage = data.msg.replace(/0 - /, '').replace(/<[^>]*>/g, '');
+          }
+          showNewsletterMessage(errorMessage, 'error');
+          setAriaLive('Newsletter subscription failed.');
+        }
+        
+        // Clean up
+        delete window.mailchimpCallback;
+        const script = document.querySelector('script[src*="list-manage.com"]');
+        if (script) script.remove();
+      };
+      
+      // Create script tag for JSONP request
+      const script = document.createElement('script');
+      script.src = actionUrl + '&EMAIL=' + encodeURIComponent(email);
+      document.head.appendChild(script);
     });
+  }
+}
+
+// Helper function to show newsletter messages
+function showNewsletterMessage(message, type) {
+  const messageDiv = document.getElementById('newsletter-message');
+  if (messageDiv) {
+    messageDiv.textContent = message;
+    messageDiv.className = `newsletter-message ${type}`;
+    messageDiv.style.display = 'block';
+    
+    // Hide message after 5 seconds
+    setTimeout(() => {
+      messageDiv.style.display = 'none';
+    }, 5000);
   }
 }
 
