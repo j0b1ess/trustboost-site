@@ -303,107 +303,61 @@ function addAriaLiveStyles() {
   document.head.appendChild(style);
 }
 
-// === Stripe Checkout Price ID Map & Dynamic Logic ===
-const stripePriceMap = {
+// === Stripe Checkout URL Map & Direct Redirect Logic ===
+const stripeCheckoutUrls = {
   starter: {
-    monthly: 'price_1RijnRIWMwthhBDiHrhqCvQ4',
-    yearly:  'price_1RijoaIWMwthhBDifmahfFT7'
+    monthly: 'https://buy.stripe.com/28EcN6cSPcJUfQCbwH00000',
+    yearly: 'https://buy.stripe.com/14A28s7yv7pA7k6asD00003'
   },
   pro: {
-    monthly: 'price_1RijnnIWMwthhBDimSQXVzlB',
-    yearly:  'price_1RijpDIWMwthhBDi4NXNMHPc'
+    monthly: 'https://buy.stripe.com/fZu00kcSP11ceMycAL00001',
+    yearly: 'https://buy.stripe.com/00w4gA8Cz7pA8oabwH00004'
   },
   enterprise: {
-    monthly: 'price_1RijoAIWMwthhBDi9lWM7iK0',
-    yearly:  'price_1RijpZIWMwthhBDivqeWP8Ru'
+    monthly: 'https://buy.stripe.com/fZu4gAdWT4do33QbwH00002',
+    yearly: 'https://buy.stripe.com/9B66oI06339k33Q30b00005'
   }
 };
 
-// Stripe publishable key (LIVE)
-const stripePublishableKey = 'pk_live_51RiNkBIWMwthhBDibOG7rnNMpliRBuq1dgrVmiupA3AJ58tjIlbjSpubcfGCRKwDvBMdYfKr3L7yRPziMdKyU95u00GP5wdtbg';
-
-// Stripe Checkout logic
+// Stripe Checkout logic - Direct URL redirect
 function launchStripeCheckout(plan, period) {
-  const priceId = stripePriceMap[plan][period];
-  if (!priceId) {
+  const checkoutUrl = stripeCheckoutUrls[plan][period];
+  if (!checkoutUrl) {
     alert('Invalid plan or billing period selected.');
     return;
   }
   
-  // Ensure Stripe.js is loaded and available
-  if (typeof window.Stripe !== 'function') {
-    alert('Stripe.js failed to load. Please check your internet connection and try again.');
-    return;
-  }
-  
-  // Create Stripe instance only once
-  if (!window._stripeInstance) {
-    window._stripeInstance = window.Stripe(stripePublishableKey);
-  }
-  
-  const stripe = window._stripeInstance;
-  stripe.redirectToCheckout({
-    lineItems: [{ price: priceId, quantity: 1 }],
-    mode: 'subscription',
-    successUrl: window.location.origin + '/success',
-    cancelUrl: window.location.origin + '/cancel'
-  }).then(function(result) {
-    if (result.error) alert(result.error.message);
-  });
+  // Redirect directly to the Stripe checkout URL
+  window.location.href = checkoutUrl;
 }
 
 // === Initialize Stripe handlers ===
 function initStripeHandlers() {
-  function isStripeLoaded() {
-    return typeof window.Stripe === 'function';
-  }
-
-  function attachStripeHandlers() {
-    document.querySelectorAll('.pricing-card .btn').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        // Only trigger Stripe checkout if the button is NOT an anchor with href="#checkout"
-        if (btn.getAttribute('href') === '#checkout') {
-          // Let the anchor scroll to the checkout section as normal
-          return;
+  document.querySelectorAll('.pricing-card .btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const card = btn.closest('.pricing-card');
+      let plan = 'starter';
+      
+      if (card) {
+        if (card.classList.contains('popular')) {
+          plan = 'pro';
+        } else if (card.querySelector('h3') && /enterprise/i.test(card.querySelector('h3').innerText)) {
+          plan = 'enterprise';
+        } else {
+          plan = 'starter';
         }
-        e.preventDefault();
-        
-        const card = btn.closest('.pricing-card');
-        let plan = 'starter';
-        
-        if (card) {
-          if (card.classList.contains('popular')) {
-            plan = 'pro';
-          } else if (card.querySelector('h3') && /enterprise/i.test(card.querySelector('h3').innerText)) {
-            plan = 'enterprise';
-          } else {
-            plan = 'starter';
-          }
-        }
-        
-        let period = 'monthly';
-        const billingToggle = document.getElementById("billing-toggle");
-        if (billingToggle && billingToggle.checked) period = "yearly";
-        
-        console.log(`Launching Stripe checkout for ${plan} ${period}`);
-        launchStripeCheckout(plan, period);
-      });
+      }
+      
+      let period = 'monthly';
+      const billingToggle = document.getElementById("billing-toggle");
+      if (billingToggle && billingToggle.checked) period = "yearly";
+      
+      console.log(`Launching Stripe checkout for ${plan} ${period}`);
+      launchStripeCheckout(plan, period);
     });
-  }
-
-  // If Stripe.js is not loaded yet, wait for it
-  function waitForStripeAndAttachHandlers(retries = 20) {
-    if (isStripeLoaded()) {
-      attachStripeHandlers();
-      console.log('Stripe handlers attached successfully');
-    } else if (retries > 0) {
-      setTimeout(() => waitForStripeAndAttachHandlers(retries - 1), 300);
-    } else {
-      console.error('Stripe.js failed to load after multiple attempts.');
-    }
-  }
-
-  waitForStripeAndAttachHandlers();
+  });
 }
 
 // === Main initialization ===
