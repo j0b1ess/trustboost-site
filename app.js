@@ -143,11 +143,16 @@ function initMobileNav() {
       }
     });
     
-    // Add touch support for better mobile compatibility
+    // Add better touch support for mobile compatibility
     mobileNavToggle.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      mobileNavToggle.click();
-    });
+      // Don't prevent default to allow normal touch behavior
+      // Just add a small visual feedback
+      mobileNavToggle.style.transform = 'scale(0.95)';
+    }, { passive: true });
+    
+    mobileNavToggle.addEventListener("touchend", (e) => {
+      mobileNavToggle.style.transform = '';
+    }, { passive: true });
     
     // Close nav if link clicked
     document.querySelectorAll('#nav-links a').forEach(link => {
@@ -590,6 +595,129 @@ function initStripeHandlers() {
   });
 }
 
+// === Mobile-specific optimizations ===
+function initMobileOptimizations() {
+  // Fix viewport height on mobile browsers (iOS Safari, etc.)
+  function setVH() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+  
+  setVH();
+  window.addEventListener('resize', setVH);
+  
+  // Improve touch performance
+  if ('passive' in document.createElement('div')) {
+    document.addEventListener('touchstart', () => {}, { passive: true });
+    document.addEventListener('touchmove', () => {}, { passive: true });
+  }
+  
+  // Add touch feedback for buttons
+  document.querySelectorAll('.btn, button, [role="button"]').forEach(button => {
+    button.addEventListener('touchstart', function() {
+      this.style.transform = 'scale(0.98)';
+    }, { passive: true });
+    
+    button.addEventListener('touchend', function() {
+      setTimeout(() => {
+        this.style.transform = '';
+      }, 150);
+    }, { passive: true });
+  });
+  
+  // Improve form input behavior on mobile
+  document.querySelectorAll('input, textarea').forEach(input => {
+    // Prevent zoom on input focus (iOS)
+    input.addEventListener('focus', function() {
+      if (window.innerWidth < 768) {
+        const viewport = document.querySelector('meta[name=viewport]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        }
+      }
+    });
+    
+    input.addEventListener('blur', function() {
+      if (window.innerWidth < 768) {
+        const viewport = document.querySelector('meta[name=viewport]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        }
+      }
+    });
+  });
+  
+  // Detect if device supports hover
+  const hasHover = window.matchMedia('(hover: hover)').matches;
+  if (!hasHover) {
+    document.body.classList.add('no-hover');
+  }
+  
+  // Add swipe support for testimonials carousel
+  const carousel = document.getElementById('testimonials-carousel');
+  if (carousel) {
+    let startX = 0;
+    let endX = 0;
+    
+    carousel.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+    
+    carousel.addEventListener('touchend', (e) => {
+      endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+      
+      if (Math.abs(diff) > 50) { // Minimum swipe distance
+        if (diff > 0) {
+          // Swipe left - next
+          const nextBtn = document.getElementById('testimonial-next');
+          if (nextBtn) nextBtn.click();
+        } else {
+          // Swipe right - previous
+          const prevBtn = document.getElementById('testimonial-prev');
+          if (prevBtn) prevBtn.click();
+        }
+      }
+    }, { passive: true });
+  }
+}
+
+// === Enhanced Mobile Navigation ===
+function initEnhancedMobileNav() {
+  const navLinks = document.getElementById("nav-links");
+  const mobileNavToggle = document.getElementById("mobile-nav-toggle");
+  
+  if (mobileNavToggle && navLinks) {
+    // Close nav on link click (immediate action)
+    document.querySelectorAll('#nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        mobileNavToggle.classList.remove('open');
+        mobileNavToggle.setAttribute("aria-expanded", "false");
+      });
+    });
+    
+    // Close nav when clicking outside (immediate action)
+    document.addEventListener('click', (e) => {
+      if (!navLinks.contains(e.target) && !mobileNavToggle.contains(e.target)) {
+        navLinks.classList.remove('active');
+        mobileNavToggle.classList.remove('open');
+        mobileNavToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+    
+    // Close nav on escape key (immediate action)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+        navLinks.classList.remove('active');
+        mobileNavToggle.classList.remove('open');
+        mobileNavToggle.setAttribute("aria-expanded", "false");
+        mobileNavToggle.focus();
+      }
+    });
+  }
+}
+
 // === Main initialization ===
 document.addEventListener("DOMContentLoaded", function() {
   console.log('TrustBoost AI: Initializing application...');
@@ -620,6 +748,12 @@ document.addEventListener("DOMContentLoaded", function() {
   if (stripeCheckoutSection) {
     stripeCheckoutSection.innerHTML = '<div style="text-align:center;color:#888;font-size:1.1em;">Select a plan above to proceed to secure checkout.</div>';
   }
+  
+  // Initialize mobile optimizations
+  initMobileOptimizations();
+  
+  // Initialize enhanced mobile navigation
+  initEnhancedMobileNav();
   
   console.log('TrustBoost AI: Application initialized successfully!');
 });
