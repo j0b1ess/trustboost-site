@@ -53,6 +53,11 @@
       color: #fff;
       transform: translateY(-1px);
     }
+    #calendly-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
     @media (max-width: 900px) {
       #calendly-btn {
         font-size: 0.85rem;
@@ -72,8 +77,19 @@
   <!-- Load Lottie first, then Stripe, then our app -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
   <script src="https://js.stripe.com/v3/"></script>
-  <!-- Calendly widget script -->
-  <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js"></script>
+  <!-- Calendly widget script with error handling -->
+  <script>
+    (function() {
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.async = true;
+      script.src = 'https://assets.calendly.com/assets/external/widget.js';
+      script.onerror = function() {
+        console.warn('Failed to load Calendly widget, fallback will be used');
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
 </head>
 <body>
   <a href="#main" class="skip-link" id="skip-link">Skip to main content</a>
