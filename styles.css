@@ -384,9 +384,13 @@ body.dark .testimonial p {
 body.dark .testimonial .user {
   color: #aaa !important;
 }
-body.dark .testimonials-header {
+body.dark .testimonials-header,
+body.dark .testimonials .section-title,
+body.dark .testimonials .gradient-text {
   color: #fff !important;
   background: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 body.dark .stars {
   color: var(--accent) !important;
@@ -455,7 +459,17 @@ body.dark .contact, body.dark .contact-form, body.dark .newsletter,
 body.dark .checkout, body.dark .stripe-checkout iframe {
   background: var(--card-dark) !important; color: var(--text-light) !important;
 }
-body.dark .section-title, body.dark .gradient-text { color: #fff !important; }
+body.dark .section-title, body.dark .gradient-text { 
+  color: #fff !important; 
+  background: transparent !important;
+}
+body.dark .features-header, body.dark .pricing-header, 
+body.dark .testimonials-header, body.dark .contact-header, 
+body.dark .newsletter-header, body.dark .checkout-header {
+  color: #fff !important;
+  background: none !important;
+  text-shadow: none !important;
+}
 body.dark .feature-card, body.dark .pricing-card, body.dark .testimonial, body.dark .contact-form, body.dark .newsletter {
   box-shadow: 0 8px 36px rgba(0,209,178,0.13);
 }
@@ -908,4 +922,22 @@ body.calendly-overlay-is-open * {
   #mobile-nav-toggle.open {
     transform: none;
   }
+}
+
+/* Additional failsafe for testimonials header visibility in dark mode */
+body.dark #testimonials-title {
+  color: #fff !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure all gradient text is visible in dark mode */
+body.dark .gradient-text {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #fff !important;
+  color: #fff !important;
+  text-shadow: none !important;
 }
