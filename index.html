@@ -77,7 +77,7 @@
   <!-- Load Lottie first, then Stripe, then our app -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
   <script src="https://js.stripe.com/v3/"></script>
-  <!-- Calendly widget script with better error handling -->
+  <!-- Calendly widget script with improved popup handling -->
   <script>
     (function() {
       // Track if Calendly script loaded successfully
@@ -91,15 +91,6 @@
       script.onload = function() {
         window.calendlyLoaded = true;
         console.log('Calendly widget loaded successfully');
-        
-        // Add event listeners for popup management
-        if (window.Calendly) {
-          window.Calendly.onEventScheduled = function(e) {
-            console.log('Event scheduled:', e);
-            // Remove body scroll lock when event is scheduled
-            document.body.classList.remove('calendly-overlay-is-open');
-          };
-        }
       };
       
       script.onerror = function() {
@@ -109,14 +100,59 @@
       
       document.head.appendChild(script);
       
-      // Add global close handler for Calendly popup
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && document.body.classList.contains('calendly-overlay-is-open')) {
-          document.body.classList.remove('calendly-overlay-is-open');
-          // Close Calendly popup if open
+      // Enhanced function to close Calendly popup
+      window.closeCalendlyPopup = function() {
+        console.log('Closing Calendly popup...');
+        
+        // Remove all possible Calendly overlay elements
+        const overlaySelectors = [
+          '.calendly-overlay',
+          '[data-calendly-popup]', 
+          '.calendly-popup',
+          '.calendly-inline-widget',
+          '[class*="calendly"]'
+        ];
+        
+        overlaySelectors.forEach(selector => {
+          const elements = document.querySelectorAll(selector);
+          elements.forEach(el => {
+            if (el && el.parentNode) {
+              el.parentNode.removeChild(el);
+            }
+          });
+        });
+        
+        // Remove close button
+        const closeBtn = document.querySelector('.calendly-close-btn');
+        if (closeBtn && closeBtn.parentNode) {
+          closeBtn.parentNode.removeChild(closeBtn);
+        }
+        
+        // Reset body styles completely
+        document.body.classList.remove('calendly-overlay-is-open');
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        
+        // Use Calendly's close function if available
+        try {
           if (window.Calendly && window.Calendly.closePopupWidget) {
             window.Calendly.closePopupWidget();
           }
+        } catch (e) {
+          console.warn('Calendly close function error:', e);
+        }
+        
+        console.log('Calendly popup closed successfully');
+      };
+      
+      // Add global close handler for Calendly popup
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.body.classList.contains('calendly-overlay-is-open')) {
+          window.closeCalendlyPopup();
         }
       });
     })();

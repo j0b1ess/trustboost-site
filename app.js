@@ -111,8 +111,16 @@ function initCalendly() {
       try {
         // Check if Calendly widget is available
         if (window.calendlyLoaded && window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
-          // Add body class to prevent scrolling
+          console.log('Using Calendly popup widget');
+          
+          // Prevent body scroll and fix position
           document.body.classList.add('calendly-overlay-is-open');
+          document.body.style.overflow = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
+          document.body.style.height = '100%';
+          document.body.style.top = '0';
+          document.body.style.left = '0';
           
           // Use Calendly widget API for proper popup
           window.Calendly.initPopupWidget({
@@ -122,24 +130,95 @@ function initCalendly() {
             utm: {}
           });
           
-          console.log('Calendly popup opened successfully');
-          
-          // Listen for popup close events
-          const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-              if (mutation.type === 'childList') {
-                // Check if Calendly popup is still present
-                const calendlyElements = document.querySelectorAll('[data-calendly-popup], .calendly-overlay, .calendly-popup');
-                if (calendlyElements.length === 0) {
-                  // Popup closed, remove body scroll lock
-                  document.body.classList.remove('calendly-overlay-is-open');
-                  observer.disconnect();
+          // Create and add custom close button after popup is initialized
+          setTimeout(() => {
+            // Remove any existing close buttons first
+            const existingBtns = document.querySelectorAll('.calendly-close-btn');
+            existingBtns.forEach(btn => btn.remove());
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'calendly-close-btn';
+            closeBtn.innerHTML = '×';
+            closeBtn.setAttribute('aria-label', 'Close Calendly popup');
+            closeBtn.onclick = function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              window.closeCalendlyPopup();
+            };
+            
+            // Inline styles to ensure visibility
+            closeBtn.style.cssText = `
+              position: fixed !important;
+              top: 20px !important;
+              right: 20px !important;
+              width: 50px !important;
+              height: 50px !important;
+              background: rgba(255, 255, 255, 0.98) !important;
+              border: 2px solid #e0e0e0 !important;
+              border-radius: 50% !important;
+              cursor: pointer !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              font-size: 24px !important;
+              color: #333 !important;
+              z-index: 10002 !important;
+              transition: all 0.2s ease !important;
+              box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+              font-family: Arial, sans-serif !important;
+              line-height: 1 !important;
+              font-weight: bold !important;
+              outline: none !important;
+            `;
+            
+            document.body.appendChild(closeBtn);
+            
+            // Enhanced MutationObserver for better popup detection
+            const observer = new MutationObserver(function(mutations) {
+              let calendlyStillExists = false;
+              
+              // Check multiple selectors for Calendly elements
+              const calendlySelectors = [
+                '[data-calendly-popup]',
+                '.calendly-overlay', 
+                '.calendly-popup',
+                '.calendly-inline-widget',
+                '[class*="calendly"]'
+              ];
+              
+              calendlySelectors.forEach(selector => {
+                if (document.querySelectorAll(selector).length > 0) {
+                  calendlyStillExists = true;
                 }
+              });
+              
+              if (!calendlyStillExists) {
+                console.log('Calendly popup closed by user');
+                window.closeCalendlyPopup();
+                observer.disconnect();
               }
             });
-          });
+            
+            // Observe both body and document for changes
+            observer.observe(document.body, { 
+              childList: true, 
+              subtree: true, 
+              attributes: true,
+              attributeFilter: ['class', 'style']
+            });
+            
+            // Additional safety: auto-cleanup after 5 minutes
+            setTimeout(() => {
+              if (document.body.classList.contains('calendly-overlay-is-open')) {
+                console.log('Auto-closing Calendly popup after 5 minutes');
+                window.closeCalendlyPopup();
+              }
+              observer.disconnect();
+            }, 300000); // 5 minutes
+            
+          }, 300); // Reduced delay for faster close button appearance
           
-          observer.observe(document.body, { childList: true, subtree: true });
+          console.log('Calendly popup opened successfully');
           
         } else {
           // Fallback: open in new tab if widget not available
@@ -152,8 +231,8 @@ function initCalendly() {
         }
       } catch (error) {
         console.error('Error opening Calendly:', error);
-        // Remove body class in case of error
-        document.body.classList.remove('calendly-overlay-is-open');
+        // Clean up in case of error
+        window.closeCalendlyPopup();
         // Final fallback: open in new tab
         const newTab = window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
         if (!newTab) {
