@@ -255,10 +255,76 @@ function initTestimonialsCarousel() {
 
 // === Newsletter, Contact Form handlers ===
 function initFormHandlers() {
-  const contactForm = document.querySelector('.contact-form form');
+  // Enhanced Contact form handler
+  const contactForm = document.getElementById('contact-form');
   if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
-      setAriaLive('Thank you for contacting us! We will get back to you soon.');
+      e.preventDefault();
+      
+      const nameInput = contactForm.querySelector('input[name="name"]');
+      const emailInput = contactForm.querySelector('input[name="email"]');
+      const phoneInput = contactForm.querySelector('input[name="phone"]');
+      const messageInput = contactForm.querySelector('textarea[name="message"]');
+      const submitBtn = document.querySelector('.contact-submit-btn');
+      
+      // Validate required fields
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const message = messageInput.value.trim();
+      const phone = phoneInput.value.trim();
+      
+      if (!name) {
+        showContactMessage('Please enter your name.', 'error');
+        nameInput.focus();
+        return;
+      }
+      
+      if (!email) {
+        showContactMessage('Please enter your email address.', 'error');
+        emailInput.focus();
+        return;
+      }
+      
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showContactMessage('Please enter a valid email address.', 'error');
+        emailInput.focus();
+        return;
+      }
+      
+      if (!message) {
+        showContactMessage('Please enter your message.', 'error');
+        messageInput.focus();
+        return;
+      }
+      
+      // Disable submit button
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      
+      // Create mailto link with all form data
+      const subject = encodeURIComponent('Contact Form Submission from ' + name);
+      const body = encodeURIComponent(
+        `Name: ${name}\n` +
+        `Email: ${email}\n` +
+        (phone ? `Phone: ${phone}\n` : '') +
+        `\nMessage:\n${message}`
+      );
+      
+      const mailtoLink = `mailto:trustboostaicontact@gmail.com?subject=${subject}&body=${body}`;
+      
+      // Open mailto link
+      window.location.href = mailtoLink;
+      
+      // Show success message and reset form
+      setTimeout(() => {
+        showContactMessage('Thank you for your message! Your email client should have opened. We will get back to you soon.', 'success');
+        contactForm.reset();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+        setAriaLive('Contact form submitted successfully!');
+      }, 1000);
     });
   }
   
@@ -327,6 +393,21 @@ function initFormHandlers() {
       script.src = actionUrl + '&EMAIL=' + encodeURIComponent(email);
       document.head.appendChild(script);
     });
+  }
+}
+
+// Helper function to show contact form messages
+function showContactMessage(message, type) {
+  const messageDiv = document.getElementById('contact-message');
+  if (messageDiv) {
+    messageDiv.textContent = message;
+    messageDiv.className = `contact-message ${type}`;
+    messageDiv.style.display = 'block';
+    
+    // Hide message after 8 seconds for contact form (longer since it's more detailed)
+    setTimeout(() => {
+      messageDiv.style.display = 'none';
+    }, 8000);
   }
 }
 
