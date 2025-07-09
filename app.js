@@ -110,9 +110,23 @@ function initThemeToggle() {
   if (themeBtn) {
     themeBtn.addEventListener("click", ()=> {
       document.body.classList.toggle("dark");
-      themeBtn.innerHTML = document.body.classList.contains("dark")
+      const isDark = document.body.classList.contains("dark");
+      
+      // Update button icon
+      themeBtn.innerHTML = isDark
         ? '<i class="fa-solid fa-sun"></i>'
         : '<i class="fa-solid fa-moon"></i>';
+      
+      // Debug log
+      console.log('Dark mode:', isDark ? 'enabled' : 'disabled');
+      
+      // Force repaint for testimonials
+      const testimonials = document.querySelectorAll('.testimonial');
+      testimonials.forEach(testimonial => {
+        testimonial.style.display = 'none';
+        testimonial.offsetHeight; // Force reflow
+        testimonial.style.display = '';
+      });
     });
   }
 }

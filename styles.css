@@ -377,6 +377,44 @@ nav .btn { margin-left: .5rem; }
   }
 }
 
+/* Dark mode testimonial text fixes */
+body.dark .testimonial p {
+  color: var(--text-light) !important;
+}
+body.dark .testimonial .user {
+  color: #aaa !important;
+}
+body.dark .testimonials-header {
+  color: #fff !important;
+  background: none !important;
+}
+body.dark .stars {
+  color: var(--accent) !important;
+}
+
+/* Failsafe for testimonial visibility */
+.testimonial {
+  color: var(--text);
+}
+.testimonial p {
+  color: inherit;
+}
+.testimonial .user {
+  color: #666;
+}
+
+/* Ensure testimonials work in both light and dark modes */
+body.dark .testimonial {
+  color: var(--text-light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+body.dark .testimonial p {
+  color: var(--text-light);
+}
+body.dark .testimonial .user {
+  color: #ccc;
+}
+
 .cta-gradient { background: var(--gradient-alt); color: #fff; padding: 60px 0; text-align: center;}
 .cta-flex { display: flex; align-items: center; justify-content: space-between; gap: 2.1rem; flex-wrap: wrap;}
 .cta-flex h2 { font-size: 2.2rem; font-weight: 800;}
@@ -412,13 +450,13 @@ body.dark {
 }
 body.dark .main-header, body.dark .features, 
 body.dark .feature-card, body.dark .pricing, body.dark .pricing-card,
-body.dark .testimonials, body.dark .testimonial-card, body.dark .footer,
+body.dark .testimonials, body.dark .testimonial, body.dark .footer,
 body.dark .contact, body.dark .contact-form, body.dark .newsletter,
 body.dark .checkout, body.dark .stripe-checkout iframe {
   background: var(--card-dark) !important; color: var(--text-light) !important;
 }
 body.dark .section-title, body.dark .gradient-text { color: #fff !important; }
-body.dark .feature-card, body.dark .pricing-card, body.dark .testimonial-card, body.dark .contact-form, body.dark .newsletter {
+body.dark .feature-card, body.dark .pricing-card, body.dark .testimonial, body.dark .contact-form, body.dark .newsletter {
   box-shadow: 0 8px 36px rgba(0,209,178,0.13);
 }
 body.dark .hero-header,
