@@ -77,17 +77,48 @@
   <!-- Load Lottie first, then Stripe, then our app -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
   <script src="https://js.stripe.com/v3/"></script>
-  <!-- Calendly widget script with error handling -->
+  <!-- Calendly widget script with better error handling -->
   <script>
     (function() {
+      // Track if Calendly script loaded successfully
+      window.calendlyLoaded = false;
+      
       var script = document.createElement('script');
       script.type = 'text/javascript';
       script.async = true;
       script.src = 'https://assets.calendly.com/assets/external/widget.js';
+      
+      script.onload = function() {
+        window.calendlyLoaded = true;
+        console.log('Calendly widget loaded successfully');
+        
+        // Add event listeners for popup management
+        if (window.Calendly) {
+          window.Calendly.onEventScheduled = function(e) {
+            console.log('Event scheduled:', e);
+            // Remove body scroll lock when event is scheduled
+            document.body.classList.remove('calendly-overlay-is-open');
+          };
+        }
+      };
+      
       script.onerror = function() {
         console.warn('Failed to load Calendly widget, fallback will be used');
+        window.calendlyLoaded = false;
       };
+      
       document.head.appendChild(script);
+      
+      // Add global close handler for Calendly popup
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.body.classList.contains('calendly-overlay-is-open')) {
+          document.body.classList.remove('calendly-overlay-is-open');
+          // Close Calendly popup if open
+          if (window.Calendly && window.Calendly.closePopupWidget) {
+            window.Calendly.closePopupWidget();
+          }
+        }
+      });
     })();
   </script>
 </head>

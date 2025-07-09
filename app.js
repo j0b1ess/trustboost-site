@@ -102,59 +102,66 @@ function initCalendly() {
   if (calendlyBtn) {
     calendlyBtn.addEventListener('click', function(e) {
       e.preventDefault();
+      e.stopPropagation();
       
       console.log('Calendly button clicked');
       
-      // Add loading state
-      calendlyBtn.textContent = 'Loading...';
-      calendlyBtn.disabled = true;
+      const calendlyUrl = 'https://calendly.com/jyehezkel10/30min';
       
-      // Reset button after 3 seconds if nothing happens
-      const resetButton = setTimeout(() => {
-        calendlyBtn.textContent = 'Schedule a Call';
-        calendlyBtn.disabled = false;
-      }, 3000);
-      
-      // Try to use Calendly widget
-      if (typeof Calendly !== 'undefined' && Calendly.initPopupWidget) {
-        try {
-          Calendly.initPopupWidget({
-            url: 'https://calendly.com/jyehezkel10/30min'
+      try {
+        // Check if Calendly widget is available
+        if (window.calendlyLoaded && window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
+          // Add body class to prevent scrolling
+          document.body.classList.add('calendly-overlay-is-open');
+          
+          // Use Calendly widget API for proper popup
+          window.Calendly.initPopupWidget({
+            url: calendlyUrl,
+            parentElement: document.body,
+            prefill: {},
+            utm: {}
           });
-          clearTimeout(resetButton);
-          calendlyBtn.textContent = 'Schedule a Call';
-          calendlyBtn.disabled = false;
+          
           console.log('Calendly popup opened successfully');
-        } catch (error) {
-          console.error('Calendly popup error:', error);
-          clearTimeout(resetButton);
-          // Fallback to new tab
-          window.open('https://calendly.com/jyehezkel10/30min', '_blank', 'width=800,height=600');
-          calendlyBtn.textContent = 'Schedule a Call';
-          calendlyBtn.disabled = false;
+          
+          // Listen for popup close events
+          const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+              if (mutation.type === 'childList') {
+                // Check if Calendly popup is still present
+                const calendlyElements = document.querySelectorAll('[data-calendly-popup], .calendly-overlay, .calendly-popup');
+                if (calendlyElements.length === 0) {
+                  // Popup closed, remove body scroll lock
+                  document.body.classList.remove('calendly-overlay-is-open');
+                  observer.disconnect();
+                }
+              }
+            });
+          });
+          
+          observer.observe(document.body, { childList: true, subtree: true });
+          
+        } else {
+          // Fallback: open in new tab if widget not available
+          console.log('Calendly widget not available, opening in new tab');
+          const newTab = window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
+          if (!newTab) {
+            // Final fallback if popup blocked
+            alert('Please allow popups for this site or visit: ' + calendlyUrl);
+          }
         }
-      } else {
-        console.log('Calendly widget not available, opening in new tab');
-        clearTimeout(resetButton);
-        // Fallback: open in new tab
-        window.open('https://calendly.com/jyehezkel10/30min', '_blank', 'width=800,height=600');
-        calendlyBtn.textContent = 'Schedule a Call';
-        calendlyBtn.disabled = false;
+      } catch (error) {
+        console.error('Error opening Calendly:', error);
+        // Remove body class in case of error
+        document.body.classList.remove('calendly-overlay-is-open');
+        // Final fallback: open in new tab
+        const newTab = window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
+        if (!newTab) {
+          alert('Please allow popups for this site or visit: ' + calendlyUrl);
+        }
       }
     });
   }
-  
-  // Check if Calendly script loaded
-  const checkCalendlyLoaded = () => {
-    if (typeof Calendly !== 'undefined') {
-      console.log('Calendly widget loaded successfully');
-    } else {
-      console.warn('Calendly widget failed to load');
-    }
-  };
-  
-  // Check after a delay to allow script to load
-  setTimeout(checkCalendlyLoaded, 2000);
 }
 
 // === Theme Toggle ===
