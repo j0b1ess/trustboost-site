@@ -79,6 +79,184 @@
         display: none;
       }
     }
+    /* AI Assistant Styles */
+    .ai-assistant {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
+      padding: 4rem 0;
+    }
+    
+    .ai-assistant-header {
+      margin-bottom: 3rem;
+    }
+    
+    .ai-assistant-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .ai-assistant-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 2.5rem;
+      max-width: 700px;
+      width: 100%;
+      border: 1px solid rgba(108, 71, 255, 0.1);
+    }
+    
+    .ai-assistant-intro {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .ai-assistant-intro p {
+      font-size: 1.1rem;
+      color: #666;
+      margin: 0;
+    }
+    
+    .ai-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    #message-input {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.3s ease;
+    }
+    
+    #message-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.1);
+    }
+    
+    .ai-submit-btn {
+      align-self: flex-end;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.5rem;
+      font-weight: 600;
+    }
+    
+    .ai-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .ai-assistant-response {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #f8f9ff;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .ai-response-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .ai-response-content {
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .ai-assistant-loading {
+      margin-top: 2rem;
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .loading-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .dots {
+      display: flex;
+      gap: 0.2rem;
+    }
+    
+    .dots span {
+      animation: loading-dot 1.4s infinite ease-in-out;
+    }
+    
+    .dots span:nth-child(1) { animation-delay: -0.32s; }
+    .dots span:nth-child(2) { animation-delay: -0.16s; }
+    .dots span:nth-child(3) { animation-delay: 0s; }
+    
+    @keyframes loading-dot {
+      0%, 80%, 100% { opacity: 0.3; }
+      40% { opacity: 1; }
+    }
+    
+    /* Dark mode styles for AI assistant */
+    body.dark .ai-assistant {
+      background: linear-gradient(135deg, #1a1635 0%, #23243a 100%);
+    }
+    
+    body.dark .ai-assistant-card {
+      background: var(--card-dark);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    body.dark .ai-assistant-intro p {
+      color: #ccc;
+    }
+    
+    body.dark #message-input {
+      background: var(--card-dark);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-light);
+    }
+    
+    body.dark #message-input:focus {
+      border-color: var(--primary);
+    }
+    
+    body.dark .ai-assistant-response {
+      background: rgba(108, 71, 255, 0.1);
+      border-left-color: var(--primary);
+    }
+    
+    body.dark .ai-response-content {
+      color: var(--text-light);
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .ai-assistant-card {
+        padding: 1.5rem;
+        margin: 0 1rem;
+      }
+      
+      .ai-input-group {
+        gap: 1.5rem;
+      }
+      
+      .ai-submit-btn {
+        align-self: stretch;
+        justify-content: center;
+      }
+    }
   </style>
   <!-- Load Lottie first, then Stripe, then our app -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
@@ -97,6 +275,7 @@
         <ul id="nav-links">
           <li><a href="#features" data-i18n="nav.features">Features</a></li>
           <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
+          <li><a href="#ai-assistant" data-i18n="nav.ai-assistant">AI Assistant</a></li>
           <li><a href="#testimonials" data-i18n="nav.testimonials">Testimonials</a></li>
           <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
         </ul>
@@ -236,6 +415,53 @@
             <!-- If you want "Contact Sales" to scroll to checkout section instead, use:
             <a href="#checkout" class="btn btn-outline" data-i18n="pricing.cta">Contact Sales</a>
             -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ai-assistant" id="ai-assistant" aria-labelledby="ai-assistant-title">
+      <div class="container">
+        <h2 class="section-title gradient-text ai-assistant-header" id="ai-assistant-title">AI Assistant</h2>
+        <div class="ai-assistant-wrapper">
+          <div class="ai-assistant-card">
+            <div class="ai-assistant-intro">
+              <p>Ask our AI assistant anything about TrustBoost, reviews, or reputation management!</p>
+            </div>
+            <form id="ai-assistant-form" class="ai-assistant-form">
+              <div class="ai-input-group">
+                <textarea 
+                  id="message-input" 
+                  name="message" 
+                  placeholder="Type your question here... (e.g., How does automated review generation work?)" 
+                  rows="3" 
+                  required
+                  aria-label="Ask the AI assistant a question"
+                ></textarea>
+                <button type="submit" id="submit-button" class="btn btn-primary ai-submit-btn" aria-label="Send message to AI assistant">
+                  <i class="fa-solid fa-paper-plane"></i>
+                  Ask AI
+                </button>
+              </div>
+            </form>
+            <div id="response-box" class="ai-assistant-response" style="display: none;" aria-live="polite">
+              <div class="ai-response-header">
+                <i class="fa-solid fa-robot"></i>
+                <span>AI Assistant</span>
+              </div>
+              <div class="ai-response-content"></div>
+            </div>
+            <div id="ai-assistant-loading" class="ai-assistant-loading" style="display: none;" aria-live="polite">
+              <div class="loading-dots">
+                <i class="fa-solid fa-robot"></i>
+                <span>AI is thinking</span>
+                <div class="dots">
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

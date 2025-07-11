@@ -127,80 +127,126 @@ nav .btn { margin-left: .5rem; }
 #mobile-nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
 
 @media (max-width: 900px) {
+  /* Improved mobile navigation */
+  .container {
+    padding: 0 1rem; /* Reduce padding on small screens */
+  }
+  
+  .nav {
+    padding: 0.5rem 0;
+  }
+  
+  .logo-group {
+    gap: 8px;
+    font-size: 1.2rem;
+  }
+  
+  .logo {
+    height: 35px;
+  }
+  
+  .site-title {
+    font-size: 1.1rem;
+  }
+  
   nav ul { 
     display: none; 
     position: absolute;
     top: 100%;
     left: 0;
-    width: 100%;
+    right: 0;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     flex-direction: column;
-    padding: 1rem 0;
-    margin: 0.5rem 0 0 0;
+    padding: 0.5rem 0;
+    margin: 0.5rem;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
   }
+  
   nav ul.active { 
     display: flex; 
   }
+  
   nav ul li {
     margin: 0;
     padding: 0;
   }
+  
   nav ul a {
-    display: block;
-    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
     margin: 0;
     border-radius: 0;
     text-align: left;
     transition: all 0.2s ease;
-    font-size: 1rem;
-    min-height: 44px; /* Ensure touch target is at least 44px */
-    display: flex;
-    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    min-height: 54px; /* Larger touch targets for mobile */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
+  
+  nav ul li:last-child a {
+    border-bottom: none;
+  }
+  
   nav ul a:hover,
   nav ul a:focus,
   nav ul a:active {
     background: var(--primary);
     color: #fff;
+    transform: none; /* Remove transform for mobile */
   }
+  
   .nav { 
-    flex-wrap: wrap; 
     position: relative;
   }
+  
+  .nav-ctas {
+    gap: 0.5rem;
+  }
+  
+  /* Hide schedule call button on very small screens */
+  #calendly-btn {
+    display: none;
+  }
+  
+  .nav-ctas .btn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    min-height: 42px;
+  }
+  
   #mobile-nav-toggle { 
-    display: inline-block; 
-    color: var(--text);
-    transition: transform 0.2s ease;
-    min-width: 44px; /* Ensure touch target is at least 44px */
-    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--text);
+    transition: all 0.2s ease;
+    min-width: 48px; /* Larger touch target */
+    min-height: 48px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 1.3rem;
   }
+  
   #mobile-nav-toggle.open {
     transform: rotate(90deg);
+    background: rgba(108, 71, 255, 0.1);
   }
+  
   #mobile-nav-toggle:hover,
   #mobile-nav-toggle:focus,
   #mobile-nav-toggle:active {
     color: var(--primary);
     background: rgba(108, 71, 255, 0.1);
-    border-radius: 4px;
-  }
-  /* Improve touch targets for nav CTAs */
-  .nav-ctas .btn {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 }
 .hero { position: relative; background: var(--gradient); color: #fff; min-height: 620px; overflow: hidden; }

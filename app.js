@@ -732,6 +732,259 @@ function initEnhancedMobileNav() {
   }
 }
 
+// === AI Assistant functionality ===
+function initAIAssistant() {
+  // Get the required HTML elements using the specified IDs
+  const form = document.getElementById('ai-assistant-form');
+  const messageInput = document.getElementById('message-input');
+  const submitButton = document.getElementById('submit-button');
+  const responseBox = document.getElementById('response-box');
+  const loadingDiv = document.getElementById('ai-assistant-loading');
+  
+  // Check if all required elements exist in the DOM
+  if (!form || !messageInput || !submitButton || !responseBox) {
+    console.warn('AI Assistant: Required elements not found in DOM');
+    return;
+  }
+  
+  // Backend API endpoint URL
+  const BACKEND_URL = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api/chat';
+  
+  /**
+   * Determines the user's subscription tier
+   * This could be enhanced to get the tier from user authentication,
+   * local storage, or URL parameters in a real application
+   */
+  function getUserSubscriptionTier() {
+    // Check if tier is stored in localStorage (from previous selection)
+    const storedTier = localStorage.getItem('selectedTier');
+    if (storedTier) {
+      return storedTier;
+    }
+    
+    // Check URL parameters for tier
+    const urlParams = new URLSearchParams(window.location.search);
+    const tierFromUrl = urlParams.get('tier');
+    if (tierFromUrl && ['starter', 'pro', 'enterprise'].includes(tierFromUrl.toLowerCase())) {
+      return tierFromUrl.toLowerCase();
+    }
+    
+    // Default to 'starter' if no tier is specified
+    return 'starter';
+  }
+  
+  /**
+   * Sends a POST request to the backend API
+   * @param {string} message - The user's question
+   * @param {string} tier - The user's subscription tier
+   * @returns {Promise} - The fetch promise
+   */
+  async function sendMessageToBackend(message, tier) {
+    try {
+      // Send POST request to backend with user message and tier
+      const response = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any additional headers your backend might need
+        },
+        body: JSON.stringify({
+          message: message,
+          tier: tier,
+          // You can add more fields here if your backend needs them
+          timestamp: new Date().toISOString()
+        })
+      });
+      
+      // Check if the response is ok (status 200-299)
+      if (!response.ok) {
+        throw new Error(`Backend responded with status: ${response.status} ${response.statusText}`);
+      }
+      
+      // Parse the JSON response
+      const data = await response.json();
+      return data;
+      
+    } catch (error) {
+      // Re-throw the error to be handled by the calling function
+      throw error;
+    }
+  }
+  
+  /**
+   * Displays the AI response in the response container
+   * @param {string} content - The response content to display
+   */
+  function displayResponse(content) {
+    // Find the content area within the response box
+    const responseContent = responseBox.querySelector('.ai-response-content');
+    if (responseContent) {
+      responseContent.textContent = content;
+    } else {
+      // Fallback: set the entire response box content
+      responseBox.innerHTML = `
+        <div class="ai-response-header">
+          <i class="fa-solid fa-robot"></i>
+          <span>AI Assistant</span>
+        </div>
+        <div class="ai-response-content">${content}</div>
+      `;
+    }
+    
+    // Show the response box
+    responseBox.style.display = 'block';
+    
+    // Hide loading indicator if it exists
+    if (loadingDiv) {
+      loadingDiv.style.display = 'none';
+    }
+    
+    // Scroll to the response for better user experience
+    responseBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  
+  /**
+   * Displays an error message to the user
+   * @param {string} errorMessage - The error message to display
+   */
+  function displayError(errorMessage) {
+    displayResponse(`⚠️ Error: ${errorMessage}. Please try again or contact support if the issue persists.`);
+  }
+  
+  /**
+   * Shows the loading indicator while waiting for backend response
+   */
+  function showLoading() {
+    // Hide response box
+    responseBox.style.display = 'none';
+    
+    // Show loading indicator if it exists
+    if (loadingDiv) {
+      loadingDiv.style.display = 'block';
+    }
+  }
+  
+  /**
+   * Hides the loading indicator
+   */
+  function hideLoading() {
+    if (loadingDiv) {
+      loadingDiv.style.display = 'none';
+    }
+  }
+  
+  /**
+   * Updates the submit button state (disabled/enabled with loading text)
+   * @param {boolean} isLoading - Whether the form is in loading state
+   */
+  function updateSubmitButton(isLoading) {
+    if (isLoading) {
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Asking AI...';
+    } else {
+      submitButton.disabled = false;
+      submitButton.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask AI';
+    }
+  }
+  
+  /**
+   * Main form submission handler
+   */
+  async function handleFormSubmission(event) {
+    // Prevent the default form submission
+    event.preventDefault();
+    
+    // Get the user's message and trim whitespace
+    const message = messageInput.value.trim();
+    
+    // Validate that the message is not empty
+    if (!message) {
+      messageInput.focus();
+      return;
+    }
+    
+    // Get the user's subscription tier
+    const userTier = getUserSubscriptionTier();
+    
+    // Update UI to show loading state
+    updateSubmitButton(true);
+    showLoading();
+    
+    try {
+      // Send the message to the backend
+      console.log('AI Assistant: Sending message to backend...', { message, tier: userTier });
+      
+      const responseData = await sendMessageToBackend(message, userTier);
+      
+      // Extract the response content from the backend response
+      // Adjust this based on your backend's response structure
+      const aiResponse = responseData.response || responseData.message || responseData.content || 'Response received successfully!';
+      
+      // Display the AI's response
+      displayResponse(aiResponse);
+      
+      // Clear the input field after successful submission
+      messageInput.value = '';
+      
+      // Log success for debugging
+      console.log('AI Assistant: Response received successfully');
+      
+    } catch (error) {
+      // Handle different types of errors
+      console.error('AI Assistant: Error occurred:', error);
+      
+      let errorMessage = 'Unable to get AI response';
+      
+      // Provide specific error messages based on error type
+      if (error.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error - please check your internet connection';
+      } else if (error.message.includes('500')) {
+        errorMessage = 'Server error - our AI is temporarily unavailable';
+      } else if (error.message.includes('400')) {
+        errorMessage = 'Invalid request - please try rephrasing your question';
+      } else if (error.message.includes('tier')) {
+        errorMessage = 'Subscription tier issue - please contact support';
+      }
+      
+      displayError(errorMessage);
+      
+    } finally {
+      // Always restore the submit button state
+      updateSubmitButton(false);
+      hideLoading();
+    }
+  }
+  
+  // Add event listener for form submission
+  form.addEventListener('submit', handleFormSubmission);
+  
+  // Handle Enter key in textarea (Submit on Enter, new line on Shift+Enter)
+  messageInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      form.dispatchEvent(new Event('submit'));
+    }
+  });
+  
+  // Auto-resize textarea as user types
+  messageInput.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+  });
+  
+  // Store the selected tier when user clicks on pricing buttons
+  // This helps maintain context for the AI assistant
+  document.addEventListener('click', function(event) {
+    if (event.target.matches('[data-plan]')) {
+      const selectedTier = event.target.getAttribute('data-plan');
+      localStorage.setItem('selectedTier', selectedTier);
+      console.log('AI Assistant: User selected tier:', selectedTier);
+    }
+  });
+  
+  console.log('AI Assistant: Initialized successfully with backend integration');
+}
+
 // === Main initialization ===
 document.addEventListener("DOMContentLoaded", function() {
   console.log('TrustBoost AI: Initializing application...');
@@ -747,6 +1000,7 @@ document.addEventListener("DOMContentLoaded", function() {
   initPricingToggle();
   initTestimonialsCarousel();
   initFormHandlers();
+  initAIAssistant();
   initSkipLink();
   initFocusManagement();
   animateStats();
@@ -768,6 +1022,9 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Initialize enhanced mobile navigation
   initEnhancedMobileNav();
+  
+  // Initialize AI assistant
+  initAIAssistant();
   
   console.log('TrustBoost AI: Application initialized successfully!');
 });
