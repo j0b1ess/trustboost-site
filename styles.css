@@ -1155,7 +1155,7 @@ body:not(.dark) .gradient-text {
 
 .pricing-card .badge { 
   position: absolute; 
-  top: 1rem;  /* Moved down to prevent cut-off */
+  bottom: 4.5rem;  /* Position above the button */
   left: 50%; 
   transform: translateX(-50%); 
   background: var(--gradient-primary); 
