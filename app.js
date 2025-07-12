@@ -781,31 +781,46 @@ function initAIAssistant() {
    */
   async function sendMessageToBackend(message, tier) {
     try {
-      // Send POST request to backend with user message and tier
+      // Construct the exact JSON body structure expected by the backend
+      const requestBody = {
+        "tier": tier,
+        "messages": [
+          {
+            "role": "user",
+            "content": message
+          }
+        ]
+      };
+      
+      console.log('AI Assistant: Sending request to backend:', requestBody);
+      
+      // Send POST request to backend with the expected JSON structure
       const response = await fetch(BACKEND_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           // Add any additional headers your backend might need
         },
-        body: JSON.stringify({
-          message: message,
-          tier: tier,
-          // You can add more fields here if your backend needs them
-          timestamp: new Date().toISOString()
-        })
+        body: JSON.stringify(requestBody)
       });
+      
+      console.log('AI Assistant: Backend response status:', response.status);
       
       // Check if the response is ok (status 200-299)
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('AI Assistant: Backend error response:', errorText);
         throw new Error(`Backend responded with status: ${response.status} ${response.statusText}`);
       }
       
       // Parse the JSON response
       const data = await response.json();
+      console.log('AI Assistant: Backend response data:', data);
       return data;
       
     } catch (error) {
+      // Log the error to console for debugging
+      console.error('AI Assistant: Error in sendMessageToBackend:', error);
       // Re-throw the error to be handled by the calling function
       throw error;
     }
@@ -816,31 +831,39 @@ function initAIAssistant() {
    * @param {string} content - The response content to display
    */
   function displayResponse(content) {
+    console.log('AI Assistant: Displaying response in #response-box:', content);
+    
     // Find the content area within the response box
     const responseContent = responseBox.querySelector('.ai-response-content');
     if (responseContent) {
+      // Set the text content (this will escape HTML for security)
       responseContent.textContent = content;
+      console.log('AI Assistant: Response content updated in existing element');
     } else {
-      // Fallback: set the entire response box content
+      // Fallback: create the structure if it doesn't exist
       responseBox.innerHTML = `
         <div class="ai-response-header">
           <i class="fa-solid fa-robot"></i>
           <span>AI Assistant</span>
         </div>
-        <div class="ai-response-content">${content}</div>
+        <div class="ai-response-content">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
       `;
+      console.log('AI Assistant: Response structure created in #response-box');
     }
     
     // Show the response box
     responseBox.style.display = 'block';
+    console.log('AI Assistant: #response-box is now visible');
     
     // Hide loading indicator if it exists
     if (loadingDiv) {
       loadingDiv.style.display = 'none';
+      console.log('AI Assistant: Loading indicator hidden');
     }
     
     // Scroll to the response for better user experience
     responseBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    console.log('AI Assistant: Scrolled to response box');
   }
   
   /**
@@ -916,34 +939,72 @@ function initAIAssistant() {
       
       const responseData = await sendMessageToBackend(message, userTier);
       
-      // Extract the response content from the backend response
-      // Adjust this based on your backend's response structure
-      const aiResponse = responseData.response || responseData.message || responseData.content || 'Response received successfully!';
+      // Parse the response based on your backend's response structure
+      // Common response structures to handle:
+      let aiResponse;
+      
+      if (responseData.choices && responseData.choices[0] && responseData.choices[0].message) {
+        // OpenAI-style response format
+        aiResponse = responseData.choices[0].message.content;
+      } else if (responseData.response) {
+        // Simple response field
+        aiResponse = responseData.response;
+      } else if (responseData.message) {
+        // Message field
+        aiResponse = responseData.message;
+      } else if (responseData.content) {
+        // Content field
+        aiResponse = responseData.content;
+      } else if (responseData.assistant) {
+        // Assistant field
+        aiResponse = responseData.assistant;
+      } else if (typeof responseData === 'string') {
+        // Direct string response
+        aiResponse = responseData;
+      } else {
+        // Fallback: stringify the entire response
+        console.warn('AI Assistant: Unexpected response format:', responseData);
+        aiResponse = JSON.stringify(responseData, null, 2);
+      }
+      
+      console.log('AI Assistant: Extracted AI response:', aiResponse);
       
       // Display the AI's response
-      displayResponse(aiResponse);
+      displayResponse(aiResponse || 'Response received successfully!');
       
       // Clear the input field after successful submission
       messageInput.value = '';
       
       // Log success for debugging
-      console.log('AI Assistant: Response received successfully');
+      console.log('AI Assistant: Response processed and displayed successfully');
       
     } catch (error) {
-      // Handle different types of errors
-      console.error('AI Assistant: Error occurred:', error);
+      // Handle different types of errors with detailed console logging
+      console.error('AI Assistant: Error occurred during request:', error);
+      console.error('AI Assistant: Error name:', error.name);
+      console.error('AI Assistant: Error message:', error.message);
+      console.error('AI Assistant: Error stack:', error.stack);
       
       let errorMessage = 'Unable to get AI response';
       
       // Provide specific error messages based on error type
-      if (error.message.includes('Failed to fetch')) {
+      if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
         errorMessage = 'Network error - please check your internet connection';
+        console.error('AI Assistant: Network connection failed');
       } else if (error.message.includes('500')) {
         errorMessage = 'Server error - our AI is temporarily unavailable';
+        console.error('AI Assistant: Backend server error (500)');
       } else if (error.message.includes('400')) {
         errorMessage = 'Invalid request - please try rephrasing your question';
+        console.error('AI Assistant: Bad request error (400)');
+      } else if (error.message.includes('404')) {
+        errorMessage = 'API endpoint not found - please contact support';
+        console.error('AI Assistant: API endpoint not found (404)');
       } else if (error.message.includes('tier')) {
         errorMessage = 'Subscription tier issue - please contact support';
+        console.error('AI Assistant: Tier-related error');
+      } else {
+        console.error('AI Assistant: Unknown error type:', error);
       }
       
       displayError(errorMessage);
