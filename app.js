@@ -1280,49 +1280,31 @@ function initAIAssistant() {
     hideLoading();
     hidePlaceholderResponse();
     
-    // For tier-formatted responses, we need to use innerHTML instead of textContent
-    const isFormattedResponse = content.includes('<div class="tier-badge') || content.includes('<div class="response-content');
+    // Clear any existing content and create clean structure
+    responseBox.innerHTML = `
+      <div class="ai-response-header">
+        <div class="ai-avatar" aria-hidden="true"></div>
+        <span>AI Assistant</span>
+      </div>
+      <div class="ai-response-content"></div>
+    `;
     
-    if (isFormattedResponse) {
-      // Set the entire response box content with the formatted HTML
-      responseBox.innerHTML = `
-        <div class="ai-response-header">
-          <div class="ai-avatar" aria-hidden="true"></div>
-          <span>AI Assistant</span>
-        </div>
-        ${content}
-      `;
-      console.log('AI Assistant: Formatted response with tier enhancements displayed');
-    } else {
-      // Find the content area within the response box for plain text
-      const responseContent = responseBox.querySelector('.ai-response-content');
-      if (responseContent) {
-        // Set the text content (this will escape HTML for security)
-        responseContent.textContent = content;
-        console.log('AI Assistant: Response content updated in existing element');
-      } else {
-        // Fallback: create the structure if it doesn't exist
-        responseBox.innerHTML = `
-          <div class="ai-response-header">
-            <div class="ai-avatar" aria-hidden="true"></div>
-            <span>AI Assistant</span>
-          </div>
-          <div class="ai-response-content">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
-        `;
-        console.log('AI Assistant: Response structure created in #response-box');
-      }
+    // Get the content div and set the text content directly (no HTML processing)
+    const responseContent = responseBox.querySelector('.ai-response-content');
+    if (responseContent) {
+      // Simply set the text content - no formatting, no processing, no corruption
+      responseContent.textContent = content;
     }
     
-    // Add tier-specific CSS class to response box for additional styling
+    // Add tier-specific CSS class to response box for styling
     responseBox.className = `ai-assistant-response ${tier.toLowerCase()}-tier`;
     
     // Show the response box with animation
     responseBox.style.display = 'block';
-    console.log('AI Assistant: #response-box is now visible');
     
     // Scroll to the response for better user experience
     responseBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    console.log('AI Assistant: Scrolled to response box');
+    console.log('AI Assistant: Response displayed successfully');
   }
   
   /**
@@ -1439,13 +1421,10 @@ function initAIAssistant() {
       // Add the AI response to conversation history (store the original, not formatted version)
       addToConversationHistory('assistant', aiResponse || 'Response received successfully!');
       
-      // Format the response based on user tier for enhanced display
-      const formattedResponse = formatResponseForTier(aiResponse || 'Response received successfully!', userTier);
-      
       // Add a slight delay for better UX transition from placeholder to response
       setTimeout(() => {
-        // Display the AI's response with tier-specific formatting
-        displayResponse(formattedResponse, userTier);
+        // Display the AI's response directly without tier formatting to prevent corruption
+        displayResponse(aiResponse || 'Response received successfully!', userTier);
         
         // Clear the input field after successful submission
         userInput.value = '';
