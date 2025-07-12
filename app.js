@@ -1224,12 +1224,24 @@ function initAIAssistant() {
   }
 
   /**
-   * Hides placeholder response
+   * Hides placeholder response and cleans up typewriter effects
    */
   function hidePlaceholderResponse() {
     if (placeholderResponse) {
       placeholderResponse.style.display = 'none';
       placeholderResponse.classList.remove('show');
+    }
+    
+    // Clean up any typewriter effects
+    if (typingText) {
+      typingText.classList.remove('typing-text', 'typing');
+      typingText.textContent = '';
+      
+      // Remove any sound indicators
+      const soundIndicator = typingText.querySelector('.typing-sound-indicator');
+      if (soundIndicator && soundIndicator.parentNode) {
+        soundIndicator.remove();
+      }
     }
   }
 
@@ -1276,7 +1288,7 @@ function initAIAssistant() {
   function displayResponse(content, tier = 'Starter') {
     console.log('AI Assistant: Displaying response in #response-box for', tier, 'user:', content);
     
-    // Hide loading and placeholder
+    // Hide loading and placeholder, and clean up any effects
     hideLoading();
     hidePlaceholderResponse();
     
@@ -1292,7 +1304,8 @@ function initAIAssistant() {
     // Get the content div and set the text content directly (no HTML processing)
     const responseContent = responseBox.querySelector('.ai-response-content');
     if (responseContent) {
-      // Simply set the text content - no formatting, no processing, no corruption
+      // Clear any residual classes and simply set the text content
+      responseContent.className = 'ai-response-content';
       responseContent.textContent = content;
     }
     
