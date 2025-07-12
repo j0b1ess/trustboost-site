@@ -756,21 +756,39 @@ function initAIAssistant() {
    * local storage, or URL parameters in a real application
    */
   function getUserSubscriptionTier() {
+    // Helper function to capitalize tier names for backend compatibility
+    function capitalizeTier(tier) {
+      if (!tier) return 'Starter'; // Default fallback
+      
+      const tierLower = tier.toLowerCase();
+      switch (tierLower) {
+        case 'starter':
+          return 'Starter';
+        case 'pro':
+          return 'Pro';
+        case 'enterprise':
+          return 'Enterprise';
+        default:
+          console.warn('AI Assistant: Unknown tier value:', tier, '- defaulting to Starter');
+          return 'Starter';
+      }
+    }
+    
     // Check if tier is stored in localStorage (from previous selection)
     const storedTier = localStorage.getItem('selectedTier');
     if (storedTier) {
-      return storedTier;
+      return capitalizeTier(storedTier);
     }
     
     // Check URL parameters for tier
     const urlParams = new URLSearchParams(window.location.search);
     const tierFromUrl = urlParams.get('tier');
     if (tierFromUrl && ['starter', 'pro', 'enterprise'].includes(tierFromUrl.toLowerCase())) {
-      return tierFromUrl.toLowerCase();
+      return capitalizeTier(tierFromUrl);
     }
     
-    // Default to 'starter' if no tier is specified
-    return 'starter';
+    // Default to 'Starter' if no tier is specified (capitalized for backend)
+    return 'Starter';
   }
   
   /**
@@ -928,6 +946,7 @@ function initAIAssistant() {
     
     // Get the user's subscription tier
     const userTier = getUserSubscriptionTier();
+    console.log('AI Assistant: Tier being sent to backend:', userTier);
     
     // Update UI to show loading state
     updateSubmitButton(true);
@@ -1038,8 +1057,10 @@ function initAIAssistant() {
   document.addEventListener('click', function(event) {
     if (event.target.matches('[data-plan]')) {
       const selectedTier = event.target.getAttribute('data-plan');
+      // Store the tier as-is from HTML (lowercase), capitalization handled in getUserSubscriptionTier()
       localStorage.setItem('selectedTier', selectedTier);
-      console.log('AI Assistant: User selected tier:', selectedTier);
+      console.log('AI Assistant: User selected tier (stored):', selectedTier);
+      console.log('AI Assistant: Tier will be sent to backend as:', getUserSubscriptionTier());
     }
   });
   
