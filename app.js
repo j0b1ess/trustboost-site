@@ -1138,6 +1138,12 @@ function initAIAssistant() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('AI Assistant: Backend error response:', errorText);
+        
+        // Handle 403 Forbidden specifically
+        if (response.status === 403) {
+          throw new Error('RATE_LIMIT_EXCEEDED');
+        }
+        
         throw new Error(`Backend responded with status: ${response.status} ${response.statusText}`);
       }
       
@@ -1177,9 +1183,7 @@ function initAIAssistant() {
       
       function type() {
         if (i < text.length) {
-          element.textContent += text.charAt(i);
-          // Re-add sound indicator after text update
-          element.appendChild(soundIndicator);
+          element.textContent = text.substring(0, i + 1);
           i++;
           setTimeout(type, speed);
         } else {
@@ -1335,45 +1339,45 @@ function initAIAssistant() {
   }
   
   /**
-   * Shows the loading indicator while waiting for backend response
-   * @param {string} tier - User's subscription tier for enhanced loading
+   * Displays a rate limit error message to the user with red styling
+   * @param {string} errorMessage - The rate limit error message to display
    */
-  function showLoading(tier = 'Starter') {
-    showEnhancedLoading(tier);
-  }
-  
-  /**
-   * Hides the loading indicator
-   */
-  function hideLoading() {
-    if (loadingDiv) {
-      loadingDiv.style.display = 'none';
-    }
+  function displayRateLimitError(errorMessage) {
+    console.log('AI Assistant: Displaying rate limit error:', errorMessage);
+    
+    // Hide loading and placeholder, and clean up any effects
+    hideLoading();
     hidePlaceholderResponse();
-  }
-  
-  /**
-   * Updates the submit button state with enhanced visual feedback
-   * @param {boolean} isLoading - Whether the form is in loading state
-   * @param {string} tier - User's subscription tier for enhanced button styling
-   */
-  function updateSubmitButton(isLoading, tier = 'Starter') {
-    if (isLoading) {
-      askButton.disabled = true;
-      const loadingTexts = {
-        'Starter': '<i class="fa-solid fa-spinner fa-spin"></i> Asking AI...',
-        'Pro': '<i class="fa-solid fa-spinner fa-spin"></i> Pro AI Processing...',
-        'Enterprise': '<i class="fa-solid fa-spinner fa-spin"></i> Enterprise AI Analyzing...'
-      };
-      askButton.innerHTML = loadingTexts[tier] || loadingTexts['Starter'];
-      askButton.classList.add('loading');
-    } else {
-      askButton.disabled = false;
-      askButton.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask AI';
-      askButton.classList.remove('loading');
+    
+    // Clear any existing content and create clean structure with error styling
+    responseBox.innerHTML = `
+      <div class="ai-response-header">
+        <div class="ai-avatar" aria-hidden="true"></div>
+        <span>AI Assistant</span>
+      </div>
+      <div class="ai-response-content rate-limit-error"></div>
+    `;
+    
+    // Get the content div and set the error message
+    const responseContent = responseBox.querySelector('.ai-response-content');
+    if (responseContent) {
+      responseContent.textContent = errorMessage;
+      // Add red text styling
+      responseContent.style.color = '#ef4444';
+      responseContent.style.fontWeight = '600';
     }
+    
+    // Add error-specific CSS class to response box
+    responseBox.className = 'ai-assistant-response rate-limit-error';
+    
+    // Show the response box with animation
+    responseBox.style.display = 'block';
+    
+    // Scroll to the response for better user experience
+    responseBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    console.log('AI Assistant: Rate limit error displayed successfully');
   }
-  
+
   /**
    * Main form submission handler
    */
@@ -1465,7 +1469,13 @@ function initAIAssistant() {
       let errorMessage = 'Unable to get AI response';
       
       // Provide specific error messages based on error type
-      if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+      if (error.message === 'RATE_LIMIT_EXCEEDED') {
+        errorMessage = "You've reached the message limit for your current plan. Please upgrade to continue.";
+        console.error('AI Assistant: Rate limit exceeded (403)');
+        // Display this as a special rate limit error with red styling
+        displayRateLimitError(errorMessage);
+        return; // Exit early to use special error display
+      } else if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
         errorMessage = 'Network error - please check your internet connection';
         console.error('AI Assistant: Network connection failed');
       } else if (error.message.includes('500')) {
