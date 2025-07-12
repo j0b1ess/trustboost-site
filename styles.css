@@ -18,12 +18,10 @@
   --max-width: 1200px;
   --nav-height: 70px;
   --z-nav: 10;
-
-  /* CSS Custom Properties for Mobile Viewport */
+  
+  /* Dynamic viewport height for mobile */
   --vh: 1vh;
 }
-
-/* ...previous base CSS... */
 
 .hero-header,
 .cta-header {
@@ -834,156 +832,425 @@ body.calendly-overlay-is-open * {
   }
 }
 
-/* Mobile-specific improvements for better touch interactions */
+/* Enhanced button loading states */
+.ai-submit-btn.loading {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  animation: buttonLoading 2s infinite ease-in-out;
+  cursor: not-allowed;
+}
+
+@keyframes buttonLoading {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(108, 71, 255, 0.4);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 8px rgba(108, 71, 255, 0);
+  }
+}
+
+.ai-submit-btn:disabled {
+  opacity: 0.8;
+}
+
+/* === End Enhanced Button States === */
+
+/* === AI Assistant Enhanced Loading and Typing Animation === */
+
+/* Animated AI avatar */
+.ai-avatar {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background: var(--gradient);
+  border-radius: 50%;
+  position: relative;
+  margin-right: 0.75rem;
+  animation: aiPulse 2s infinite ease-in-out;
+}
+
+.ai-avatar::before {
+  content: '🤖';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  filter: brightness(0) invert(1);
+}
+
+@keyframes aiPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(108, 71, 255, 0.7);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(108, 71, 255, 0);
+  }
+}
+
+/* Enhanced loading state with typing animation */
+.ai-assistant-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-top: 1.5rem;
+  min-height: 120px;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.loading-avatar-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.loading-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+/* Typing dots animation */
+.typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.typing-dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Placeholder response with typing effect */
+.placeholder-response {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  display: none;
+  border-left: 4px solid var(--primary);
+}
+
+.placeholder-response.show {
+  display: block;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.placeholder-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.placeholder-content {
+  color: var(--text);
+  line-height: 1.6;
+  position: relative;
+  overflow: hidden;
+}
+
+.typing-text {
+  border-right: 2px solid var(--primary);
+  animation: typewriterCursor 1s infinite;
+}
+
+@keyframes typewriterCursor {
+  0%, 50% { border-color: var(--primary); }
+  51%, 100% { border-color: transparent; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced response animation */
+.ai-assistant-response {
+  animation: slideInResponse 0.6s ease-out;
+}
+
+@keyframes slideInResponse {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Progress bar for loading */
+.loading-progress {
+  width: 200px;
+  height: 4px;
+  background: rgba(108, 71, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.loading-progress-bar {
+  height: 100%;
+  background: var(--gradient);
+  border-radius: 2px;
+  animation: loadingProgress 3s ease-in-out infinite;
+}
+
+@keyframes loadingProgress {
+  0% {
+    width: 0%;
+    transform: translateX(-100%);
+  }
+  50% {
+    width: 70%;
+    transform: translateX(0%);
+  }
+  100% {
+    width: 100%;
+    transform: translateX(100%);
+  }
+}
+
+/* Loading state variations for different tiers */
+.loading-content.pro-tier .loading-text {
+  color: var(--primary);
+}
+
+.loading-content.pro-tier .ai-avatar {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  animation: aiPulsePro 1.8s infinite ease-in-out;
+}
+
+@keyframes aiPulsePro {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg);
+    box-shadow: 0 0 0 0 rgba(108, 71, 255, 0.7);
+  }
+  50% { 
+    transform: scale(1.1) rotate(180deg);
+    box-shadow: 0 0 0 15px rgba(108, 71, 255, 0);
+  }
+}
+
+.loading-content.enterprise-tier .loading-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.loading-content.enterprise-tier .ai-avatar {
+  background: var(--gradient-alt);
+  animation: aiPulseEnterprise 1.5s infinite ease-in-out;
+}
+
+@keyframes aiPulseEnterprise {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 
+      0 0 0 0 rgba(108, 71, 255, 0.7),
+      0 0 0 0 rgba(0, 209, 178, 0.3);
+  }
+  33% {
+    transform: scale(1.15);
+    box-shadow: 
+      0 0 0 10px rgba(108, 71, 255, 0.3),
+      0 0 0 20px rgba(0, 209, 178, 0);
+  }
+  66% {
+    transform: scale(1.05);
+    box-shadow: 
+      0 0 0 15px rgba(108, 71, 255, 0),
+      0 0 0 25px rgba(0, 209, 178, 0);
+  }
+}
+
+/* Dark mode adjustments */
+body.dark .ai-assistant-loading,
+body.dark .placeholder-response {
+  background: var(--card-dark);
+  box-shadow: 0 8px 36px rgba(0, 209, 178, 0.13);
+}
+
+body.dark .loading-text,
+body.dark .placeholder-content {
+  color: var(--text-light);
+}
+
+body.dark .loading-progress {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .typing-text {
+  border-color: var(--secondary);
+}
+
+@keyframes typingTextDark {
+  0%, 50% { border-color: var(--secondary); }
+  51%, 100% { border-color: transparent; }
+}
+
+body.dark .typing-text {
+  animation: typingTextDark 1s infinite;
+}
+
+/* Mobile optimizations */
 @media (max-width: 768px) {
-  /* Ensure all buttons have proper touch targets */
-  .btn, button, [role="button"] {
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0.75rem 1.5rem;
+  .ai-assistant-loading {
+    padding: 1.5rem;
+    min-height: 100px;
+  }
+  
+  .loading-avatar-container {
+    gap: 0.75rem;
+  }
+  
+  .ai-avatar {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .ai-avatar::before {
+    font-size: 14px;
+  }
+  
+  .loading-text {
     font-size: 1rem;
   }
   
-  /* Improve form inputs for mobile */
-  input, textarea, select {
-    min-height: 44px;
-    font-size: 16px; /* Prevents zoom on iOS */
-    padding: 0.75rem;
+  .loading-progress {
+    width: 150px;
   }
   
-  /* Better spacing for mobile interactions */
-  .hero-ctas {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
-  }
-  
-  .hero-ctas .btn {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  /* Make pricing cards stack better on mobile */
-  .pricing-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  /* Improve mobile testimonial interaction */
-  .testimonial {
-    padding: 2rem 1.5rem;
-  }
-  
-  /* Better mobile contact form */
-  .contact-flex {
-    flex-direction: column;
-    gap: 2rem;
-  }
-  
-  .contact-form, .newsletter {
-    width: 100%;
-  }
-  
-  /* Improve mobile carousel controls */
-  .carousel-controls button {
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0.75rem;
-    font-size: 1.2rem;
-  }
-  
-  /* Ensure footer is mobile-friendly */
-  .footer-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
-  
-  .footer-socials {
-    margin-top: 1rem;
-  }
-  
-  .footer-socials a {
-    min-width: 44px;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 0.5rem;
+  .placeholder-response {
+    padding: 1.25rem;
   }
 }
 
-/* Additional touch improvements for all screen sizes */
-@media (hover: none) and (pointer: coarse) {
-  /* This targets touch devices specifically */
-  .btn:hover {
-    /* Override hover states that don't work well on touch */
-    transform: none;
-  }
-  
-  .btn:active {
-    transform: scale(0.98);
-    transition: transform 0.1s ease;
-  }
-  
-  .feature-card:hover {
-    transform: none;
-  }
-  
-  .feature-card:active {
-    transform: scale(0.98);
-  }
-  
-  .pricing-card:hover {
-    transform: none;
-  }
-  
-  .pricing-card:active {
-    transform: scale(0.98);
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .btn {
-    border-width: 2px;
-    font-weight: bold;
-  }
-  
-  #mobile-nav-toggle:focus,
-  .btn:focus {
-    outline: 3px solid currentColor;
-    outline-offset: 2px;
-  }
-}
-
-/* Reduced motion support */
+/* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .ai-avatar,
+  .typing-dot,
+  .loading-progress-bar,
+  .ai-assistant-response,
+  .placeholder-response {
+    animation: none !important;
   }
   
-  #mobile-nav-toggle.open {
-    transform: none;
+  .typing-text {
+    border-right: 2px solid var(--primary);
+    animation: none;
   }
 }
 
-/* Additional failsafe for testimonials header visibility in dark mode */
-body.dark #testimonials-title {
-  color: #fff !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .ai-avatar {
+    border: 2px solid currentColor;
+  }
+  
+  .typing-dot {
+    border: 1px solid currentColor;
+  }
+  
+  .loading-progress {
+    border: 1px solid currentColor;
+  }
 }
 
-/* Ensure all gradient text is visible in dark mode */
-body.dark .gradient-text {
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  background-clip: unset !important;
-  -webkit-text-fill-color: #fff !important;
-  color: #fff !important;
-  text-shadow: none !important;
+/* Typing sound visual feedback */
+.typing-sound-indicator {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: typingPing 0.8s infinite;
+  opacity: 0;
 }
+
+.typing-text.typing .typing-sound-indicator {
+  opacity: 1;
+}
+
+@keyframes typingPing {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* Enhanced accessibility features */
+@media (prefers-reduced-motion: reduce) {
+  .typing-sound-indicator {
+    display: none;
+  }
+}
+
+/* Screen reader announcements for dynamic content */
+.sr-typing-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* === End Accessibility Enhancements === */
