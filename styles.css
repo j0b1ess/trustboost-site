@@ -1331,7 +1331,6 @@ body:not(.dark) .gradient-text {
   background: var(--gradient-primary);
   opacity: 0.03;
   pointer-events: none;
-  border-radius: var(--radius-lg);
 }
 
 .pricing-card.popular .pricing-btn {
@@ -2310,7 +2309,7 @@ body.calendly-overlay-is-open * {
 .ai-input-group {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom:  2rem;
   align-items: flex-end;
 }
 
@@ -2510,14 +2509,228 @@ body.calendly-overlay-is-open * {
   color: var(--primary-dark);
 }
 
-@media (max-width: 768px) {
-  .contact-flex {
-    flex-direction: column;
-    gap: 2rem;
+/* Pulsing Robot Animation for AI Assistant */
+.ai-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: robotPulse 2s ease-in-out infinite;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+}
+
+.ai-avatar::before {
+  content: '🤖';
+  font-size: 20px;
+  animation: robotBounce 1.5s ease-in-out infinite;
+}
+
+.ai-avatar::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
+  opacity: 0.3;
+  animation: robotRing 2s ease-out infinite;
+  z-index: -1;
+}
+
+/* Robot Animation Keyframes */
+@keyframes robotPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
   }
-  
-  .contact-form,
-  .newsletter {
-    padding: 2rem 1.5rem;
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 30px rgba(79, 70, 229, 0.5);
+  }
+}
+
+@keyframes robotBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes robotRing {
+  0% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* Enhanced Memory Indicator */
+#memory-indicator {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+#memory-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4f46e5, #8b5cf6, #4f46e5);
+  background-size: 200% 100%;
+  animation: memoryGlow 3s ease-in-out infinite;
+}
+
+#memory-indicator:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+#memory-indicator .fa-brain {
+  color: #8b5cf6;
+  font-size: 1.2rem;
+  animation: brainPulse 2s ease-in-out infinite;
+}
+
+/* Enhanced Clear Memory Button */
+.clear-memory-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  margin-left: auto;
+}
+
+.clear-memory-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.clear-memory-btn:active {
+  transform: translateY(0);
+}
+
+.clear-memory-btn .fa-trash {
+  margin-right: 0.5rem;
+  animation: trashWiggle 2s ease-in-out infinite;
+}
+
+/* Memory Animation Keyframes */
+@keyframes memoryGlow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes brainPulse {
+  0%, 100% {
+    transform: scale(1);
+    color: #8b5cf6;
+  }
+  50% {
+    transform: scale(1.1);
+    color: #7c3aed;
+  }
+}
+
+@keyframes trashWiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+/* Dark mode support for memory indicator */
+[data-theme="dark"] #memory-indicator {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-color: #475569;
+  color: var(--text-white);
+}
+
+[data-theme="dark"] #memory-indicator:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Loading Animation Enhancement */
+.ai-assistant-loading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--bg);
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  animation: loadingPulse 2s ease-in-out infinite;
+}
+
+.loading-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.loading-avatar-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.loading-text {
+  font-weight: 600;
+  color: var(--text-secondary);
+  animation: textPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% {
+    border-color: var(--border);
+  }
+  50% {
+    border-color: var(--primary);
+  }
+}
+
+@keyframes textPulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
   }
 }
