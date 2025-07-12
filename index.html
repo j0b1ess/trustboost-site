@@ -121,7 +121,7 @@
       gap: 1rem;
     }
     
-    #message-input {
+    #user-input {
       width: 100%;
       padding: 1rem;
       border: 2px solid var(--border);
@@ -133,7 +133,7 @@
       transition: border-color 0.3s ease;
     }
     
-    #message-input:focus {
+    #user-input:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.1);
@@ -222,13 +222,13 @@
       color: #ccc;
     }
     
-    body.dark #message-input {
+    body.dark #user-input {
       background: var(--card-dark);
       border-color: rgba(255, 255, 255, 0.2);
       color: var(--text-light);
     }
     
-    body.dark #message-input:focus {
+    body.dark #user-input:focus {
       border-color: var(--primary);
     }
     
@@ -431,14 +431,14 @@
             <form id="ai-assistant-form" class="ai-assistant-form">
               <div class="ai-input-group">
                 <textarea 
-                  id="message-input" 
+                  id="user-input" 
                   name="message" 
                   placeholder="Type your question here... (e.g., How does automated review generation work?)" 
                   rows="3" 
                   required
                   aria-label="Ask the AI assistant a question"
                 ></textarea>
-                <button type="submit" id="submit-button" class="btn btn-primary ai-submit-btn" aria-label="Send message to AI assistant">
+                <button type="submit" id="ask-button" class="btn btn-primary ai-submit-btn" aria-label="Send message to AI assistant">
                   <i class="fa-solid fa-paper-plane"></i>
                   Ask AI
                 </button>

@@ -736,13 +736,13 @@ function initEnhancedMobileNav() {
 function initAIAssistant() {
   // Get the required HTML elements using the specified IDs
   const form = document.getElementById('ai-assistant-form');
-  const messageInput = document.getElementById('message-input');
-  const submitButton = document.getElementById('submit-button');
+  const userInput = document.getElementById('user-input');
+  const askButton = document.getElementById('ask-button');
   const responseBox = document.getElementById('response-box');
   const loadingDiv = document.getElementById('ai-assistant-loading');
   
   // Check if all required elements exist in the DOM
-  if (!form || !messageInput || !submitButton || !responseBox) {
+  if (!form || !userInput || !askButton || !responseBox) {
     console.warn('AI Assistant: Required elements not found in DOM');
     return;
   }
@@ -902,11 +902,11 @@ function initAIAssistant() {
    */
   function updateSubmitButton(isLoading) {
     if (isLoading) {
-      submitButton.disabled = true;
-      submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Asking AI...';
+      askButton.disabled = true;
+      askButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Asking AI...';
     } else {
-      submitButton.disabled = false;
-      submitButton.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask AI';
+      askButton.disabled = false;
+      askButton.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask AI';
     }
   }
   
@@ -918,11 +918,11 @@ function initAIAssistant() {
     event.preventDefault();
     
     // Get the user's message and trim whitespace
-    const message = messageInput.value.trim();
+    const message = userInput.value.trim();
     
     // Validate that the message is not empty
     if (!message) {
-      messageInput.focus();
+      userInput.focus();
       return;
     }
     
@@ -973,7 +973,7 @@ function initAIAssistant() {
       displayResponse(aiResponse || 'Response received successfully!');
       
       // Clear the input field after successful submission
-      messageInput.value = '';
+      userInput.value = '';
       
       // Log success for debugging
       console.log('AI Assistant: Response processed and displayed successfully');
@@ -1020,7 +1020,7 @@ function initAIAssistant() {
   form.addEventListener('submit', handleFormSubmission);
   
   // Handle Enter key in textarea (Submit on Enter, new line on Shift+Enter)
-  messageInput.addEventListener('keydown', function(event) {
+  userInput.addEventListener('keydown', function(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       form.dispatchEvent(new Event('submit'));
@@ -1028,7 +1028,7 @@ function initAIAssistant() {
   });
   
   // Auto-resize textarea as user types
-  messageInput.addEventListener('input', function() {
+  userInput.addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = Math.min(this.scrollHeight, 200) + 'px';
   });
