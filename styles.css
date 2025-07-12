@@ -480,9 +480,12 @@ nav a:hover::before, nav a.active::before {
     gap: 0.5rem;
   }
   
-  /* Hide schedule call button on very small screens */
+  /* Make schedule call button visible on mobile with adjusted styling */
   #calendly-btn {
-    display: none;
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    min-height: 42px;
+    display: inline-flex;
   }
   
   .nav-ctas .btn {
@@ -1005,7 +1008,9 @@ body:not(.dark) .gradient-text {
 .pricing { 
   background: var(--bg);
   padding: 6rem 0;
+  padding-top: 8rem;  /* Extra padding to accommodate badges */
   position: relative;
+  overflow: visible;  /* Allow badges to be visible */
 }
 
 .pricing::before {
@@ -1150,7 +1155,7 @@ body:not(.dark) .gradient-text {
 
 .pricing-card .badge { 
   position: absolute; 
-  top: -15px; 
+  top: 1rem;  /* Moved down to prevent cut-off */
   left: 50%; 
   transform: translateX(-50%); 
   background: var(--gradient-primary); 
@@ -1546,12 +1551,6 @@ body.dark .testimonial {
 
 .contact { background: var(--bg);}
 .contact-flex { display: flex; gap: 3rem; justify-content: space-between; align-items: flex-start;}
-.contact-form, .newsletter { flex: 1 1 0; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 2rem; margin-bottom: 2rem;}
-.contact-form h3, .newsletter h3 { margin-bottom: 1rem;}
-.contact-form form, .newsletter-form { display: flex; flex-direction: column; gap: 1rem;}
-.contact-form input, .contact-form textarea, .newsletter-form input { border-radius: 8px; border: 1.5px solid #eee; padding: .89rem 1.1rem; font-size: 1rem;}
-.contact-form button, .newsletter-form button { margin-top: .4rem;}
-.contact-info, .newsletter-desc { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.7rem;}
 @media (max-width:700px) { .contact-flex { flex-direction: column; gap: 2rem;} }
 
 /* Dark Mode Forms and Contact */
