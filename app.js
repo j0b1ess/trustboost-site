@@ -107,15 +107,18 @@ function animateStats() {
 // === Theme Toggle ===
 function initThemeToggle() {
   const themeBtn = document.getElementById("theme-toggle");
-  if (themeBtn) {
+  const themeText = themeBtn?.querySelector(".theme-text");
+  
+  if (themeBtn && themeText) {
     themeBtn.addEventListener("click", ()=> {
       document.body.classList.toggle("dark");
       const isDark = document.body.classList.contains("dark");
       
-      // Update button icon
-      themeBtn.innerHTML = isDark
-        ? '<i class="fa-solid fa-sun"></i>'
-        : '<i class="fa-solid fa-moon"></i>';
+      // Update button text - show opposite mode (what clicking will switch to)
+      themeText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+      
+      // Update ARIA label for accessibility
+      themeBtn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
       
       // Debug log
       console.log('Dark mode:', isDark ? 'enabled' : 'disabled');

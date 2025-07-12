@@ -338,18 +338,36 @@ nav a:hover::before, nav a.active::before {
   background: var(--card); 
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  padding: 0.75rem;
-  font-size: 1.1rem; 
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem; 
+  font-weight: 600;
   cursor: pointer; 
   transition: var(--transition-fast);
   color: var(--text-muted);
   box-shadow: var(--shadow-sm);
+  font-family: inherit;
+  white-space: nowrap;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #theme-toggle:hover {
   color: var(--primary);
   transform: translateY(-1px);
   box-shadow: var(--shadow);
+  border-color: var(--primary);
+}
+
+#theme-toggle:active {
+  transform: translateY(0);
+}
+
+.theme-text {
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
 }
 
 #mobile-nav-toggle { 
@@ -458,6 +476,12 @@ nav a:hover::before, nav a.active::before {
   .nav-ctas .btn {
     font-size: 0.9rem;
     padding: 0.6rem 1rem;
+    min-height: 42px;
+  }
+  
+  #theme-toggle {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.8rem;
     min-height: 42px;
   }
   
