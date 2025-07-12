@@ -1498,42 +1498,51 @@ function initAIAssistant() {
   // Add event listener for form submission
   form.addEventListener('submit', handleFormSubmission);
   
-  // Handle question suggestion clicks
-  const suggestionButtons = document.querySelectorAll('.suggestion-btn');
-  suggestionButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const question = this.getAttribute('data-question');
-      if (question) {
-        // Add visual feedback - briefly highlight the clicked button
-        this.style.background = 'rgba(108, 71, 255, 0.2)';
-        this.style.transform = 'scale(0.98)';
+  // Handle question suggestion clicks - ensure this runs after DOM is ready
+  setTimeout(() => {
+    const suggestionButtons = document.querySelectorAll('.suggestion-btn');
+    console.log('AI Assistant: Found', suggestionButtons.length, 'suggestion buttons');
+    
+    suggestionButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const question = this.getAttribute('data-question');
+        console.log('AI Assistant: Suggestion button clicked:', question);
         
-        // Reset the visual feedback after a short delay
-        setTimeout(() => {
-          this.style.background = '';
-          this.style.transform = '';
-        }, 150);
-        
-        // Fill the input with the suggested question
-        userInput.value = question;
-        
-        // Auto-resize the textarea to fit the content
-        userInput.style.height = 'auto';
-        userInput.style.height = Math.min(userInput.scrollHeight, 200) + 'px';
-        
-        // Focus the input for better UX
-        userInput.focus();
-        
-        // Set cursor to end of text
-        userInput.setSelectionRange(userInput.value.length, userInput.value.length);
-        
-        // Optional: Auto-submit the question (uncomment if desired)
-        // form.dispatchEvent(new Event('submit'));
-        
-        console.log('AI Assistant: Question suggestion selected:', question);
-      }
+        if (question) {
+          // Add visual feedback - briefly highlight the clicked button
+          this.style.background = 'rgba(108, 71, 255, 0.2)';
+          this.style.transform = 'scale(0.98)';
+          
+          // Reset the visual feedback after a short delay
+          setTimeout(() => {
+            this.style.background = '';
+            this.style.transform = '';
+          }, 150);
+          
+          // Fill the input with the suggested question
+          userInput.value = question;
+          
+          // Auto-resize the textarea to fit the content
+          userInput.style.height = 'auto';
+          userInput.style.height = Math.min(userInput.scrollHeight, 200) + 'px';
+          
+          // Focus the input for better UX
+          userInput.focus();
+          
+          // Set cursor to end of text
+          userInput.setSelectionRange(userInput.value.length, userInput.value.length);
+          
+          // Auto-submit the question for immediate response
+          setTimeout(() => {
+            console.log('AI Assistant: Auto-submitting suggestion question');
+            form.dispatchEvent(new Event('submit'));
+          }, 200); // Small delay for better UX
+          
+          console.log('AI Assistant: Question suggestion selected and submitted:', question);
+        }
+      });
     });
-  });
+  }, 100);
   
   // Handle Enter key in textarea (Submit on Enter, new line on Shift+Enter)
   userInput.addEventListener('keydown', function(event) {
