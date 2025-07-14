@@ -32,11 +32,11 @@
         .admin-login {
             max-width: 400px;
             margin: 2rem auto;
-            background: var(--card-bg);
+            background: var(--card);
             padding: 2rem;
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            border: 1px solid var(--card-border);
         }
         
         .admin-dashboard {
@@ -51,11 +51,11 @@
         }
         
         .stat-card {
-            background: var(--card-bg);
+            background: var(--card);
             padding: 1.5rem;
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            border: 1px solid var(--card-border);
             text-align: center;
         }
         
@@ -75,10 +75,10 @@
         }
         
         .users-table {
-            background: var(--card-bg);
+            background: var(--card);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            border: 1px solid var(--card-border);
             overflow: hidden;
         }
         
@@ -99,7 +99,7 @@
             grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
             gap: 1rem;
             padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--card-border);
             align-items: center;
         }
         
@@ -180,7 +180,7 @@
         
         .admin-input {
             padding: 0.8rem;
-            border: 1px solid var(--border);
+            border: 1px solid var(--card-border);
             border-radius: var(--radius);
             background: var(--bg);
             color: var(--text);
@@ -377,7 +377,6 @@
     </div>
 
     <!-- Include mock API for testing (remove when backend is ready) -->
-    <script src="mock-admin-api.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

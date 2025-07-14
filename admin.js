@@ -1,8 +1,15 @@
 // TrustBoost AI Admin Dashboard
 // Secure admin interface for monitoring users and system metrics
+// 
+// PRODUCTION MODE: Connected to Real Backend API
+// - All data comes from trustboost-ai-backend-jsyinvest7.replit.app
+// - Real authentication and user management
+// - Live system monitoring
 
 class AdminDashboard {
     constructor() {
+        // Production mode - using real backend API
+        this.useMockAPI = false;
         this.apiBaseUrl = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
         this.adminToken = null;
         this.refreshInterval = null;
@@ -20,6 +27,8 @@ class AdminDashboard {
             document.body.classList.add('dark');
             document.documentElement.setAttribute('data-theme', 'dark');
         }
+
+        this.initThemeToggle();
     }
 
     bindEvents() {
@@ -64,6 +73,7 @@ class AdminDashboard {
         errorDiv.style.display = 'none';
 
         try {
+            // Use real backend API
             const response = await fetch(`${this.apiBaseUrl}/admin/login`, {
                 method: 'POST',
                 headers: {
@@ -74,7 +84,6 @@ class AdminDashboard {
 
             if (response.ok) {
                 const data = await response.json();
-                
                 if (data.token) {
                     this.adminToken = data.token;
                     localStorage.setItem('adminToken', this.adminToken);
@@ -160,6 +169,7 @@ class AdminDashboard {
 
     async fetchDashboardStats() {
         try {
+            // Use real backend API
             const response = await fetch(`${this.apiBaseUrl}/admin/stats`, {
                 headers: {
                     'Authorization': `Bearer ${this.adminToken}`,
@@ -183,6 +193,7 @@ class AdminDashboard {
 
     async fetchUsers() {
         try {
+            // Use real backend API
             const response = await fetch(`${this.apiBaseUrl}/admin/users`, {
                 headers: {
                     'Authorization': `Bearer ${this.adminToken}`,
@@ -323,6 +334,33 @@ class AdminDashboard {
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
             this.refreshInterval = null;
+        }
+    }
+
+    initThemeToggle() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle?.querySelector('i');
+        
+        if (themeToggle && themeIcon) {
+            // Set initial theme state
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                document.body.classList.toggle('dark', newTheme === 'dark');
+                
+                // Update icon
+                themeIcon.className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+                
+                // Save preference
+                localStorage.setItem('theme', newTheme);
+                
+                console.log('Admin Dashboard: Theme changed to', newTheme);
+            });
         }
     }
 }
