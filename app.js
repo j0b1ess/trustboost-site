@@ -1578,13 +1578,13 @@ function initAIAssistant() {
       
       // Clear input and reset button state
       userInput.value = '';
-      updateSubmitButton(false, userTier);
+      // updateSubmitButton(false, userTier); // Function not defined - removed to prevent ReferenceError
       
       return; // Stop processing
     }
     
     // Update UI to show loading state with tier-specific enhancements
-    updateSubmitButton(true, userTier);
+    // updateSubmitButton(true, userTier); // Function not defined - removed to prevent ReferenceError
     showLoading(userTier);
     
     try {
@@ -1656,7 +1656,7 @@ function initAIAssistant() {
         }
         
         // Reset button state
-        updateSubmitButton(false);
+        // updateSubmitButton(false); // Function not defined - removed to prevent ReferenceError
         
         // Log success for debugging
         console.log('AI Assistant: Response processed and displayed successfully');
@@ -1701,7 +1701,7 @@ function initAIAssistant() {
       
     } finally {
       // Always restore the submit button state
-      updateSubmitButton(false);
+      // updateSubmitButton(false); // Function not defined - removed to prevent ReferenceError
       hideLoading();
     }
   }
