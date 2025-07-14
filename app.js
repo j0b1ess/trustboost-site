@@ -906,6 +906,9 @@ function initAIAssistant() {
   // Starter plan limitations
   const STARTER_MESSAGE_LIMIT = 2; // Free limit for Starter plan users
   
+  // Request state management to prevent duplicate submissions
+  let isRequestPending = false;
+  
   /**
    * Gets the current session message count for Starter plan users
    * @returns {number} - The number of messages sent in current session
@@ -929,6 +932,70 @@ function initAIAssistant() {
    */
   function hasReachedStarterLimit() {
     return getSessionMessageCount() >= STARTER_MESSAGE_LIMIT;
+  }
+
+  /**
+   * Disables the submit button and suggestion buttons to prevent duplicate requests
+   */
+  function disableSubmissionButtons() {
+    isRequestPending = true;
+    
+    // Disable the main submit button
+    if (askButton) {
+      askButton.disabled = true;
+      askButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+      askButton.style.opacity = '0.6';
+      askButton.style.cursor = 'not-allowed';
+    }
+    
+    // Disable all suggestion buttons
+    const suggestionButtons = document.querySelectorAll('.suggestion-btn');
+    suggestionButtons.forEach(btn => {
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+      btn.style.cursor = 'not-allowed';
+      btn.style.pointerEvents = 'none';
+    });
+    
+    // Disable the textarea
+    if (userInput) {
+      userInput.disabled = true;
+      userInput.style.opacity = '0.7';
+    }
+    
+    console.log('AI Assistant: Submission buttons disabled while request is pending');
+  }
+
+  /**
+   * Re-enables the submit button and suggestion buttons after request completion
+   */
+  function enableSubmissionButtons() {
+    isRequestPending = false;
+    
+    // Re-enable the main submit button
+    if (askButton) {
+      askButton.disabled = false;
+      askButton.innerHTML = 'Ask AI';
+      askButton.style.opacity = '';
+      askButton.style.cursor = '';
+    }
+    
+    // Re-enable all suggestion buttons
+    const suggestionButtons = document.querySelectorAll('.suggestion-btn');
+    suggestionButtons.forEach(btn => {
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = '';
+      btn.style.pointerEvents = '';
+    });
+    
+    // Re-enable the textarea
+    if (userInput) {
+      userInput.disabled = false;
+      userInput.style.opacity = '';
+    }
+    
+    console.log('AI Assistant: Submission buttons re-enabled after request completion');
   }
 
   /**
@@ -1556,6 +1623,12 @@ function initAIAssistant() {
     // Prevent the default form submission
     event.preventDefault();
     
+    // Prevent duplicate requests if one is already pending
+    if (isRequestPending) {
+      console.log('AI Assistant: Request already pending, ignoring duplicate submission');
+      return;
+    }
+    
     // Get the user's message and trim whitespace
     const message = userInput.value.trim();
     
@@ -1578,13 +1651,14 @@ function initAIAssistant() {
       
       // Clear input and reset button state
       userInput.value = '';
-      // updateSubmitButton(false, userTier); // Function not defined - removed to prevent ReferenceError
       
       return; // Stop processing
     }
     
+    // Disable buttons to prevent duplicate submissions
+    disableSubmissionButtons();
+    
     // Update UI to show loading state with tier-specific enhancements
-    // updateSubmitButton(true, userTier); // Function not defined - removed to prevent ReferenceError
     showEnhancedLoading(userTier);
     
     try {
@@ -1637,6 +1711,9 @@ function initAIAssistant() {
         // Clear the input field after successful submission
         userInput.value = '';
         
+        // Re-enable submission buttons
+        enableSubmissionButtons();
+        
         // Increment message count for Starter plan users
         if (userTier === 'Starter') {
           incrementSessionMessageCount();
@@ -1677,6 +1754,8 @@ function initAIAssistant() {
         console.error('AI Assistant: Rate limit exceeded (403)');
         // Display this as a special rate limit error with red styling
         displayRateLimitError(errorMessage);
+        // Re-enable buttons even for rate limit errors
+        enableSubmissionButtons();
         return; // Exit early to use special error display
       } else if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
         errorMessage = 'Network error - please check your internet connection';
@@ -1700,8 +1779,8 @@ function initAIAssistant() {
       displayError(errorMessage);
       
     } finally {
-      // Always restore the submit button state
-      // updateSubmitButton(false); // Function not defined - removed to prevent ReferenceError
+      // Always restore the submit button state and re-enable buttons
+      enableSubmissionButtons();
       // hideLoading(); // Function not defined - cleanup handled by displayResponse/displayError functions
     }
   }
@@ -1716,6 +1795,12 @@ function initAIAssistant() {
     
     suggestionButtons.forEach(button => {
       button.addEventListener('click', function() {
+        // Prevent clicking if a request is already pending
+        if (isRequestPending) {
+          console.log('AI Assistant: Request already pending, ignoring suggestion button click');
+          return;
+        }
+        
         const question = this.getAttribute('data-question');
         console.log('AI Assistant: Suggestion button clicked:', question);
         
@@ -1758,6 +1843,13 @@ function initAIAssistant() {
   // Handle Enter key in textarea (Submit on Enter, new line on Shift+Enter)
   userInput.addEventListener('keydown', function(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
+      // Prevent submission if a request is already pending
+      if (isRequestPending) {
+        event.preventDefault();
+        console.log('AI Assistant: Request already pending, ignoring Enter key submission');
+        return;
+      }
+      
       event.preventDefault();
       form.dispatchEvent(new Event('submit'));
     }
