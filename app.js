@@ -1364,7 +1364,7 @@ function initAIAssistant() {
     console.log('AI Assistant: Displaying response in #response-box for', tier, 'user:', content);
     
     // Hide loading and placeholder, and clean up any effects
-    hideLoading();
+    // hideLoading(); // Function not defined - using hidePlaceholderResponse() instead
     hidePlaceholderResponse();
     
     // Clear any existing content and create clean structure
@@ -1411,7 +1411,7 @@ function initAIAssistant() {
     console.log('AI Assistant: Displaying rate limit error:', errorMessage);
     
     // Hide loading and placeholder, and clean up any effects
-    hideLoading();
+    // hideLoading(); // Function not defined - using hidePlaceholderResponse() instead
     hidePlaceholderResponse();
     
     // Clear any existing content and create clean structure with error styling
@@ -1585,7 +1585,7 @@ function initAIAssistant() {
     
     // Update UI to show loading state with tier-specific enhancements
     // updateSubmitButton(true, userTier); // Function not defined - removed to prevent ReferenceError
-    showLoading(userTier);
+    showEnhancedLoading(userTier);
     
     try {
       // Send the message to the backend
@@ -1702,7 +1702,7 @@ function initAIAssistant() {
     } finally {
       // Always restore the submit button state
       // updateSubmitButton(false); // Function not defined - removed to prevent ReferenceError
-      hideLoading();
+      // hideLoading(); // Function not defined - cleanup handled by displayResponse/displayError functions
     }
   }
   
