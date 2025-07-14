@@ -903,6 +903,34 @@ function initAIAssistant() {
   let conversationHistory = [];
   const MAX_HISTORY_LENGTH = 6; // 3 user messages + 3 AI responses = 6 total
   
+  // Starter plan limitations
+  const STARTER_MESSAGE_LIMIT = 2; // Free limit for Starter plan users
+  
+  /**
+   * Gets the current session message count for Starter plan users
+   * @returns {number} - The number of messages sent in current session
+   */
+  function getSessionMessageCount() {
+    const sessionCount = sessionStorage.getItem('starterMessageCount');
+    return sessionCount ? parseInt(sessionCount) : 0;
+  }
+  
+  /**
+   * Increments the session message count for Starter plan users
+   */
+  function incrementSessionMessageCount() {
+    const currentCount = getSessionMessageCount();
+    sessionStorage.setItem('starterMessageCount', (currentCount + 1).toString());
+  }
+  
+  /**
+   * Checks if Starter plan user has reached their message limit
+   * @returns {boolean} - True if limit is reached
+   */
+  function hasReachedStarterLimit() {
+    return getSessionMessageCount() >= STARTER_MESSAGE_LIMIT;
+  }
+
   /**
    * Adds a message to the conversation history
    * @param {string} role - 'user' or 'assistant'
@@ -1541,6 +1569,20 @@ function initAIAssistant() {
     const userTier = getUserSubscriptionTier();
     console.log('AI Assistant: Tier being sent to backend:', userTier);
     
+    // Check Starter plan message limit before processing
+    if (userTier === 'Starter' && hasReachedStarterLimit()) {
+      console.log('AI Assistant: Starter plan user has reached message limit');
+      
+      // Show limit reached message
+      showUsageLimitMessage('Starter', 0);
+      
+      // Clear input and reset button state
+      userInput.value = '';
+      updateSubmitButton(false, userTier);
+      
+      return; // Stop processing
+    }
+    
     // Update UI to show loading state with tier-specific enhancements
     updateSubmitButton(true, userTier);
     showLoading(userTier);
@@ -1594,6 +1636,24 @@ function initAIAssistant() {
         
         // Clear the input field after successful submission
         userInput.value = '';
+        
+        // Increment message count for Starter plan users
+        if (userTier === 'Starter') {
+          incrementSessionMessageCount();
+          const currentCount = getSessionMessageCount();
+          console.log('AI Assistant: Starter plan message count incremented to:', currentCount);
+          
+          // Show warning if approaching limit
+          if (currentCount >= STARTER_MESSAGE_LIMIT) {
+            setTimeout(() => {
+              showUsageLimitMessage('Starter', 0);
+            }, 2000); // Show after response is fully displayed
+          } else if (currentCount === STARTER_MESSAGE_LIMIT - 1) {
+            setTimeout(() => {
+              showUsageLimitMessage('Starter', 1);
+            }, 2000); // Show warning for last message
+          }
+        }
         
         // Reset button state
         updateSubmitButton(false);
