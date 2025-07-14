@@ -1727,6 +1727,26 @@ function initAIAssistant() {
   console.log('AI Assistant: Initialized successfully with backend integration and conversation memory');
 }
 
+// === Admin Keyboard Shortcuts ===
+function initAdminKeyboardShortcuts() {
+  document.addEventListener('keydown', function(event) {
+    // Check for Ctrl+Shift+A (Windows/Linux) or Cmd+Shift+A (Mac)
+    if (event.shiftKey && 
+        event.key.toLowerCase() === 'a' && 
+        (event.ctrlKey || event.metaKey)) {
+      
+      event.preventDefault();
+      
+      // Navigate to admin dashboard
+      window.location.href = 'admin.html';
+      
+      console.log('Admin: Keyboard shortcut activated - navigating to admin dashboard');
+    }
+  });
+  
+  console.log('Admin: Keyboard shortcuts initialized (Ctrl/Cmd+Shift+A)');
+}
+
 // === Main initialization ===
 document.addEventListener("DOMContentLoaded", function() {
   console.log('TrustBoost AI: Initializing application...');
@@ -1767,6 +1787,9 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Initialize AI assistant
   initAIAssistant();
+  
+  // Initialize admin keyboard shortcuts
+  initAdminKeyboardShortcuts();
   
   console.log('TrustBoost AI: Application initialized successfully!');
 });
