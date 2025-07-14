@@ -1150,6 +1150,43 @@ function initAIAssistant() {
       // Parse the JSON response
       const data = await response.json();
       console.log('AI Assistant: Backend response data:', data);
+      
+      // Check for usage limit information in the response
+      if (data.usage || data.remaining || data.limit) {
+        const remainingMessages = data.remaining || data.usage?.remaining || 0;
+        const limit = data.limit || data.usage?.limit || 0;
+        const used = data.used || data.usage?.used || 0;
+        
+        console.log('AI Assistant: Usage info received - remaining:', remainingMessages, 'limit:', limit, 'used:', used);
+        
+        // Show usage warning if getting close to limit (less than 3 messages remaining)
+        if (remainingMessages <= 3 && remainingMessages > 0) {
+          setTimeout(() => {
+            showUsageLimitMessage(tier, remainingMessages);
+          }, 1000); // Show after response is displayed
+        }
+        
+        // Show limit reached message if no messages remaining
+        if (remainingMessages === 0) {
+          setTimeout(() => {
+            showUsageLimitMessage(tier, 0);
+          }, 1000);
+        }
+      }
+      
+      // Check for usage limit warnings in response messages
+      if (data.warning) {
+        console.log('AI Assistant: Backend warning received:', data.warning);
+        
+        // Extract remaining count from warning message if available
+        const warningMatch = data.warning.match(/(\d+)\s+messages?\s+remaining/i);
+        const remaining = warningMatch ? parseInt(warningMatch[1]) : 1;
+        
+        setTimeout(() => {
+          showUsageLimitMessage(tier, remaining);
+        }, 1000);
+      }
+      
       return data;
       
     } catch (error) {
@@ -1377,6 +1414,112 @@ function initAIAssistant() {
     responseBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     console.log('AI Assistant: Rate limit error displayed successfully');
   }
+
+  /**
+   * Shows a usage limit popup/message below the AI chat area
+   * @param {string} tier - User's current tier
+   * @param {number} remainingMessages - Number of messages remaining (optional)
+   */
+  function showUsageLimitMessage(tier = 'Starter', remainingMessages = 0) {
+    // Remove any existing usage limit message
+    const existingMessage = document.getElementById('usage-limit-message');
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+    
+    // Create the usage limit message container
+    const usageLimitDiv = document.createElement('div');
+    usageLimitDiv.id = 'usage-limit-message';
+    usageLimitDiv.className = 'usage-limit-popup';
+    
+    // Set the message content based on tier and remaining messages
+    let messageContent = '';
+    let upgradeText = '';
+    
+    if (remainingMessages > 0) {
+      messageContent = `
+        <div class="usage-warning">
+          <i class="fa-solid fa-exclamation-triangle"></i>
+          <strong>Usage Warning</strong>
+        </div>
+        <p>You have <strong>${remainingMessages} message${remainingMessages > 1 ? 's' : ''}</strong> remaining on your ${tier} plan.</p>
+      `;
+      
+      if (tier === 'Starter') {
+        upgradeText = '<a href="#pricing" class="upgrade-link">Upgrade to Pro</a> for unlimited messages and enhanced features.';
+      } else if (tier === 'Pro') {
+        upgradeText = '<a href="#pricing" class="upgrade-link">Upgrade to Enterprise</a> for unlimited enterprise features.';
+      }
+    } else {
+      messageContent = `
+        <div class="usage-limit-reached">
+          <i class="fa-solid fa-ban"></i>
+          <strong>Usage Limit Reached</strong>
+        </div>
+        <p>You've reached your ${tier} plan's message limit for this period.</p>
+      `;
+      
+      if (tier === 'Starter') {
+        upgradeText = '<a href="#pricing" class="upgrade-link">Upgrade to Pro</a> for unlimited messages and enhanced AI features.';
+      } else if (tier === 'Pro') {
+        upgradeText = '<a href="#pricing" class="upgrade-link">Upgrade to Enterprise</a> for unlimited enterprise-level features.';
+      } else {
+        upgradeText = 'Contact support for Enterprise plan adjustments.';
+      }
+    }
+    
+    usageLimitDiv.innerHTML = `
+      ${messageContent}
+      <div class="upgrade-suggestion">
+        ${upgradeText}
+      </div>
+      <button class="close-usage-message" onclick="closeUsageLimitMessage()">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    `;
+    
+    // Insert the message below the AI chat area
+    const aiAssistantSection = document.querySelector('.ai-assistant');
+    const responseBox = document.getElementById('response-box');
+    
+    if (aiAssistantSection && responseBox) {
+      // Insert after the response box
+      responseBox.parentNode.insertBefore(usageLimitDiv, responseBox.nextSibling);
+    } else if (aiAssistantSection) {
+      // Fallback: append to AI assistant section
+      aiAssistantSection.appendChild(usageLimitDiv);
+    }
+    
+    // Animate the message in
+    setTimeout(() => {
+      usageLimitDiv.classList.add('show');
+    }, 100);
+    
+    // Auto-hide warning messages after 10 seconds (not limit reached messages)
+    if (remainingMessages > 0) {
+      setTimeout(() => {
+        closeUsageLimitMessage();
+      }, 10000);
+    }
+    
+    console.log('AI Assistant: Usage limit message displayed for', tier, 'tier, remaining:', remainingMessages);
+  }
+
+  /**
+   * Closes the usage limit message
+   */
+  function closeUsageLimitMessage() {
+    const usageLimitMessage = document.getElementById('usage-limit-message');
+    if (usageLimitMessage) {
+      usageLimitMessage.classList.add('hide');
+      setTimeout(() => {
+        usageLimitMessage.remove();
+      }, 300);
+    }
+  }
+
+  // Make the close function globally available
+  window.closeUsageLimitMessage = closeUsageLimitMessage;
 
   /**
    * Main form submission handler

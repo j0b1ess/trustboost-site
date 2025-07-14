@@ -2059,23 +2059,25 @@ div[data-calendly] {
 }
 
 /* Dark mode support */
-body.dark .calendly-close-btn {
-  background: rgba(45, 45, 45, 0.98) !important;
-  color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
+@media (prefers-color-scheme: dark) {
+  .calendly-close-btn {
+    background: rgba(45, 45, 45, 0.98) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
 
-body.dark .calendly-close-btn:hover {
-  background: rgba(45, 45, 45, 1) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-}
+  .calendly-close-btn:hover {
+    background: rgba(45, 45, 45, 1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
 
-body.dark .calendly-popup,
-body.dark [data-calendly-popup] {
-  box-shadow: 
-    0 32px 64px rgba(0, 0, 0, 0.4),
-    0 16px 32px rgba(0, 0, 0, 0.3),
-    0 8px 16px rgba(0, 0, 0, 0.2) !important;
+  .calendly-popup,
+  [data-calendly-popup] {
+    box-shadow: 
+      0 32px 64px rgba(0, 0, 0, 0.4),
+      0 16px 32px rgba(0, 0, 0, 0.3),
+      0 8px 16px rgba(0, 0, 0, 0.2) !important;
+  }
 }
 
 /* Prevent any layout issues */
@@ -2732,5 +2734,153 @@ body.calendly-overlay-is-open * {
   }
   50% {
     opacity: 1;
+  }
+}
+
+/* Usage Limit Popup Styling */
+.usage-limit-popup {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.1);
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 100%;
+}
+
+.usage-limit-popup.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.usage-limit-popup.hide {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+
+.usage-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #f59e0b;
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+.usage-warning i {
+  font-size: 1.2rem;
+}
+
+.usage-limit-reached {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ef4444;
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+.usage-limit-reached i {
+  font-size: 1.2rem;
+}
+
+.usage-limit-popup p {
+  margin: 0 0 1rem 0;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.upgrade-suggestion {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.upgrade-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.upgrade-link:hover {
+  background: rgba(99, 102, 241, 0.2);
+  transform: translateY(-1px);
+}
+
+.close-usage-message {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-usage-message:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text);
+}
+
+/* Dark Mode Support for Usage Popup */
+[data-theme="dark"] .usage-limit-popup {
+  background: linear-gradient(135deg, rgba(30, 27, 46, 0.95) 0%, rgba(15, 15, 26, 0.95) 100%);
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .usage-warning {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .usage-limit-reached {
+  color: #f87171;
+}
+
+[data-theme="dark"] .upgrade-link {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+[data-theme="dark"] .upgrade-link:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+[data-theme="dark"] .close-usage-message:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile Responsiveness for Usage Popup */
+@media (max-width: 768px) {
+  .usage-limit-popup {
+    padding: 1rem;
+    margin: 0.8rem 0;
+    border-radius: var(--radius);
+  }
+  
+  .usage-warning,
+  .usage-limit-reached {
+    font-size: 1rem;
+  }
+  
+  .upgrade-suggestion {
+    font-size: 0.9rem;
+  }
+  
+  .close-usage-message {
+    top: 0.5rem;
+    right: 0.5rem;
   }
 }
