@@ -1014,7 +1014,8 @@ function initAIAssistant() {
       conversationHistory = conversationHistory.slice(-MAX_HISTORY_LENGTH);
     }
     
-    console.log('AI Assistant: Updated conversation history:', conversationHistory);
+    // Log conversation update without exposing content
+    console.log('AI Assistant: Conversation history updated, length:', conversationHistory.length);
     updateMemoryIndicator();
   }
   
@@ -1037,7 +1038,8 @@ function initAIAssistant() {
       content: enhancedMessage
     });
     
-    console.log('AI Assistant: Sending message history to backend:', messages);
+    // Log message history length without exposing content
+    console.log('AI Assistant: Sending message history to backend, message count:', messages.length);
     return messages;
   }
   
@@ -1139,7 +1141,8 @@ function initAIAssistant() {
       enhancedMessage = `As an Enterprise user asking: "${message}" - Please provide a comprehensive, expert-level response with detailed technical information, enterprise-specific features, scalability considerations, integration options, ROI analysis, and advanced strategic insights. Include case studies, implementation guidance, and enterprise best practices for TrustBoost AI.`;
     }
     
-    console.log('AI Assistant: Enhanced message for', tier, 'tier:', enhancedMessage);
+    // Log message enhancement without exposing content
+    console.log('AI Assistant: Message enhanced for', tier, 'tier');
     return enhancedMessage;
   }
   
@@ -1215,7 +1218,8 @@ function initAIAssistant() {
         "messages": messages
       };
       
-      console.log('AI Assistant: Sending request to backend:', requestBody);
+      // Log request initiation without sensitive data
+      console.log('AI Assistant: Sending request to backend for tier:', tier);
       
       // Send POST request to backend with the expected JSON structure
       const response = await fetch(BACKEND_URL, {
@@ -1244,7 +1248,8 @@ function initAIAssistant() {
       
       // Parse the JSON response
       const data = await response.json();
-      console.log('AI Assistant: Backend response data:', data);
+      // Log response status without exposing sensitive data
+      console.log('AI Assistant: Backend response received successfully');
       
       // Check for usage limit information in the response
       if (data.usage || data.remaining || data.limit) {
@@ -1428,7 +1433,8 @@ function initAIAssistant() {
    * @param {string} tier - The user's subscription tier for additional styling
    */
   function displayResponse(content, tier = 'Starter') {
-    console.log('AI Assistant: Displaying response in #response-box for', tier, 'user:', content);
+    // Log response display without exposing user content
+    console.log('AI Assistant: Displaying response for', tier, 'user');
     
     // Hide loading and placeholder, and clean up any effects
     // hideLoading(); // Function not defined - using hidePlaceholderResponse() instead
@@ -1663,7 +1669,7 @@ function initAIAssistant() {
     
     try {
       // Send the message to the backend
-      console.log('AI Assistant: Sending message to backend...', { message, tier: userTier });
+      console.log('AI Assistant: Sending message to backend for tier:', userTier);
       
       // Add the original user message to conversation history
       addToConversationHistory('user', message);
@@ -1694,11 +1700,12 @@ function initAIAssistant() {
         aiResponse = responseData;
       } else {
         // Fallback: stringify the entire response
-        console.warn('AI Assistant: Unexpected response format:', responseData);
+        console.warn('AI Assistant: Unexpected response format - using fallback');
         aiResponse = JSON.stringify(responseData, null, 2);
       }
       
-      console.log('AI Assistant: Extracted AI response:', aiResponse);
+      // Log response extraction without exposing content
+      console.log('AI Assistant: AI response extracted successfully');
       
       // Add the AI response to conversation history (store the original, not formatted version)
       addToConversationHistory('assistant', aiResponse || 'Response received successfully!');
