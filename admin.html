@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustBoost AI - Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Admin-specific styles */
+        .admin-container {
+            min-height: 100vh;
+            background: var(--bg);
+            padding: 2rem;
+        }
+        
+        .admin-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .admin-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+        
+        .admin-login {
+            max-width: 400px;
+            margin: 2rem auto;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .admin-dashboard {
+            display: none;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0;
+        }
+        
+        .users-table {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .table-content {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .user-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+        
+        .user-row:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .plan-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .plan-starter {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .plan-pro {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .plan-enterprise {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .usage-bar {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .usage-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+        
+        .usage-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+        
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .admin-input {
+            padding: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+        
+        .admin-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+        
+        .admin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-message {
+            color: #ef4444;
+            background: #fef2f2;
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            border: 1px solid #fecaca;
+            margin-bottom: 1rem;
+        }
+        
+        .success-message {
+            color: #10b981;
+            background: #f0fdf4;
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            border: 1px solid #bbf7d0;
+            margin-bottom: 1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1rem;
+            }
+            
+            .user-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Dark mode support */
+        [data-theme="dark"] .plan-starter {
+            background: #312e81;
+            color: #c7d2fe;
+        }
+        
+        [data-theme="dark"] .plan-pro {
+            background: #92400e;
+            color: #fef3c7;
+        }
+        
+        [data-theme="dark"] .plan-enterprise {
+            background: #065f46;
+            color: #d1fae5;
+        }
+        
+        [data-theme="dark"] .status-active {
+            background: #065f46;
+            color: #d1fae5;
+        }
+        
+        [data-theme="dark"] .status-inactive {
+            background: #991b1b;
+            color: #fee2e2;
+        }
+        
+        [data-theme="dark"] .status-pending {
+            background: #92400e;
+            color: #fef3c7;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Login Form -->
+        <div id="admin-login" class="admin-login">
+            <div class="admin-header">
+                <h1><i class="fa-solid fa-shield-halved"></i> Admin Access</h1>
+                <p>Enter your admin credentials to access the dashboard</p>
+            </div>
+            
+            <div id="login-error" class="error-message" style="display: none;"></div>
+            
+            <form id="admin-login-form" class="admin-form">
+                <input 
+                    type="text" 
+                    id="admin-username" 
+                    class="admin-input" 
+                    placeholder="Admin Username" 
+                    required
+                >
+                <input 
+                    type="password" 
+                    id="admin-password" 
+                    class="admin-input" 
+                    placeholder="Admin Password" 
+                    required
+                >
+                <button type="submit" id="login-btn" class="admin-btn">
+                    <i class="fa-solid fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-dashboard" class="admin-dashboard">
+            <div class="admin-header" style="position: relative;">
+                <h1><i class="fa-solid fa-chart-line"></i> TrustBoost AI Admin Dashboard</h1>
+                <p>Monitor users, plans, and system usage</p>
+                <button id="logout-btn" class="logout-btn">
+                    <i class="fa-solid fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3>Total Users</h3>
+                    <div id="total-users" class="stat-value">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Subscriptions</h3>
+                    <div id="active-subs" class="stat-value">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Monthly Revenue</h3>
+                    <div id="monthly-revenue" class="stat-value">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>API Calls Today</h3>
+                    <div id="api-calls" class="stat-value">-</div>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="users-table">
+                <div class="table-header">
+                    <div class="user-row" style="font-weight: 600;">
+                        <div>User</div>
+                        <div>Plan</div>
+                        <div>Usage</div>
+                        <div>Status</div>
+                        <div>Revenue</div>
+                    </div>
+                </div>
+                <div class="table-content">
+                    <div id="users-loading" class="loading">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Loading users...
+                    </div>
+                    <div id="users-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include mock API for testing (remove when backend is ready) -->
+    <script src="mock-admin-api.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
