@@ -34,6 +34,8 @@
   </style>
 </head>
 <body class="font-sans text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900">
+  <!-- whoami status strip -->
+  <div id="whoami-strip" class="text-[11px] px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono tracking-tight flex items-center gap-2" style="border-bottom:1px solid rgba(0,0,0,0.05);"></div>
   <div class="admin-wrapper">
     <!-- Login Panel -->
     <div id="login-panel" class="max-w-md mx-auto bg-white dark:bg-slate-800 shadow rounded-lg p-6 border border-slate-200 dark:border-slate-700">
@@ -41,6 +43,14 @@
       <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Restricted access. Authorized email only.</p>
       <div id="unauthorized-msg" class="hidden text-sm rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 px-3 py-2 mb-3"></div>
       <div id="login-error" class="hidden text-sm rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 px-3 py-2 mb-3"></div>
+      <!-- Login Diagnostics (always visible after an attempt) -->
+      <div id="login-diagnostics" class="hidden mb-4 text-[11px] leading-snug bg-slate-100 dark:bg-slate-800/60 rounded p-2 border border-slate-200 dark:border-slate-700">
+        <div><span class="font-semibold">API Base:</span> <span id="diag-api-base" class="font-mono"></span></div>
+        <div><span class="font-semibold">HTTP Status:</span> <span id="diag-http-status" class="font-mono">—</span></div>
+        <div><span class="font-semibold">Reason:</span> <span id="diag-reason" class="font-mono">—</span></div>
+        <div><span class="font-semibold">Req ID:</span> <span id="diag-reqid" class="font-mono">—</span></div>
+  <div><span class="font-semibold">Auth Mode:</span> <span id="diag-auth-mode" class="font-mono">—</span></div>
+      </div>
   <form id="login-form" class="space-y-4" autocomplete="off">
         <div>
           <label class="block text-sm font-medium mb-1" for="admin-email">Email</label>

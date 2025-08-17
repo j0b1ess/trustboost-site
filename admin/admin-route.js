@@ -22,8 +22,60 @@ if(!API_BASE){
 const AUTH_LOGIN_PATH = '/auth/login';
 const AUTH_ME_PATH = '/auth/me';
 const AUTH_WHOAMI_PATH = '/auth/whoami';
-// Cookie-only auth mode (no bearer token persisted)
-let adminToken = null; // unused placeholder
+// Auth mode detection: prefer cookie session if document.cookie available after login; otherwise fallback to token mode
+let adminToken = null; // token (if token mode)
+let AUTH_MODE = 'cookie';
+
+// Auth mode: default cookie-session, switch to token if backend returns JWT.
+const LOCAL_TOKEN_KEY = 'adminToken';
+
+function setAdminToken(token){
+  adminToken = token || null;
+  try {
+    if(token) localStorage.setItem(LOCAL_TOKEN_KEY, token); else localStorage.removeItem(LOCAL_TOKEN_KEY);
+  } catch {}
+  detectAuthMode();
+}
+
+function clearAuthAndLogout(message){
+  setAdminToken(null);
+  logoutWithMessage(message || 'Session expired or unauthorized. Please log in.');
+}
+function detectAuthMode(){
+  // If we have an adminToken set explicitly -> token mode
+  if(adminToken){ AUTH_MODE = 'token'; return AUTH_MODE; }
+  // Heuristic: if cookies exist and no token stored, treat as cookie mode
+  if(typeof document !== 'undefined' && document.cookie && document.cookie.length > 0){
+    AUTH_MODE = 'cookie';
+  } else {
+    AUTH_MODE = adminToken ? 'token' : 'cookie'; // default cookie
+  }
+  return AUTH_MODE;
+}
+function authFetch(url, options = {}){
+  const mode = detectAuthMode();
+  const finalOpts = { ...options };
+  finalOpts.headers = finalOpts.headers ? { ...finalOpts.headers } : {};
+  if(mode === 'cookie'){
+    finalOpts.credentials = 'include';
+  }
+  if(mode === 'token' && adminToken){
+    finalOpts.headers['Authorization'] = `Bearer ${adminToken}`;
+  }
+  return fetch(url, finalOpts).then(async resp => {
+    if(resp.status === 401 || resp.status === 403){
+      // Attempt to parse reason for messaging
+      let reason = '';
+      try { if(resp.headers.get('content-type')?.includes('application/json')){ const js = await resp.clone().json(); reason = js.reason || js.error || js.message || ''; } } catch {}
+      if(/\/auth\/whoami|\/admin\//.test(url) || /\/auth\/me/.test(url)){
+        clearAuthAndLogout(reason ? `${resp.status} ${reason}` : 'Session expired or unauthorized. Please log in again.');
+      }
+    }
+    return resp;
+  });
+}
+// Restore token early (outside DOMContentLoaded to allow pre-login checks)
+try { const saved = localStorage.getItem(LOCAL_TOKEN_KEY); if(saved) adminToken = saved; } catch {}
 
 function qs(id){ return document.getElementById(id); }
 
@@ -37,17 +89,24 @@ async function login(e){
   const btn = qs('login-btn');
   const unauth = qs('unauthorized-msg');
   const err = qs('login-error');
+  const diagBox = qs('login-diagnostics');
+  const diagApi = qs('diag-api-base');
+  const diagStatus = qs('diag-http-status');
+  const diagReason = qs('diag-reason');
+  const diagReqId = qs('diag-reqid');
   unauth.classList.add('hidden');
   err.classList.add('hidden');
+  if(diagBox){ diagBox.classList.add('hidden'); }
   if(!email || !pass) return;
 
   btn.disabled = true;
   btn.textContent = 'Logging in...';
+  const requestId = Date.now().toString();
   try {
-    const resp = await fetch(`${API_BASE}${AUTH_LOGIN_PATH}`,{
+    const resp = await authFetch(`${API_BASE}${AUTH_LOGIN_PATH}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      credentials: 'include', // allow cookie-based sessions
+      credentials: 'include', // keep include for cookie mode
       body: JSON.stringify({ username: email, password: pass })
     });
     let data = null;
@@ -59,12 +118,20 @@ async function login(e){
       showDevReason(rawReason);
       // Display exact server-provided reason code if present
       let displayReason = reasonCode || `HTTP_${resp.status}`;
+      // Populate diagnostics
+      if(diagBox){
+        if(diagApi) diagApi.textContent = API_BASE;
+        if(diagStatus) diagStatus.textContent = resp.status;
+        if(diagReason) diagReason.textContent = displayReason || '—';
+        if(diagReqId) diagReqId.textContent = requestId;
+        diagBox.classList.remove('hidden');
+      }
       throw new Error(displayReason);
     }
     data = await resp.json();
   // Ignore any token field (cookie-based session)
     // Validate session via server (no client allowlist)
-    const profile = await fetchCurrentUser();
+  const profile = await fetchCurrentUser();
     if(!profile || !profile.email){
       throw new Error('Unauthorized account');
     }
@@ -77,11 +144,40 @@ async function login(e){
     hide(qs('login-panel'));
     show(qs('dashboard'));
     loadUsers();
+    // Successful login diagnostics
+    if(diagBox){
+  setAdminToken(null);
+      if(diagStatus) diagStatus.textContent = '200';
+      if(diagReason) diagReason.textContent = 'OK';
+      if(diagReqId) diagReqId.textContent = requestId;
+      const mode = detectAuthMode();
+      const diagAuth = qs('diag-auth-mode');
+  setAdminToken(null);
+      diagBox.classList.remove('hidden');
+    }
   } catch(ex){
     if(ex instanceof TypeError){
       err.textContent = 'NETWORK/CORS';
+      if(diagBox){
+        if(diagApi) diagApi.textContent = API_BASE;
+        if(diagStatus) diagStatus.textContent = '—';
+        if(diagReason) diagReason.textContent = 'NETWORK/CORS or unreachable';
+        if(diagReqId) diagReqId.textContent = requestId;
+        const diagAuth = qs('diag-auth-mode');
+        if(diagAuth) diagAuth.textContent = detectAuthMode();
+        diagBox.classList.remove('hidden');
+      }
     } else {
       err.textContent = (ex.message || '').toUpperCase();
+      if(diagBox){
+        if(diagApi) diagApi.textContent = API_BASE;
+        if(diagStatus) diagStatus.textContent = diagStatus.textContent || '—';
+        if(diagReason) diagReason.textContent = (ex.message || '').toUpperCase();
+        if(diagReqId) diagReqId.textContent = requestId;
+        const diagAuth = qs('diag-auth-mode');
+        if(diagAuth) diagAuth.textContent = detectAuthMode();
+        diagBox.classList.remove('hidden');
+      }
     }
     err.classList.remove('hidden');
   } finally {
@@ -101,7 +197,7 @@ async function loadUsers(){
       return handleAuthFailure('You are not authorized to access the admin portal.');
     }
     updateAuthedEmail(who.email);
-    const resp = await fetch(`${API_BASE}/admin/users`,{
+    const resp = await authFetch(`${API_BASE}/admin/users`,{
       method:'GET',
       credentials: 'include'
     });
@@ -174,7 +270,7 @@ async function mutate(path, payload, btn){
   btn.disabled = true;
   btn.textContent = '...';
   try {
-    const resp = await fetch(`${API_BASE}${path}`,{
+    const resp = await authFetch(`${API_BASE}${path}`,{
       method:'POST',
       credentials: 'include',
       headers: { 'Content-Type':'application/json' },
@@ -213,6 +309,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const hint = qs('email-normalized-hint');
   // Deployment checklist: record resolved API base immediately
   setChecklistStatus('chk-api-base', 'success', API_BASE + (API_BASE === '/api' ? ' (proxy)' : ''));
+  // Initial whoami status strip population
+  initWhoAmIStrip();
   // Dev-only show computed production API base resolution
   const isDev = /localhost|127\./.test(window.location.host);
   // Predict production value for trustboostai.com (non-Replit) => '/api', else fallback value
@@ -253,13 +351,53 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchCurrentUser(){
   if(!adminToken) return null;
   try {
-    const resp = await fetch(`${API_BASE}${AUTH_ME_PATH}`,{
+    const resp = await authFetch(`${API_BASE}${AUTH_ME_PATH}`,{
       method:'GET',
       credentials: 'include'
     });
     if(!resp.ok) return null;
     return await resp.json();
   } catch { return null; }
+}
+
+// whoami strip logic
+async function initWhoAmIStrip(){
+  const strip = qs('whoami-strip');
+  if(!strip) return;
+  strip.textContent = 'whoami: loading...';
+  try {
+    const resp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, { method:'GET', credentials:'include' });
+    let payload = null;
+    if(resp.headers.get('content-type')?.includes('application/json')){
+      try { payload = await resp.json(); } catch { /* ignore */ }
+    }
+    if(resp.status === 401 || resp.status === 403){
+      const reason = (payload?.reason || payload?.error || payload?.message || '').toString();
+      // Show reason and return to login
+      logoutWithMessage(reason ? `${resp.status} ${reason}` : `${resp.status} Unauthorized`);
+      strip.textContent = `whoami: ${resp.status}${reason? ' ' + reason:''}`;
+      strip.style.background = '#fef2f2';
+      strip.style.color = '#b91c1c';
+      return;
+    }
+    if(!resp.ok){
+      strip.textContent = `whoami: HTTP_${resp.status}`;
+      strip.style.background = '#fef2f2';
+      strip.style.color = '#b91c1c';
+      return;
+    }
+    const email = payload?.email || 'n/a';
+    const isAdmin = payload?.isAdmin === true;
+    strip.textContent = `Logged in as ${email}${isAdmin ? ' (Admin)' : ''}`;
+    strip.style.background = '#e0f2fe';
+    strip.style.color = '#0369a1';
+    // Also update authed-email area if dashboard visible later
+    updateAuthedEmail(email);
+  } catch(ex){
+    strip.textContent = 'whoami: network error';
+    strip.style.background = '#fef2f2';
+    strip.style.color = '#b91c1c';
+  }
 }
 
 async function validateSessionOnRestore(){
@@ -327,7 +465,7 @@ function mapReason(reason, status){
 async function fetchWhoAmI(){
   if(!document.cookie) return null;
   try {
-    const resp = await fetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, {
+    const resp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, {
       method:'GET',
       credentials:'include'
     });
