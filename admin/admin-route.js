@@ -22,65 +22,7 @@ if(!API_BASE){
 const AUTH_LOGIN_PATH = '/auth/login';
 const AUTH_ME_PATH = '/auth/me';
 const AUTH_WHOAMI_PATH = '/auth/whoami';
-// Auth mode detection: prefer cookie session if document.cookie available after login; otherwise fallback to token mode
-let adminToken = null; // token (if token mode)
-let AUTH_MODE = 'cookie';
-
-// Auth mode: default cookie-session, switch to token if backend returns JWT.
-const LOCAL_TOKEN_KEY = 'adminToken';
-
-function setAdminToken(token){
-  adminToken = token || null;
-  try {
-    if(token) localStorage.setItem(LOCAL_TOKEN_KEY, token); else localStorage.removeItem(LOCAL_TOKEN_KEY);
-  } catch {}
-  detectAuthMode();
-}
-
-function clearAuthAndLogout(message){
-  setAdminToken(null);
-  logoutWithMessage(message || 'Session expired or unauthorized. Please log in.');
-}
-function detectAuthMode(){
-  // If we have an adminToken set explicitly -> token mode
-  if(adminToken){ AUTH_MODE = 'token'; return AUTH_MODE; }
-  // Heuristic: if cookies exist and no token stored, treat as cookie mode
-  if(typeof document !== 'undefined' && document.cookie && document.cookie.length > 0){
-    AUTH_MODE = 'cookie';
-  } else {
-    AUTH_MODE = adminToken ? 'token' : 'cookie'; // default cookie
-  }
-  return AUTH_MODE;
-}
-function authFetch(url, options = {}){
-  const mode = detectAuthMode();
-  const finalOpts = { ...options };
-  finalOpts.headers = finalOpts.headers ? { ...finalOpts.headers } : {};
-  if(mode === 'cookie'){
-    finalOpts.credentials = 'include';
-  }
-  if(mode === 'token' && adminToken){
-    finalOpts.headers['Authorization'] = `Bearer ${adminToken}`;
-  }
-  return fetch(url, finalOpts).then(async resp => {
-    if(resp.status === 401 || resp.status === 403){
-      // Attempt to parse reason for messaging
-      let reason = '';
-      try { if(resp.headers.get('content-type')?.includes('application/json')){ const js = await resp.clone().json(); reason = js.reason || js.error || js.message || ''; } } catch {}
-      if(/\/auth\/whoami|\/admin\//.test(url) || /\/auth\/me/.test(url)){
-        clearAuthAndLogout(reason ? `${resp.status} ${reason}` : 'Session expired or unauthorized. Please log in again.');
-      }
-    }
-    return resp;
-  });
-}
-// Restore token early (outside DOMContentLoaded to allow pre-login checks)
-try { const saved = localStorage.getItem(LOCAL_TOKEN_KEY); if(saved) adminToken = saved; } catch {}
-
-function qs(id){ return document.getElementById(id); }
-
-function show(el){ el.classList.remove('hidden'); }
-function hide(el){ el.classList.add('hidden'); }
+function loginCleanup(){}
 
 async function login(e){
   e.preventDefault();
@@ -96,63 +38,55 @@ async function login(e){
   const diagReqId = qs('diag-reqid');
   unauth.classList.add('hidden');
   err.classList.add('hidden');
-  if(diagBox){ diagBox.classList.add('hidden'); }
+  if(diagBox) diagBox.classList.add('hidden');
   if(!email || !pass) return;
-
   btn.disabled = true;
   btn.textContent = 'Logging in...';
   const requestId = Date.now().toString();
+  await runAdvancedDiagnostics(email, pass);
+  const loginBody = { username: email, password: pass };
+  const loginInit = { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(loginBody) };
   try {
-    const resp = await authFetch(`${API_BASE}${AUTH_LOGIN_PATH}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      credentials: 'include', // keep include for cookie mode
-      body: JSON.stringify({ username: email, password: pass })
-    });
+    const resp = await authFetch(`${API_BASE}${AUTH_LOGIN_PATH}`, loginInit);
     let data = null;
     if(!resp.ok){
-      // Attempt to parse JSON error payload
-      try { data = await resp.json(); } catch { /* swallow parse error */ }
-      const rawReason = data?.reason || data?.error || data?.message;
-      const reasonCode = (rawReason || '').toString().trim().toUpperCase();
+      try { data = await resp.json(); } catch {}
+      const rawReason = data?.reason || data?.error || data?.message || '';
       showDevReason(rawReason);
-      // Display exact server-provided reason code if present
-      let displayReason = reasonCode || `HTTP_${resp.status}`;
-      // Populate diagnostics
       if(diagBox){
         if(diagApi) diagApi.textContent = API_BASE;
         if(diagStatus) diagStatus.textContent = resp.status;
-        if(diagReason) diagReason.textContent = displayReason || '—';
+        if(diagReason) diagReason.textContent = rawReason || `HTTP_${resp.status}`;
         if(diagReqId) diagReqId.textContent = requestId;
         diagBox.classList.remove('hidden');
       }
-      throw new Error(displayReason);
+      throw new Error(rawReason || `HTTP_${resp.status}`);
     }
     data = await resp.json();
-  // Ignore any token field (cookie-based session)
-    // Validate session via server (no client allowlist)
-  const profile = await fetchCurrentUser();
-    if(!profile || !profile.email){
-      throw new Error('Unauthorized account');
+    const token = data.token || data.accessToken || data.jwt;
+    if(token) setAdminToken(token);
+    const whoResp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, { method:'GET', credentials:'include' });
+    let whoJson = null; if(whoResp.headers.get('content-type')?.includes('application/json')){ try { whoJson = await whoResp.json(); } catch {} }
+    if(!whoResp.ok || !whoJson || !whoJson.email){
+      const failReason = whoJson?.reason || whoJson?.error || whoJson?.message || `HTTP_${whoResp.status}`;
+      throw new Error(failReason);
     }
-    // If current path isn't /admin, redirect (central route)
-    if(window.location.pathname !== '/admin'){ 
-      hide(qs('login-panel')); // prevent flash
+    if(window.location.pathname !== '/admin'){
+      hide(qs('login-panel'));
       window.location.href = '/admin';
-      return; // after redirect
+      return;
     }
     hide(qs('login-panel'));
     show(qs('dashboard'));
+    updateAuthedEmail(whoJson.email, whoJson.isAdmin);
     loadUsers();
-    // Successful login diagnostics
     if(diagBox){
-  setAdminToken(null);
+      if(diagApi) diagApi.textContent = API_BASE;
       if(diagStatus) diagStatus.textContent = '200';
       if(diagReason) diagReason.textContent = 'OK';
       if(diagReqId) diagReqId.textContent = requestId;
-      const mode = detectAuthMode();
       const diagAuth = qs('diag-auth-mode');
-  setAdminToken(null);
+      if(diagAuth) diagAuth.textContent = detectAuthMode();
       diagBox.classList.remove('hidden');
     }
   } catch(ex){
@@ -168,11 +102,11 @@ async function login(e){
         diagBox.classList.remove('hidden');
       }
     } else {
-      err.textContent = (ex.message || '').toUpperCase();
+      err.textContent = ex.message || 'Login failed';
       if(diagBox){
         if(diagApi) diagApi.textContent = API_BASE;
         if(diagStatus) diagStatus.textContent = diagStatus.textContent || '—';
-        if(diagReason) diagReason.textContent = (ex.message || '').toUpperCase();
+        if(diagReason) diagReason.textContent = ex.message || '';
         if(diagReqId) diagReqId.textContent = requestId;
         const diagAuth = qs('diag-auth-mode');
         if(diagAuth) diagAuth.textContent = detectAuthMode();
@@ -185,6 +119,19 @@ async function login(e){
     btn.textContent = 'Login';
   }
 }
+
+// Toggle advanced diagnostics panel
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = qs('adv-diag-toggle');
+  const body = qs('adv-diag-body');
+  const caret = qs('adv-diag-caret');
+  if(toggle && body){
+    toggle.addEventListener('click', () => {
+      const hidden = body.classList.toggle('hidden');
+      if(caret) caret.textContent = hidden ? '▸' : '▾';
+    });
+  }
+});
 
 async function loadUsers(){
   const tbody = qs('users-tbody');
@@ -474,9 +421,9 @@ async function fetchWhoAmI(){
   } catch { return null; }
 }
 
-function updateAuthedEmail(email){
+function updateAuthedEmail(email, isAdmin){
   const el = qs('authed-email');
-  if(el) el.textContent = `Logged in as: ${email} (Admin)`;
+  if(el) el.textContent = `Logged in as: ${email}${isAdmin? ' (Admin)':''}`;
 }
 
 // ---------------- Deployment Checklist Helpers ----------------

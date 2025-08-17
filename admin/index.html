@@ -51,6 +51,53 @@
         <div><span class="font-semibold">Req ID:</span> <span id="diag-reqid" class="font-mono">—</span></div>
   <div><span class="font-semibold">Auth Mode:</span> <span id="diag-auth-mode" class="font-mono">—</span></div>
       </div>
+      <!-- Advanced Diagnostics Panel -->
+      <div id="adv-diagnostics" class="mb-4 text-[11px] bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded">
+        <button type="button" id="adv-diag-toggle" class="w-full text-left px-3 py-2 font-semibold flex items-center justify-between">
+          <span>Diagnostics</span>
+          <span id="adv-diag-caret" class="text-xs">▾</span>
+        </button>
+        <div id="adv-diag-body" class="px-3 pb-3 pt-0 space-y-2">
+          <div class="mt-1"><span class="font-semibold">API Base (prod):</span> <span id="adv-api-base" class="font-mono"></span></div>
+          <div id="diag-echo" class="p-2 rounded bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-600">
+            <div class="font-semibold mb-1">1) login-echo</div>
+            <div class="space-y-0.5">
+              <div>Request: <span id="echo-req" class="font-mono"></span></div>
+              <div>Email(masked): <span id="echo-email" class="font-mono"></span></div>
+              <div>Status: <span id="echo-status" class="font-mono"></span></div>
+              <div>normalizedEmail: <span id="echo-normalized" class="font-mono"></span></div>
+              <div>Error: <span id="echo-error" class="font-mono text-rose-600"></span></div>
+            </div>
+          </div>
+          <div id="diag-login-diagnose" class="p-2 rounded bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-600">
+            <div class="font-semibold mb-1">2) login-diagnose</div>
+            <div class="space-y-0.5 text-[10px] leading-snug">
+              <div>Status: <span id="diag-status" class="font-mono"></span></div>
+              <div>userFound: <span id="diag-userFound" class="font-mono"></span></div>
+              <div>hasHash: <span id="diag-hash" class="font-mono"></span></div>
+              <div>passwordMatch: <span id="diag-passmatch" class="font-mono"></span></div>
+              <div>isAdmin: <span id="diag-isadmin" class="font-mono"></span></div>
+              <div>reason: <span id="diag-reason2" class="font-mono"></span></div>
+              <div>backendPath: <span id="diag-backendpath" class="font-mono"></span></div>
+              <div>cors.originSeen: <span id="diag-origin" class="font-mono"></span></div>
+              <div>cors.allowCreds: <span id="diag-allowcreds" class="font-mono"></span></div>
+              <div>mode: <span id="diag-mode" class="font-mono"></span></div>
+              <div>Error: <span id="diag-error" class="font-mono text-rose-600"></span></div>
+            </div>
+          </div>
+          <div id="diag-token" class="p-2 rounded bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-600">
+            <div class="font-semibold mb-1">3) token-diagnose</div>
+            <div class="space-y-0.5 text-[10px] leading-snug">
+              <div>Status: <span id="token-status" class="font-mono"></span></div>
+              <div>tokenPresent: <span id="token-present" class="font-mono"></span></div>
+              <div>tokenValid: <span id="token-valid" class="font-mono"></span></div>
+              <div>email: <span id="token-email" class="font-mono"></span></div>
+              <div>isAdmin: <span id="token-isadmin" class="font-mono"></span></div>
+              <div>Note/Error: <span id="token-error" class="font-mono text-rose-600"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
   <form id="login-form" class="space-y-4" autocomplete="off">
         <div>
           <label class="block text-sm font-medium mb-1" for="admin-email">Email</label>
