@@ -908,6 +908,73 @@ function initAIAssistant() {
   
   // Request state management to prevent duplicate submissions
   let isRequestPending = false;
+
+  // === Persistent Usage Limit Banner Logic ===
+  const USAGE_ENDPOINT = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api/usage/starter';
+  let bannerInjected = false;
+
+  function createUsageLimitBanner() {
+    if (document.getElementById('usage-limit-top-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'usage-limit-top-banner';
+    banner.className = 'usage-limit-banner';
+    banner.innerHTML = `
+      <div class="banner-content">
+        <span><strong>Limit Reached:</strong> You've reached your free plan limit for AI messages. Upgrade your plan to continue using TrustBoostAI.</span>
+        <button type="button" class="upgrade-btn" id="banner-upgrade-btn">
+          <i class="fa-solid fa-arrow-up"></i> Upgrade Now
+        </button>
+      </div>`;
+    // Insert as first element inside body (after possible existing nav offset)
+    document.body.prepend(banner);
+    requestAnimationFrame(() => banner.classList.add('show'));
+
+    const upgradeBtn = banner.querySelector('#banner-upgrade-btn');
+    if (upgradeBtn) {
+      upgradeBtn.addEventListener('click', () => {
+        // Prefer existing billing toggle + pricing section if present
+        const billingToggle = document.getElementById('billing-toggle');
+        let period = 'monthly';
+        if (billingToggle && billingToggle.checked) period = 'yearly';
+        // Direct user toward Pro starter upgrade (Stripe checkout) – adapt as needed
+        const stripeUrlMap = {
+          monthly: 'https://buy.stripe.com/fZu00kcSP11ceMycAL00001',
+          yearly: 'https://buy.stripe.com/00w4gA8Cz7pA8oabwH00004'
+        };
+        const target = stripeUrlMap[period] || stripeUrlMap.monthly;
+        window.location.href = target;
+      });
+    }
+  }
+
+  async function checkStarterUsageAndShowBanner() {
+    try {
+      const tier = getUserSubscriptionTier();
+      if (tier !== 'Starter') return; // Only relevant for Starter
+
+      // Avoid duplicate fetches if banner already injected
+      if (bannerInjected) return;
+
+      const resp = await fetch(USAGE_ENDPOINT, { method: 'GET' });
+      if (!resp.ok) {
+        console.warn('Usage Banner: Failed to fetch usage endpoint status=', resp.status);
+        return;
+      }
+      const usageData = await resp.json().catch(() => ({}));
+      // Expecting usageData.messageCount or similar; fallback checks
+      const messageCount = usageData.messageCount ?? usageData.count ?? usageData.used ?? 0;
+      if (messageCount >= STARTER_MESSAGE_LIMIT) {
+        createUsageLimitBanner();
+        bannerInjected = true;
+        console.log('Usage Banner: Displayed persistent top banner for Starter plan limit reached');
+      }
+    } catch (err) {
+      console.warn('Usage Banner: Error checking usage', err);
+    }
+  }
+
+  // Defer banner check slightly to allow other init work
+  setTimeout(checkStarterUsageAndShowBanner, 1200);
   
   /**
    * Gets the current session message count for Starter plan users

@@ -63,6 +63,92 @@
   --vh: 1vh;
 }
 
+/* Persistent Usage Limit Banner */
+.usage-limit-banner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  z-index: calc(var(--z-nav) + 20);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform .4s ease, opacity .4s ease;
+}
+
+.usage-limit-banner.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.usage-limit-banner .banner-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: var(--max-width);
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+.usage-limit-banner strong { font-weight: 600; }
+
+.usage-limit-banner button.upgrade-btn {
+  background: #fff;
+  color: #ef4444;
+  border: none;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: background .25s ease, color .25s ease, transform .25s ease;
+}
+
+.usage-limit-banner button.upgrade-btn:hover {
+  background: #ffe4e4;
+  transform: translateY(-2px);
+}
+
+body.dark .usage-limit-banner {
+  background: linear-gradient(90deg, #b91c1c, #c2410c);
+}
+
+body.dark .usage-limit-banner button.upgrade-btn {
+  background: #1e1b2e;
+  color: #fca5a5;
+}
+
+body.dark .usage-limit-banner button.upgrade-btn:hover {
+  background: #312e44;
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .usage-limit-banner {
+    font-size: 0.85rem;
+    padding: 0.65rem 0.75rem;
+  }
+  .usage-limit-banner button.upgrade-btn {
+    padding: 0.45rem 0.85rem;
+  }
+}
+
 .hero-header,
 .cta-header {
   background: var(--gradient-primary);
@@ -2056,7 +2142,7 @@ div[data-calendly] {
   iframe[src*="calendly.com"] {
     border-radius: 16px !important;
   }
-}
+
 
 @media (max-width: 768px) {
   .calendly-overlay {
