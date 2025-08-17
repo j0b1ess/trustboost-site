@@ -915,6 +915,12 @@ function initAIAssistant() {
 
   function createUsageLimitBanner() {
     if (document.getElementById('usage-limit-top-banner')) return;
+    // Respect session dismissal flag
+    try {
+      if (sessionStorage.getItem('usageBannerDismissed') === '1') {
+        return; // User dismissed for this session
+      }
+    } catch(_) {}
     const banner = document.createElement('div');
     banner.id = 'usage-limit-top-banner';
     banner.className = 'usage-limit-banner';
@@ -924,6 +930,7 @@ function initAIAssistant() {
         <button type="button" class="upgrade-btn" id="banner-upgrade-btn">
           <i class="fa-solid fa-arrow-up"></i> Upgrade Now
         </button>
+        <button type="button" class="banner-close-btn" id="banner-close-btn" aria-label="Dismiss usage limit banner">&times;</button>
       </div>`;
     // Insert as first element inside body (after possible existing nav offset)
     document.body.prepend(banner);
@@ -945,28 +952,64 @@ function initAIAssistant() {
         window.location.href = target;
       });
     }
+    const closeBtn = banner.querySelector('#banner-close-btn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        try { sessionStorage.setItem('usageBannerDismissed','1'); } catch(_) {}
+        banner.classList.remove('show');
+        banner.classList.add('hide');
+        setTimeout(()=> banner.remove(), 300);
+      });
+    }
   }
 
-  async function checkStarterUsageAndShowBanner() {
+  async function checkStarterUsageAndShowBanner(forceRefresh = false) {
     try {
       const tier = getUserSubscriptionTier();
       if (tier !== 'Starter') return; // Only relevant for Starter
 
       // Avoid duplicate fetches if banner already injected
       if (bannerInjected) return;
-
-      const resp = await fetch(USAGE_ENDPOINT, { method: 'GET' });
-      if (!resp.ok) {
-        console.warn('Usage Banner: Failed to fetch usage endpoint status=', resp.status);
-        return;
+      // Caching: attempt to read from sessionStorage
+      const CACHE_KEY = 'usageCache';
+      const FIFTEEN_MIN_MS = 15 * 60 * 1000;
+      let usageData = null;
+      if (!forceRefresh) {
+        const cachedRaw = sessionStorage.getItem(CACHE_KEY);
+        if (cachedRaw) {
+          try {
+            const parsed = JSON.parse(cachedRaw);
+            if (parsed && parsed.timestamp && (Date.now() - parsed.timestamp) < FIFTEEN_MIN_MS) {
+              usageData = parsed.data;
+              // console.log('Usage Banner: Using cached usage data');
+            }
+          } catch (_) { /* ignore parse errors */ }
+        }
       }
-      const usageData = await resp.json().catch(() => ({}));
+
+      if (!usageData) {
+        const resp = await fetch(USAGE_ENDPOINT, { method: 'GET' });
+        if (!resp.ok) {
+          console.warn('Usage Banner: Failed to fetch usage endpoint status=', resp.status);
+          return;
+        }
+        usageData = await resp.json().catch(() => ({}));
+        // Store in cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: usageData }));
+        } catch (e) {
+          // Ignore quota or storage errors
+        }
+      }
       // Expecting usageData.messageCount or similar; fallback checks
       const messageCount = usageData.messageCount ?? usageData.count ?? usageData.used ?? 0;
       if (messageCount >= STARTER_MESSAGE_LIMIT) {
-        createUsageLimitBanner();
-        bannerInjected = true;
-        console.log('Usage Banner: Displayed persistent top banner for Starter plan limit reached');
+        // Only create if not dismissed
+        if (!sessionStorage.getItem('usageBannerDismissed')) {
+          createUsageLimitBanner();
+          bannerInjected = true;
+          console.log('Usage Banner: Displayed persistent top banner for Starter plan limit reached');
+        }
       }
     } catch (err) {
       console.warn('Usage Banner: Error checking usage', err);
@@ -1793,6 +1836,9 @@ function initAIAssistant() {
           incrementSessionMessageCount();
           const currentCount = getSessionMessageCount();
           console.log('AI Assistant: Starter plan message count incremented to:', currentCount);
+
+          // Force re-check usage from backend (bypass cache) to decide if banner should now show
+           checkStarterUsageAndShowBanner(true);
           
           // Show warning if approaching limit
           if (currentCount >= STARTER_MESSAGE_LIMIT) {

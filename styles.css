@@ -102,6 +102,32 @@
   text-align: center;
 }
 
+.usage-limit-banner .banner-close-btn {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background .25s ease, transform .25s ease;
+}
+
+.usage-limit-banner .banner-close-btn:hover {
+  background: rgba(0,0,0,0.25);
+  transform: rotate(90deg);
+}
+
+body.dark .usage-limit-banner .banner-close-btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+
 .usage-limit-banner strong { font-weight: 600; }
 
 .usage-limit-banner button.upgrade-btn {
