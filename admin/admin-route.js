@@ -19,9 +19,164 @@ if(!API_BASE){
     API_BASE = RPL_BACKEND;
   }
 }
-const AUTH_LOGIN_PATH = '/auth/login';
+const AUTH_LOGIN_PATH = '/admin/login';
 const AUTH_ME_PATH = '/auth/me';
 const AUTH_WHOAMI_PATH = '/auth/whoami';
+const ADMIN_EMAIL = 'jyehezkel10@gmail.com';
+// --- Token auth setup (pure token mode) ---
+let adminToken = null;
+const LOCAL_TOKEN_KEY = 'adminToken';
+try { const saved = localStorage.getItem(LOCAL_TOKEN_KEY); if(saved) adminToken = saved; } catch {}
+
+function setAdminToken(tok){
+  adminToken = tok || null;
+  try { if(tok) localStorage.setItem(LOCAL_TOKEN_KEY, tok); else localStorage.removeItem(LOCAL_TOKEN_KEY); } catch {}
+}
+
+function clearAuthAndLogout(msg){
+  setAdminToken(null);
+  logoutWithMessage(msg || 'Session expired. Please log in.');
+}
+
+async function authFetch(url, options = {}){
+  const final = { ...options };
+  final.headers = { ...(final.headers||{}) };
+  if(adminToken) final.headers['Authorization'] = `Bearer ${adminToken}`;
+  const resp = await fetch(url, final);
+  if(resp.status === 401 || resp.status === 403){
+    // Treat all 401/403 on protected admin/auth endpoints as session expiration
+    if(/\/admin(\/|$)/.test(url) || /\/auth\/whoami/.test(url) || /\/auth\/me/.test(url)){
+      clearAuthAndLogout('Session expired. Please log in as the authorized admin.');
+    }
+  }
+  return resp;
+}
+function detectAuthMode(){
+  return adminToken ? 'token' : 'none';
+}
+
+// -------- Central Admin Guard --------
+function failGuard(){
+  clearAuthAndLogout('Not authenticated/authorized. Please log in as the authorized admin.');
+  return null;
+}
+
+async function enforceAdminGuard(){
+  if(!adminToken) return failGuard();
+  try {
+    const resp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, { method:'GET' });
+    if(resp.status === 401 || resp.status === 403) return failGuard();
+    if(!resp.ok) return failGuard();
+    let data = null;
+    if(resp.headers.get('content-type')?.includes('application/json')){
+      try { data = await resp.json(); } catch {}
+    }
+    if(!data || data.isAdmin !== true || (data.email||'').toLowerCase() !== ADMIN_EMAIL) return failGuard();
+    return data;
+  } catch { return failGuard(); }
+}
+
+// Advanced diagnostics (echo, login-diagnose, token-diagnose)
+async function runAdvancedDiagnostics(email, password){
+  const echoReqEl = qs('echo-req');
+  const echoEmailEl = qs('echo-email');
+  const echoStatusEl = qs('echo-status');
+  const echoNormEl = qs('echo-normalized');
+  const echoErrEl = qs('echo-error');
+  const diagStatusEl = qs('diag-status');
+  const diagUserFoundEl = qs('diag-userFound');
+  const diagHashEl = qs('diag-hash');
+  const diagPassMatchEl = qs('diag-passmatch');
+  const diagIsAdminEl = qs('diag-isadmin');
+  const diagReason2El = qs('diag-reason2');
+  const diagBackendPathEl = qs('diag-backendpath');
+  const diagOriginEl = qs('diag-origin');
+  const diagAllowCredsEl = qs('diag-allowcreds');
+  const diagModeEl = qs('diag-mode');
+  const diagErrorEl = qs('diag-error');
+  const tokenStatusEl = qs('token-status');
+  const tokenPresentEl = qs('token-present');
+  const tokenValidEl = qs('token-valid');
+  const tokenEmailEl = qs('token-email');
+  const tokenIsAdminEl = qs('token-isadmin');
+  const tokenErrorEl = qs('token-error');
+
+  // reset
+  [echoStatusEl, echoNormEl, diagStatusEl, tokenStatusEl].forEach(el=>{ if(el) el.textContent=''; });
+  [echoErrEl, diagErrorEl, tokenErrorEl].forEach(el=>{ if(el) el.textContent=''; });
+  if(tokenPresentEl) tokenPresentEl.textContent = adminToken ? 'true' : 'false';
+
+  // 1) login-echo
+  try {
+    if(echoReqEl) echoReqEl.textContent = `${API_BASE}/auth/login-echo`;
+    if(echoEmailEl) echoEmailEl.textContent = maskEmail(email||'');
+    const resp = await fetch(`${API_BASE}/auth/login-echo`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+    if(echoStatusEl) echoStatusEl.textContent = resp.status;
+    if(resp.headers.get('content-type')?.includes('application/json')){
+      try {
+        const js = await resp.clone().json();
+        if(echoNormEl) echoNormEl.textContent = js.normalizedEmail || '';
+      } catch {}
+    }
+    if(!resp.ok){
+      try { const e = await resp.json(); if(echoErrEl) echoErrEl.textContent = e.reason || e.error || e.message || ''; } catch{}
+    }
+  } catch(err){ if(echoErrEl) echoErrEl.textContent = err.message || 'network'; }
+
+  // 2) login-diagnose
+  try {
+    const resp = await fetch(`${API_BASE}/auth/login-diagnose`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+    if(diagStatusEl) diagStatusEl.textContent = resp.status;
+    let js = null; if(resp.headers.get('content-type')?.includes('application/json')){ try { js = await resp.clone().json(); } catch{} }
+    if(js){
+      if(diagUserFoundEl) diagUserFoundEl.textContent = js.userFound;
+      if(diagHashEl) diagHashEl.textContent = js.hasHash;
+      if(diagPassMatchEl) diagPassMatchEl.textContent = js.passwordMatch;
+      if(diagIsAdminEl) diagIsAdminEl.textContent = js.isAdmin;
+      if(diagReason2El) diagReason2El.textContent = js.reason || '';
+      if(diagBackendPathEl) diagBackendPathEl.textContent = js.backendPath || '';
+      if(diagOriginEl) diagOriginEl.textContent = js.cors?.originSeen || '';
+      if(diagAllowCredsEl) diagAllowCredsEl.textContent = js.cors?.allowCredentials || '';
+      if(diagModeEl) diagModeEl.textContent = js.mode || '';
+      if(!resp.ok && diagErrorEl) diagErrorEl.textContent = js.reason || js.error || js.message || '';
+    } else if(!resp.ok && diagErrorEl){
+      diagErrorEl.textContent = `HTTP_${resp.status}`;
+    }
+  } catch(err){ if(diagErrorEl) diagErrorEl.textContent = err.message || 'network'; }
+
+  // 3) token-diagnose (pre-login; may not have token yet)
+  await updateTokenDiagnostics();
+}
+
+async function updateTokenDiagnostics(){
+  const tokenStatusEl = qs('token-status');
+  const tokenPresentEl = qs('token-present');
+  const tokenValidEl = qs('token-valid');
+  const tokenEmailEl = qs('token-email');
+  const tokenIsAdminEl = qs('token-isadmin');
+  const tokenErrorEl = qs('token-error');
+  if(tokenPresentEl) tokenPresentEl.textContent = adminToken ? 'true' : 'false';
+  if(!adminToken){
+    if(tokenStatusEl) tokenStatusEl.textContent = 'no token';
+    if(tokenValidEl) tokenValidEl.textContent = 'false';
+    return;
+  }
+  try {
+    const resp = await authFetch(`${API_BASE}/auth/token-diagnose`, { method:'GET' });
+    if(tokenStatusEl) tokenStatusEl.textContent = resp.status;
+    let js = null; if(resp.headers.get('content-type')?.includes('application/json')){ try { js = await resp.json(); } catch{} }
+    if(!resp.ok){
+      if(tokenErrorEl) tokenErrorEl.textContent = js?.reason || js?.error || js?.message || `HTTP_${resp.status}`;
+      if(tokenValidEl) tokenValidEl.textContent = 'false';
+      return;
+    }
+    if(tokenValidEl) tokenValidEl.textContent = js?.tokenValid === undefined ? 'true' : String(js.tokenValid);
+    if(tokenEmailEl) tokenEmailEl.textContent = js?.email || '';
+    if(tokenIsAdminEl) tokenIsAdminEl.textContent = js?.isAdmin || '';
+  } catch(err){
+    if(tokenErrorEl) tokenErrorEl.textContent = err.message || 'network';
+  }
+}
 function loginCleanup(){}
 
 async function login(e){
@@ -44,10 +199,10 @@ async function login(e){
   btn.textContent = 'Logging in...';
   const requestId = Date.now().toString();
   await runAdvancedDiagnostics(email, pass);
-  const loginBody = { username: email, password: pass };
+  const loginBody = { email: email, password: pass };
   const loginInit = { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(loginBody) };
   try {
-    const resp = await authFetch(`${API_BASE}${AUTH_LOGIN_PATH}`, loginInit);
+  const resp = await authFetch(`${API_BASE}${AUTH_LOGIN_PATH}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(loginBody) });
     let data = null;
     if(!resp.ok){
       try { data = await resp.json(); } catch {}
@@ -65,11 +220,15 @@ async function login(e){
     data = await resp.json();
     const token = data.token || data.accessToken || data.jwt;
     if(token) setAdminToken(token);
-    const whoResp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, { method:'GET', credentials:'include' });
+  const whoResp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, { method:'GET' });
     let whoJson = null; if(whoResp.headers.get('content-type')?.includes('application/json')){ try { whoJson = await whoResp.json(); } catch {} }
     if(!whoResp.ok || !whoJson || !whoJson.email){
       const failReason = whoJson?.reason || whoJson?.error || whoJson?.message || `HTTP_${whoResp.status}`;
       throw new Error(failReason);
+    }
+    if(whoJson.isAdmin !== true || (whoJson.email||'').toLowerCase() !== ADMIN_EMAIL){
+      clearAuthAndLogout('Not authenticated/authorized. Please log in as the authorized admin.');
+      return;
     }
     if(window.location.pathname !== '/admin'){
       hide(qs('login-panel'));
@@ -80,6 +239,7 @@ async function login(e){
     show(qs('dashboard'));
     updateAuthedEmail(whoJson.email, whoJson.isAdmin);
     loadUsers();
+  updateTokenDiagnostics();
     if(diagBox){
       if(diagApi) diagApi.textContent = API_BASE;
       if(diagStatus) diagStatus.textContent = '200';
@@ -91,18 +251,24 @@ async function login(e){
     }
   } catch(ex){
     if(ex instanceof TypeError){
-      err.textContent = 'NETWORK/CORS';
+      err.textContent = 'Network/Proxy error';
       if(diagBox){
         if(diagApi) diagApi.textContent = API_BASE;
         if(diagStatus) diagStatus.textContent = '—';
-        if(diagReason) diagReason.textContent = 'NETWORK/CORS or unreachable';
+        if(diagReason) diagReason.textContent = 'Network/Proxy error';
         if(diagReqId) diagReqId.textContent = requestId;
         const diagAuth = qs('diag-auth-mode');
         if(diagAuth) diagAuth.textContent = detectAuthMode();
         diagBox.classList.remove('hidden');
       }
     } else {
-      err.textContent = ex.message || 'Login failed';
+      // ex.message is expected in format rawReason || HTTP_<code>
+      // Display HTTP status & backend reason if present.
+      let msg = ex.message || '';
+      if(!msg.startsWith('HTTP_') && !/\d{3}/.test(msg)){
+        // Keep raw message (backend reason) as-is.
+      }
+      err.textContent = msg || 'Network/Proxy error';
       if(diagBox){
         if(diagApi) diagApi.textContent = API_BASE;
         if(diagStatus) diagStatus.textContent = diagStatus.textContent || '—';
@@ -138,21 +304,12 @@ async function loadUsers(){
   const status = qs('table-status');
   tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">Loading...</td></tr>';
   try {
-    // Pre-auth validation
-    const who = await fetchWhoAmI();
-    if(!who || !who.email || !who.isAdmin || (who.email||'').toLowerCase() !== 'jyehezkel10@gmail.com') {
-      return handleAuthFailure('You are not authorized to access the admin portal.');
-    }
-    updateAuthedEmail(who.email);
-    const resp = await authFetch(`${API_BASE}/admin/users`,{
-      method:'GET',
-      credentials: 'include'
-    });
-    if(resp.status === 401){
-      return handleAuthFailure('Session expired. Please log in again.');
-    }
-    if(resp.status === 403){
-      return handleAuthFailure('You are not authorized to access the admin dashboard.');
+  const who = await enforceAdminGuard();
+  if(!who) return; // guard handled message
+  updateAuthedEmail(who.email, who.isAdmin);
+    const resp = await authFetch(`${API_BASE}/admin/users`,{ method:'GET' });
+    if(resp.status === 401 || resp.status === 403){
+      return; // authFetch already cleared & messaged
     }
     if(!resp.ok) throw new Error('Failed fetching users');
     const users = await resp.json();
@@ -219,10 +376,12 @@ async function mutate(path, payload, btn){
   try {
     const resp = await authFetch(`${API_BASE}${path}`,{
       method:'POST',
-      credentials: 'include',
       headers: { 'Content-Type':'application/json' },
       body: JSON.stringify(payload)
     });
+    if(resp.status === 401 || resp.status === 403){
+      return; // session already cleared & message shown
+    }
     if(!resp.ok) throw new Error('Request failed');
     await loadUsers();
   } catch(ex){
@@ -252,6 +411,10 @@ function logout(){
 document.addEventListener('DOMContentLoaded', () => {
   qs('login-form').addEventListener('submit', login);
   qs('logout-btn').addEventListener('click', logout);
+  const authTestBtn = qs('run-auth-test-btn');
+  if(authTestBtn){
+    authTestBtn.addEventListener('click', runAdminAuthTest);
+  }
   const emailInput = qs('admin-email');
   const hint = qs('email-normalized-hint');
   // Deployment checklist: record resolved API base immediately
@@ -298,10 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchCurrentUser(){
   if(!adminToken) return null;
   try {
-    const resp = await authFetch(`${API_BASE}${AUTH_ME_PATH}`,{
-      method:'GET',
-      credentials: 'include'
-    });
+    const resp = await authFetch(`${API_BASE}${AUTH_ME_PATH}`,{ method:'GET' });
     if(!resp.ok) return null;
     return await resp.json();
   } catch { return null; }
@@ -313,7 +473,7 @@ async function initWhoAmIStrip(){
   if(!strip) return;
   strip.textContent = 'whoami: loading...';
   try {
-    const resp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, { method:'GET', credentials:'include' });
+  const resp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, { method:'GET' });
     let payload = null;
     if(resp.headers.get('content-type')?.includes('application/json')){
       try { payload = await resp.json(); } catch { /* ignore */ }
@@ -348,16 +508,9 @@ async function initWhoAmIStrip(){
 }
 
 async function validateSessionOnRestore(){
-  const profile = await fetchCurrentUser();
-  if(!profile || !profile.email){
-    return logoutWithMessage('Session invalid or expired. Please log in.');
-  }
-  // Additional whoami enforcement
-  const who = await fetchWhoAmI();
-  if(!who || !who.email || !who.isAdmin || (who.email||'').toLowerCase() !== 'jyehezkel10@gmail.com') {
-    return logoutWithMessage('You are not authorized to access the admin portal.');
-  }
-  updateAuthedEmail(who.email);
+  const who = await enforceAdminGuard();
+  if(!who) return; // guard handled
+  updateAuthedEmail(who.email, who.isAdmin);
   if(window.location.pathname !== '/admin'){
     window.location.href = '/admin';
     return;
@@ -410,15 +563,7 @@ function mapReason(reason, status){
 }
 
 async function fetchWhoAmI(){
-  if(!document.cookie) return null;
-  try {
-    const resp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, {
-      method:'GET',
-      credentials:'include'
-    });
-    if(!resp.ok) return null;
-    return await resp.json();
-  } catch { return null; }
+  return enforceAdminGuard();
 }
 
 function updateAuthedEmail(email, isAdmin){
@@ -463,21 +608,17 @@ loadUsers = async function(){
     const tbody = qs('users-tbody');
     if(tbody) setChecklistStatus('chk-users','pending','loading...');
     // Perform original logic up to fetching whoami manually so we can intercept
-    const who = await fetchWhoAmI();
-    if(!who || !who.email || !who.isAdmin || (who.email||'').toLowerCase() !== 'jyehezkel10@gmail.com') {
+    const who = await enforceAdminGuard();
+    if(!who){
       setChecklistStatus('chk-whoami','error','unauthorized');
-      return handleAuthFailure('You are not authorized to access the admin portal.');
+      return; // guard displayed message
     }
     setChecklistStatus('chk-whoami','success', who.email.toLowerCase());
-    updateAuthedEmail(who.email);
-    const resp = await fetch(`${API_BASE}/admin/users`,{ method:'GET', credentials:'include' });
-    if(resp.status === 401){
-      setChecklistStatus('chk-users','error','401');
-      return handleAuthFailure('Session expired. Please log in again.');
-    }
-    if(resp.status === 403){
-      setChecklistStatus('chk-users','error','403');
-      return handleAuthFailure('You are not authorized to access the admin dashboard.');
+    updateAuthedEmail(who.email, who.isAdmin);
+  const resp = await authFetch(`${API_BASE}/admin/users`,{ method:'GET' });
+    if(resp.status === 401 || resp.status === 403){
+      setChecklistStatus('chk-users','error', String(resp.status));
+      return; // already handled by authFetch
     }
     if(!resp.ok){
       setChecklistStatus('chk-users','error',`HTTP_${resp.status}`);
@@ -516,4 +657,45 @@ logoutWithMessage = function(message){
   setChecklistStatus('chk-users','error','n/a');
   return __origLogoutWithMessage(message);
 };
+
+// -------- Admin Auth Test Pipeline --------
+async function runAdminAuthTest(){
+  const btn = qs('run-auth-test-btn');
+  const out = qs('auth-test-output');
+  if(!btn || !out) return;
+  const email = qs('admin-email')?.value.trim().toLowerCase();
+  const password = qs('admin-password')?.value;
+  out.classList.remove('hidden');
+  out.textContent = 'Running auth test...';
+  btn.disabled = true;
+  let lines = [];
+  function log(line){ lines.push(line); out.textContent = lines.join('\n'); }
+  try {
+    log(`[1] POST /admin/login as ${email || '(missing email)'} ...`);
+    const resp = await fetch(`${API_BASE}${AUTH_LOGIN_PATH}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+    let body = null; if(resp.headers.get('content-type')?.includes('application/json')){ try { body = await resp.clone().json(); } catch{} }
+    const reason = body?.reason || body?.error || body?.message || '';
+    log(`    -> status ${resp.status}${reason? ' reason:'+reason:''}`);
+    if(resp.ok){
+      const token = body?.token || body?.accessToken || body?.jwt;
+      if(token){ setAdminToken(token); log('    -> token stored'); }
+      // whoami
+      log(`[2] GET /auth/whoami`);
+      const whoResp = await authFetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, { method:'GET' });
+      let who = null; if(whoResp.headers.get('content-type')?.includes('application/json')){ try { who = await whoResp.clone().json(); } catch{} }
+      log(`    -> status ${whoResp.status} email:${who?.email||'n/a'} isAdmin:${who?.isAdmin}`);
+      // users
+      log(`[3] GET /admin/users`);
+      const usersResp = await authFetch(`${API_BASE}/admin/users`, { method:'GET' });
+      log(`    -> status ${usersResp.status}`);
+      if(usersResp.ok){
+        try { const arr = await usersResp.clone().json(); log(`    -> users count: ${Array.isArray(arr)? arr.length : 'n/a'}`); } catch{}
+      }
+    }
+  } catch(err){
+    log(`ERROR: ${err.message || err}`);
+  } finally {
+    btn.disabled = false;
+  }
+}
 
