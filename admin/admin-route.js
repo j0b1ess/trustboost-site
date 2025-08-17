@@ -1,7 +1,6 @@
 // Lightweight admin route script (separate from legacy admin.js if needed)
 // Requirements: Only allow specific email; fetch users; plan change & usage reset.
 
-const ALLOWED_EMAIL = 'jyehezkel10@gmail.com';
 const API_BASE = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
 const AUTH_LOGIN_PATH = '/auth/login';
 const AUTH_ME_PATH = '/auth/me';
@@ -21,12 +20,6 @@ async function login(e){
   const err = qs('login-error');
   unauth.classList.add('hidden');
   err.classList.add('hidden');
-
-  if(email !== ALLOWED_EMAIL){
-    unauth.textContent = 'Unauthorized email.';
-    unauth.classList.remove('hidden');
-    return;
-  }
   if(!email || !pass) return;
 
   btn.disabled = true;
@@ -35,17 +28,35 @@ async function login(e){
     const resp = await fetch(`${API_BASE}${AUTH_LOGIN_PATH}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
+      credentials: 'include', // allow cookie-based sessions
       body: JSON.stringify({ username: email, password: pass })
     });
-    if(!resp.ok){ throw new Error('Login failed'); }
-    const data = await resp.json();
-    if(!data.token) throw new Error('No token');
-    adminToken = data.token;
-    localStorage.setItem('adminToken', adminToken);
-    // Validate session to ensure allowed email
+    let data = null;
+    if(!resp.ok){
+      // Try to parse diagnostic reason
+      try { data = await resp.json(); } catch { /* ignore */ }
+      const reason = data?.reason;
+      showDevReason(reason);
+      if(resp.status === 401){ throw new Error('Incorrect email or password'); }
+      if(resp.status === 403){ throw new Error('You are not authorized'); }
+      throw new Error('Login failed');
+    }
+    data = await resp.json();
+    if(data.token){
+      // Token-based auth path
+      adminToken = data.token;
+      localStorage.setItem('adminToken', adminToken);
+    }
+    // Validate session via server (no client allowlist)
     const profile = await fetchCurrentUser();
-    if(!profile || (profile.email||'').toLowerCase() !== ALLOWED_EMAIL){
+    if(!profile || !profile.email){
       throw new Error('Unauthorized account');
+    }
+    // If current path isn't /admin, redirect (central route)
+    if(window.location.pathname !== '/admin'){ 
+      hide(qs('login-panel')); // prevent flash
+      window.location.href = '/admin';
+      return; // after redirect
     }
     hide(qs('login-panel'));
     show(qs('dashboard'));
@@ -65,8 +76,16 @@ async function loadUsers(){
   tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">Loading...</td></tr>';
   try {
     const resp = await fetch(`${API_BASE}/admin/users`,{
-      headers:{ 'Authorization': `Bearer ${adminToken}` }
+      method:'GET',
+      credentials: 'include',
+      headers: getAuthHeaders()
     });
+    if(resp.status === 401){
+      return handleAuthFailure('Session expired. Please log in again.');
+    }
+    if(resp.status === 403){
+      return handleAuthFailure('You are not authorized to access the admin dashboard.');
+    }
     if(!resp.ok) throw new Error('Failed fetching users');
     const users = await resp.json();
     renderUsers(users);
@@ -132,10 +151,8 @@ async function mutate(path, payload, btn){
   try {
     const resp = await fetch(`${API_BASE}${path}`,{
       method:'POST',
-      headers:{
-        'Authorization': `Bearer ${adminToken}`,
-        'Content-Type':'application/json'
-      },
+      credentials: 'include',
+      headers: { ...getAuthHeaders(), 'Content-Type':'application/json' },
       body: JSON.stringify(payload)
     });
     if(!resp.ok) throw new Error('Request failed');
@@ -172,6 +189,27 @@ function logout(){
 document.addEventListener('DOMContentLoaded', () => {
   qs('login-form').addEventListener('submit', login);
   qs('logout-btn').addEventListener('click', logout);
+  const emailInput = qs('admin-email');
+  const hint = qs('email-normalized-hint');
+  function updateHint(){
+    if(!emailInput) return;
+    const normalized = emailInput.value.trim().toLowerCase();
+    if(normalized){
+      hint.textContent = `Submitting as: ${normalized}`;
+      hint.classList.remove('hidden');
+    } else {
+      hint.classList.add('hidden');
+    }
+  }
+  if(emailInput){
+    ['input','blur','change'].forEach(evt => emailInput.addEventListener(evt, () => {
+      // force trim & lowercase in-place
+      const normalized = emailInput.value.trim().toLowerCase();
+      if(emailInput.value !== normalized) emailInput.value = normalized;
+      updateHint();
+    }));
+    updateHint();
+  }
   restoreSession();
 });
 
@@ -180,7 +218,9 @@ async function fetchCurrentUser(){
   if(!adminToken) return null;
   try {
     const resp = await fetch(`${API_BASE}${AUTH_ME_PATH}`,{
-      headers:{ 'Authorization': `Bearer ${adminToken}` }
+      method:'GET',
+      credentials: 'include',
+      headers: getAuthHeaders()
     });
     if(!resp.ok) return null;
     return await resp.json();
@@ -189,11 +229,44 @@ async function fetchCurrentUser(){
 
 async function validateSessionOnRestore(){
   const profile = await fetchCurrentUser();
-  if(profile && (profile.email||'').toLowerCase() === ALLOWED_EMAIL){
-    hide(qs('login-panel'));
-    show(qs('dashboard'));
-    loadUsers();
-  } else {
-    logout();
+  if(!profile || !profile.email){
+    return logoutWithMessage('Session invalid or expired. Please log in.');
   }
+  if(window.location.pathname !== '/admin'){
+    window.location.href = '/admin';
+    return;
+  }
+  hide(qs('login-panel'));
+  show(qs('dashboard'));
+  loadUsers();
+}
+
+function getAuthHeaders(){
+  return adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {}; // Support cookie-only sessions when token absent
+}
+
+function handleAuthFailure(message){
+  logoutWithMessage(message);
+}
+
+function logoutWithMessage(message){
+  adminToken = null;
+  localStorage.removeItem('adminToken');
+  show(qs('login-panel'));
+  hide(qs('dashboard'));
+  const err = qs('login-error');
+  err.textContent = message || 'Please log in';
+  err.classList.remove('hidden');
+}
+
+// Dev helper: display backend failure reason (only if reason present & not production)
+function showDevReason(reason){
+  const el = qs('dev-reason');
+  if(!el) return;
+  if(!reason){ el.classList.add('hidden'); return; }
+  // Basic heuristic: treat location host containing 'localhost' or '127.' as dev
+  const isDev = /localhost|127\./.test(window.location.host);
+  if(!isDev) return;
+  el.textContent = `Debug reason: ${reason}`;
+  el.classList.remove('hidden');
 }
