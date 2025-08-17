@@ -3,6 +3,8 @@
 
 const ALLOWED_EMAIL = 'jyehezkel10@gmail.com';
 const API_BASE = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
+const AUTH_LOGIN_PATH = '/auth/login';
+const AUTH_ME_PATH = '/auth/me';
 let adminToken = null;
 
 function qs(id){ return document.getElementById(id); }
@@ -30,7 +32,7 @@ async function login(e){
   btn.disabled = true;
   btn.textContent = 'Logging in...';
   try {
-    const resp = await fetch(`${API_BASE}/admin/login`,{
+    const resp = await fetch(`${API_BASE}${AUTH_LOGIN_PATH}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ username: email, password: pass })
@@ -40,6 +42,11 @@ async function login(e){
     if(!data.token) throw new Error('No token');
     adminToken = data.token;
     localStorage.setItem('adminToken', adminToken);
+    // Validate session to ensure allowed email
+    const profile = await fetchCurrentUser();
+    if(!profile || (profile.email||'').toLowerCase() !== ALLOWED_EMAIL){
+      throw new Error('Unauthorized account');
+    }
     hide(qs('login-panel'));
     show(qs('dashboard'));
     loadUsers();
@@ -151,9 +158,7 @@ function restoreSession(){
   const token = localStorage.getItem('adminToken');
   if(token){
     adminToken = token;
-    hide(qs('login-panel'));
-    show(qs('dashboard'));
-    loadUsers();
+  validateSessionOnRestore();
   }
 }
 
@@ -169,3 +174,26 @@ document.addEventListener('DOMContentLoaded', () => {
   qs('logout-btn').addEventListener('click', logout);
   restoreSession();
 });
+
+// Session validation helpers
+async function fetchCurrentUser(){
+  if(!adminToken) return null;
+  try {
+    const resp = await fetch(`${API_BASE}${AUTH_ME_PATH}`,{
+      headers:{ 'Authorization': `Bearer ${adminToken}` }
+    });
+    if(!resp.ok) return null;
+    return await resp.json();
+  } catch { return null; }
+}
+
+async function validateSessionOnRestore(){
+  const profile = await fetchCurrentUser();
+  if(profile && (profile.email||'').toLowerCase() === ALLOWED_EMAIL){
+    hide(qs('login-panel'));
+    show(qs('dashboard'));
+    loadUsers();
+  } else {
+    logout();
+  }
+}
