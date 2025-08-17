@@ -41,14 +41,14 @@
       <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Restricted access. Authorized email only.</p>
       <div id="unauthorized-msg" class="hidden text-sm rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 px-3 py-2 mb-3"></div>
       <div id="login-error" class="hidden text-sm rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 px-3 py-2 mb-3"></div>
-      <form id="login-form" class="space-y-4">
+  <form id="login-form" class="space-y-4" autocomplete="off">
         <div>
           <label class="block text-sm font-medium mb-1" for="admin-email">Email</label>
           <input id="admin-email" type="email" required class="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" placeholder="you@example.com" />
         </div>
         <div>
           <label class="block text-sm font-medium mb-1" for="admin-password">Password</label>
-          <input id="admin-password" type="password" required class="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" placeholder="••••••••" />
+          <input id="admin-password" type="password" required autocomplete="new-password" class="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" placeholder="Password" />
         </div>
         <button id="login-btn" type="submit" class="w-full bg-brand text-white font-semibold py-2 rounded hover:opacity-90 transition">Login</button>
       </form>
