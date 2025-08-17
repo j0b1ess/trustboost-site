@@ -109,7 +109,7 @@
         
         .user-row {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.5fr; /* Added actions column */
             gap: 1rem;
             padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--card-border);
@@ -184,6 +184,30 @@
             color: var(--text-muted);
             margin-top: 0.3rem;
         }
+
+        .actions-cell {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .action-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            font-size: 0.7rem;
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: .5px;
+            transition: var(--transition-fast);
+        }
+        .action-btn:hover { background:#e2e8f0; }
+        .action-btn.plan-starter { color:#3730a3; }
+        .action-btn.plan-pro { color:#92400e; }
+        .action-btn.plan-enterprise { color:#065f46; }
+        .action-btn.reset-btn { color:#991b1b; }
+        .action-btn:disabled { opacity:.5; cursor:not-allowed; }
         
         .admin-form {
             display: flex;
@@ -319,10 +343,10 @@
             
             <form id="admin-login-form" class="admin-form">
                 <input 
-                    type="text" 
+                    type="email" 
                     id="admin-username" 
                     class="admin-input" 
-                    placeholder="Admin Username" 
+                    placeholder="Admin Email" 
                     required
                 >
                 <input 
@@ -336,6 +360,7 @@
                     <i class="fa-solid fa-sign-in-alt"></i> Login
                 </button>
             </form>
+            <div id="unauthorized-message" class="error-message" style="display:none; margin-top:1rem;">Unauthorized: This email is not permitted to access the admin dashboard.</div>
         </div>
 
         <!-- Admin Dashboard -->
@@ -377,6 +402,7 @@
                         <div>Usage</div>
                         <div>Status</div>
                         <div>Revenue</div>
+                        <div>Actions</div>
                     </div>
                 </div>
                 <div class="table-content">

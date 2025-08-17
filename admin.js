@@ -13,6 +13,7 @@ class AdminDashboard {
         this.apiBaseUrl = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
         this.adminToken = null;
         this.refreshInterval = null;
+    this.allowedAdmins = ['jyehezkel10@gmail.com']; // Only this email has dashboard access for now
         
         this.init();
     }
@@ -57,14 +58,23 @@ class AdminDashboard {
     }
 
     async handleLogin() {
-        const username = document.getElementById('admin-username').value.trim();
+        const username = document.getElementById('admin-username').value.trim().toLowerCase();
         const password = document.getElementById('admin-password').value.trim();
         const loginBtn = document.getElementById('login-btn');
         const errorDiv = document.getElementById('login-error');
+        const unauthorizedDiv = document.getElementById('unauthorized-message');
 
         if (!username || !password) {
             this.showError('Please enter both username and password');
             return;
+        }
+
+        // Frontend allowlist check (still rely on backend auth)
+        if (!this.allowedAdmins.includes(username)) {
+            unauthorizedDiv.style.display = 'block';
+            return;
+        } else {
+            unauthorizedDiv.style.display = 'none';
         }
 
         // Disable button and show loading
@@ -244,14 +254,16 @@ class AdminDashboard {
         }
 
         usersList.innerHTML = users.map(user => this.createUserRow(user)).join('');
+        // Bind action buttons after rendering
+        users.forEach(u => this.bindUserActionButtons(u));
     }
 
     createUserRow(user) {
-        const usagePercentage = user.usage ? 
+        const usagePercentage = user.usage ?
             Math.min((user.usage.used / user.usage.limit) * 100, 100) : 0;
-        
+
         return `
-            <div class="user-row">
+            <div class="user-row" data-user-id="${this.escapeHtml(user.id || '')}" data-user-email="${this.escapeHtml(user.email || '')}">
                 <div>
                     <div style="font-weight: 600;">${this.escapeHtml(user.email || user.id || 'Unknown')}</div>
                     <div style="font-size: 0.8rem; color: var(--text-muted);">
@@ -284,6 +296,12 @@ class AdminDashboard {
                     <div style="font-size: 0.8rem; color: var(--text-muted);">
                         Last payment: ${this.formatDate(user.lastPayment)}
                     </div>
+                </div>
+                <div class="actions-cell">
+                    <button class="action-btn plan-starter" data-action="plan" data-plan="Starter">Starter</button>
+                    <button class="action-btn plan-pro" data-action="plan" data-plan="Pro">Pro</button>
+                    <button class="action-btn plan-enterprise" data-action="plan" data-plan="Enterprise">Ent</button>
+                    <button class="action-btn reset-btn" data-action="reset" title="Reset usage"><i class="fa-solid fa-rotate-left"></i></button>
                 </div>
             </div>
         `;
@@ -361,6 +379,71 @@ class AdminDashboard {
                 
                 console.log('Admin Dashboard: Theme changed to', newTheme);
             });
+        }
+    }
+
+    // ===== User Action Methods =====
+    bindUserActionButtons(user) {
+        const row = document.querySelector(`.user-row[data-user-id="${CSS.escape(user.id || '')}"]`);
+        if (!row) return;
+        row.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.getAttribute('data-action');
+                if (action === 'plan') {
+                    const newPlan = btn.getAttribute('data-plan');
+                    this.updateUserPlan(user, newPlan, btn);
+                } else if (action === 'reset') {
+                    this.resetUserUsage(user, btn);
+                }
+            });
+        });
+    }
+
+    async updateUserPlan(user, newPlan, buttonEl) {
+        if (!confirm(`Change plan for ${user.email || user.id} to ${newPlan}?`)) return;
+        const originalText = buttonEl.textContent;
+        buttonEl.disabled = true;
+        buttonEl.textContent = '...';
+        try {
+            const resp = await fetch(`${this.apiBaseUrl}/admin/update-plan`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: user.id, plan: newPlan })
+            });
+            if (!resp.ok) throw new Error('Failed to update plan');
+            await this.loadDashboardData();
+        } catch(err) {
+            alert(err.message || 'Error updating plan');
+        } finally {
+            buttonEl.disabled = false;
+            buttonEl.textContent = originalText;
+        }
+    }
+
+    async resetUserUsage(user, buttonEl) {
+        if (!confirm(`Reset usage for ${user.email || user.id}?`)) return;
+        const originalHTML = buttonEl.innerHTML;
+        buttonEl.disabled = true;
+        buttonEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        try {
+            const resp = await fetch(`${this.apiBaseUrl}/admin/reset-usage`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: user.id })
+            });
+            if (!resp.ok) throw new Error('Failed to reset usage');
+            await this.loadDashboardData();
+        } catch(err) {
+            alert(err.message || 'Error resetting usage');
+        } finally {
+            buttonEl.disabled = false;
+            buttonEl.innerHTML = originalHTML;
         }
     }
 }
