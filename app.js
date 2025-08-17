@@ -896,8 +896,20 @@ function initAIAssistant() {
     return;
   }
   
-  // Backend API endpoint URL
-  const BACKEND_URL = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api/chat';
+  // Backend API endpoint base (dynamic w/ proxy support)
+  const PROD_FALLBACK = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
+  const locHost = (typeof window !== 'undefined' && window.location ? window.location.host : '');
+  let API_BASE = (typeof window !== 'undefined' && (window.__API_BASE__ || window.VITE_API_BASE_URL || window.NEXT_PUBLIC_API_URL)) || '';
+  if(!API_BASE) {
+    if(/localhost|127\./.test(locHost)) {
+      API_BASE = PROD_FALLBACK; // dev directly hitting backend
+    } else if(!/replit/i.test(locHost)) {
+      API_BASE = '/api'; // production site expects proxy
+    } else {
+      API_BASE = PROD_FALLBACK;
+    }
+  }
+  const BACKEND_URL = API_BASE + '/chat';
   
   // Conversation memory - stores last 3 user messages and AI responses
   let conversationHistory = [];
@@ -910,7 +922,7 @@ function initAIAssistant() {
   let isRequestPending = false;
 
   // === Persistent Usage Limit Banner Logic ===
-  const USAGE_ENDPOINT = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api/usage/starter';
+  const USAGE_ENDPOINT = API_BASE + '/usage/starter';
   let bannerInjected = false;
 
   function createUsageLimitBanner() {
@@ -988,7 +1000,7 @@ function initAIAssistant() {
       }
 
       if (!usageData) {
-        const resp = await fetch(USAGE_ENDPOINT, { method: 'GET' });
+  const resp = await fetch(USAGE_ENDPOINT, { method: 'GET', credentials: 'include' });
         if (!resp.ok) {
           console.warn('Usage Banner: Failed to fetch usage endpoint status=', resp.status);
           return;

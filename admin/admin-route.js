@@ -1,10 +1,29 @@
 // Lightweight admin route script (separate from legacy admin.js if needed)
 // Requirements: Only allow specific email; fetch users; plan change & usage reset.
 
-const API_BASE = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
+// Determine API base dynamically. Precedence:
+// 1. window.__API_BASE__ (injected at build/deploy)
+// 2. environment-like globals (VITE_API_BASE_URL / NEXT_PUBLIC_API_URL)
+// 3. Same-origin /api proxy if host not replit
+// 4. Fallback to Replit production backend
+const RPL_BACKEND = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
+const host = (typeof window !== 'undefined' && window.location && window.location.host) ? window.location.host : '';
+let API_BASE = (typeof window !== 'undefined' && (window.__API_BASE__ || window.VITE_API_BASE_URL || window.NEXT_PUBLIC_API_URL)) || '';
+if(!API_BASE){
+  if(/localhost|127\./.test(host)){ // dev
+    API_BASE = RPL_BACKEND; // dev hitting prod backend (adjust if running local backend)
+  } else if(/trustboost/i.test(host) && !/replit/i.test(host)) {
+    // Deployed marketing site domain -> assume proxy route configured
+    API_BASE = '/api';
+  } else {
+    API_BASE = RPL_BACKEND;
+  }
+}
 const AUTH_LOGIN_PATH = '/auth/login';
 const AUTH_ME_PATH = '/auth/me';
-let adminToken = null;
+const AUTH_WHOAMI_PATH = '/auth/whoami';
+// Cookie-only auth mode (no bearer token persisted)
+let adminToken = null; // unused placeholder
 
 function qs(id){ return document.getElementById(id); }
 
@@ -33,20 +52,17 @@ async function login(e){
     });
     let data = null;
     if(!resp.ok){
-      // Try to parse diagnostic reason
-      try { data = await resp.json(); } catch { /* ignore */ }
-      const reason = data?.reason;
-      showDevReason(reason);
-      if(resp.status === 401){ throw new Error('Incorrect email or password'); }
-      if(resp.status === 403){ throw new Error('You are not authorized'); }
-      throw new Error('Login failed');
+      // Attempt to parse JSON error payload
+      try { data = await resp.json(); } catch { /* swallow parse error */ }
+      const rawReason = data?.reason || data?.error || data?.message;
+      const reasonCode = (rawReason || '').toString().trim().toUpperCase();
+      showDevReason(rawReason);
+      // Display exact server-provided reason code if present
+      let displayReason = reasonCode || `HTTP_${resp.status}`;
+      throw new Error(displayReason);
     }
     data = await resp.json();
-    if(data.token){
-      // Token-based auth path
-      adminToken = data.token;
-      localStorage.setItem('adminToken', adminToken);
-    }
+  // Ignore any token field (cookie-based session)
     // Validate session via server (no client allowlist)
     const profile = await fetchCurrentUser();
     if(!profile || !profile.email){
@@ -62,7 +78,11 @@ async function login(e){
     show(qs('dashboard'));
     loadUsers();
   } catch(ex){
-    err.textContent = ex.message || 'Login error';
+    if(ex instanceof TypeError){
+      err.textContent = 'NETWORK/CORS';
+    } else {
+      err.textContent = (ex.message || '').toUpperCase();
+    }
     err.classList.remove('hidden');
   } finally {
     btn.disabled = false;
@@ -75,10 +95,15 @@ async function loadUsers(){
   const status = qs('table-status');
   tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">Loading...</td></tr>';
   try {
+    // Pre-auth validation
+    const who = await fetchWhoAmI();
+    if(!who || !who.email || !who.isAdmin || (who.email||'').toLowerCase() !== 'jyehezkel10@gmail.com') {
+      return handleAuthFailure('You are not authorized to access the admin portal.');
+    }
+    updateAuthedEmail(who.email);
     const resp = await fetch(`${API_BASE}/admin/users`,{
       method:'GET',
-      credentials: 'include',
-      headers: getAuthHeaders()
+      credentials: 'include'
     });
     if(resp.status === 401){
       return handleAuthFailure('Session expired. Please log in again.');
@@ -152,7 +177,7 @@ async function mutate(path, payload, btn){
     const resp = await fetch(`${API_BASE}${path}`,{
       method:'POST',
       credentials: 'include',
-      headers: { ...getAuthHeaders(), 'Content-Type':'application/json' },
+      headers: { 'Content-Type':'application/json' },
       body: JSON.stringify(payload)
     });
     if(!resp.ok) throw new Error('Request failed');
@@ -172,16 +197,11 @@ function escapeHtml(str){
 }
 
 function restoreSession(){
-  const token = localStorage.getItem('adminToken');
-  if(token){
-    adminToken = token;
   validateSessionOnRestore();
-  }
 }
 
 function logout(){
   adminToken = null;
-  localStorage.removeItem('adminToken');
   show(qs('login-panel'));
   hide(qs('dashboard'));
 }
@@ -191,6 +211,22 @@ document.addEventListener('DOMContentLoaded', () => {
   qs('logout-btn').addEventListener('click', logout);
   const emailInput = qs('admin-email');
   const hint = qs('email-normalized-hint');
+  // Deployment checklist: record resolved API base immediately
+  setChecklistStatus('chk-api-base', 'success', API_BASE + (API_BASE === '/api' ? ' (proxy)' : ''));
+  // Dev-only show computed production API base resolution
+  const isDev = /localhost|127\./.test(window.location.host);
+  // Predict production value for trustboostai.com (non-Replit) => '/api', else fallback value
+  let predictedProdBase = /trustboostai\.com$/i.test(window.location.host) ? '/api' : (API_BASE === '/api' ? '/api' : RPL_BACKEND);
+  const devBaseEl = document.createElement('div');
+  devBaseEl.style.marginTop = '6px';
+  devBaseEl.style.fontSize = '10px';
+  devBaseEl.style.color = 'var(--text-muted, #64748b)';
+  devBaseEl.id = 'api-base-display';
+  devBaseEl.textContent = `API Base (prod): ${predictedProdBase}`;
+  if(isDev){
+    const form = qs('login-form');
+    form?.parentNode?.insertBefore(devBaseEl, form.nextSibling);
+  }
   function updateHint(){
     if(!emailInput) return;
     const normalized = emailInput.value.trim().toLowerCase();
@@ -219,8 +255,7 @@ async function fetchCurrentUser(){
   try {
     const resp = await fetch(`${API_BASE}${AUTH_ME_PATH}`,{
       method:'GET',
-      credentials: 'include',
-      headers: getAuthHeaders()
+      credentials: 'include'
     });
     if(!resp.ok) return null;
     return await resp.json();
@@ -232,6 +267,12 @@ async function validateSessionOnRestore(){
   if(!profile || !profile.email){
     return logoutWithMessage('Session invalid or expired. Please log in.');
   }
+  // Additional whoami enforcement
+  const who = await fetchWhoAmI();
+  if(!who || !who.email || !who.isAdmin || (who.email||'').toLowerCase() !== 'jyehezkel10@gmail.com') {
+    return logoutWithMessage('You are not authorized to access the admin portal.');
+  }
+  updateAuthedEmail(who.email);
   if(window.location.pathname !== '/admin'){
     window.location.href = '/admin';
     return;
@@ -241,9 +282,7 @@ async function validateSessionOnRestore(){
   loadUsers();
 }
 
-function getAuthHeaders(){
-  return adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {}; // Support cookie-only sessions when token absent
-}
+// getAuthHeaders removed in cookie-only mode
 
 function handleAuthFailure(message){
   logoutWithMessage(message);
@@ -251,7 +290,6 @@ function handleAuthFailure(message){
 
 function logoutWithMessage(message){
   adminToken = null;
-  localStorage.removeItem('adminToken');
   show(qs('login-panel'));
   hide(qs('dashboard'));
   const err = qs('login-error');
@@ -270,3 +308,127 @@ function showDevReason(reason){
   el.textContent = `Debug reason: ${reason}`;
   el.classList.remove('hidden');
 }
+
+// Map backend reason codes to friendly messages
+function mapReason(reason, status){
+  const code = String(reason).toUpperCase();
+  switch(code){
+    case 'USER_NOT_FOUND': return 'Incorrect email or password';
+    case 'PASSWORD_MISMATCH': return 'Incorrect email or password';
+    case 'NOT_ADMIN': return 'You are not authorized';
+    case 'ACCOUNT_DISABLED': return 'Account disabled – contact support';
+    default:
+      if(status === 401) return 'Authentication failed';
+      if(status === 403) return 'You are not authorized';
+      return reason;
+  }
+}
+
+async function fetchWhoAmI(){
+  if(!document.cookie) return null;
+  try {
+    const resp = await fetch(`${API_BASE}${AUTH_WHOAMI_PATH}`, {
+      method:'GET',
+      credentials:'include'
+    });
+    if(!resp.ok) return null;
+    return await resp.json();
+  } catch { return null; }
+}
+
+function updateAuthedEmail(email){
+  const el = qs('authed-email');
+  if(el) el.textContent = `Logged in as: ${email} (Admin)`;
+}
+
+// ---------------- Deployment Checklist Helpers ----------------
+function setChecklistStatus(id, state, text){
+  const li = qs(id);
+  if(!li) return;
+  li.dataset.status = state;
+  const span = li.querySelector('.value');
+  if(span && text) span.textContent = text;
+  // simple color heuristics (inline to avoid extra CSS edits)
+  let color = '';
+  if(state === 'success') color = '#059669'; // green
+  else if(state === 'error') color = '#dc2626'; // red
+  else color = '#64748b'; // slate
+  li.style.color = color;
+}
+
+// Patch login() to update checklist (wrap original logic)
+const __origLogin = login;
+login = async function(e){
+  try {
+    await __origLogin(e);
+    // If dashboard visible we assume login success (session validated separately)
+    if(!qs('login-panel').classList.contains('hidden')) return; // still on login -> no success
+    setChecklistStatus('chk-login','success','OK');
+    // whoami + users will be updated inside loadUsers()/validateSessionOnRestore
+  } catch(err){
+    setChecklistStatus('chk-login','error', (err && err.message) ? err.message.toUpperCase() : 'ERROR');
+    throw err; // rethrow so original UI handling still applies if needed
+  }
+};
+
+// Wrap loadUsers to set whoami/users statuses
+const __origLoadUsers = loadUsers;
+loadUsers = async function(){
+  try {
+    const tbody = qs('users-tbody');
+    if(tbody) setChecklistStatus('chk-users','pending','loading...');
+    // Perform original logic up to fetching whoami manually so we can intercept
+    const who = await fetchWhoAmI();
+    if(!who || !who.email || !who.isAdmin || (who.email||'').toLowerCase() !== 'jyehezkel10@gmail.com') {
+      setChecklistStatus('chk-whoami','error','unauthorized');
+      return handleAuthFailure('You are not authorized to access the admin portal.');
+    }
+    setChecklistStatus('chk-whoami','success', who.email.toLowerCase());
+    updateAuthedEmail(who.email);
+    const resp = await fetch(`${API_BASE}/admin/users`,{ method:'GET', credentials:'include' });
+    if(resp.status === 401){
+      setChecklistStatus('chk-users','error','401');
+      return handleAuthFailure('Session expired. Please log in again.');
+    }
+    if(resp.status === 403){
+      setChecklistStatus('chk-users','error','403');
+      return handleAuthFailure('You are not authorized to access the admin dashboard.');
+    }
+    if(!resp.ok){
+      setChecklistStatus('chk-users','error',`HTTP_${resp.status}`);
+      throw new Error('Failed fetching users');
+    }
+    const users = await resp.json();
+    renderUsers(users);
+    const status = qs('table-status');
+    if(status) status.textContent = `${users.length} users`;
+    setChecklistStatus('chk-users','success', `${users.length} users`);
+  } catch(ex){
+    setChecklistStatus('chk-users','error', (ex && ex.message) ? ex.message.toUpperCase() : 'ERROR');
+    const tbody = qs('users-tbody');
+    if(tbody) tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-6 text-center text-rose-600">${ex.message}</td></tr>`;
+  }
+};
+
+// Wrap validateSessionOnRestore to mark login status implicitly if valid
+const __origValidate = validateSessionOnRestore;
+validateSessionOnRestore = async function(){
+  try {
+    await __origValidate();
+    if(!qs('login-panel').classList.contains('hidden')) return; // still logging in / failed
+    setChecklistStatus('chk-login','success','session restored');
+  } catch(err){
+    setChecklistStatus('chk-login','error','RESTORE_FAIL');
+    throw err;
+  }
+};
+
+// When logging out or auth failure ensure dependent checklist items revert
+const __origLogoutWithMessage = logoutWithMessage;
+logoutWithMessage = function(message){
+  setChecklistStatus('chk-login','error','not logged in');
+  setChecklistStatus('chk-whoami','error','n/a');
+  setChecklistStatus('chk-users','error','n/a');
+  return __origLogoutWithMessage(message);
+};
+
