@@ -457,6 +457,7 @@
 </head>
 <body>
   <a href="#main" class="skip-link" id="skip-link">Skip to main content</a>
+  <div class="revamp-banner" role="status">TRUSTBOOSTAI UI REVAMP ACTIVE</div>
   <header class="main-header" aria-label="Main navigation">
     <div class="container nav">
       <div class="logo-group">
@@ -487,37 +488,48 @@
   </header>
   <main id="main" tabindex="-1">
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-bg"></div>
+      <div class="hero-bg" aria-hidden="true"></div>
       <div class="container hero-content">
         <div class="hero-left">
-          <h1 id="hero-title" class="section-title gradient-text hero-header">
-            <span class="hero-contrast" data-i18n="hero.title1">Grow Your Reputation</span><br>
-            <span data-i18n="hero.title2">Effortlessly, With AI</span>
-          </h1>
-          <p data-i18n="hero.subtitle">
-            Win more reviews, delight your customers, and dominate local search results – all from one playful, powerful dashboard.
+          <p class="hero-kicker">Reputation intelligence without the noise</p>
+          <h1 id="hero-title" class="hero-header">AI powered reputation management for modern businesses.</h1>
+          <p class="hero-subtitle">
+            TrustBoostAI monitors your reviews, drafts on-brand responses, and highlights wins so your team can focus on service instead of screens.
           </p>
           <div class="hero-ctas">
-            <a href="#pricing" class="btn btn-gradient big" data-i18n="hero.cta1">Start Free Trial</a>
-            <a href="#features" class="btn btn-outline" data-i18n="hero.cta2">See How It Works</a>
+            <a href="#pricing" class="btn hero-primary" data-i18n="hero.cta1">Get started</a>
+            <a href="#features" class="btn hero-secondary" data-i18n="hero.cta2">Schedule a demo</a>
           </div>
           <div class="hero-stats" role="group" aria-label="Stats">
-            <div>
+            <div class="stat-card">
               <span class="stat-num" data-animate="5000">0</span>+
               <span class="stat-label" data-i18n="hero.stat1">5-Star Reviews</span>
             </div>
-            <div>
+            <div class="stat-card">
               <span class="stat-num" data-animate="92">0</span>%
               <span class="stat-label" data-i18n="hero.stat2">Avg. Google Rank Boost</span>
             </div>
           </div>
         </div>
         <div class="hero-right hero-media-wrapper">
-          <video class="hero-video" autoplay muted loop playsinline poster="public/ai-human-touch.jpg" aria-label="TrustBoost AI in action">
-            <source src="public/hero.mp4" type="video/mp4"/>
-          </video>
-          <img class="hero-image" src="public/ai-human-touch.jpg" alt="AI Human Touch" />
-          <div id="lottie-hero" class="lottie-hero" aria-hidden="true"></div>
+          <div class="hero-panel">
+            <div class="hero-panel-header">
+              <span class="badge-soft">Live preview</span>
+              <span class="hero-pill">AI responses on autopilot</span>
+            </div>
+            <div class="hero-media-stack">
+              <video class="hero-video" autoplay muted loop playsinline poster="public/ai-human-touch.jpg" aria-label="TrustBoost AI in action">
+                <source src="public/hero.mp4" type="video/mp4"/>
+              </video>
+              <img class="hero-image" src="public/ai-human-touch.jpg" alt="AI Human Touch" />
+              <div id="lottie-hero" class="lottie-hero" aria-hidden="true"></div>
+            </div>
+            <ul class="hero-list">
+              <li><i class="fa-solid fa-check"></i>Smart review outreach and reminders</li>
+              <li><i class="fa-solid fa-check"></i>Human-sounding AI replies ready to send</li>
+              <li><i class="fa-solid fa-check"></i>Digestible analytics your team can trust</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
