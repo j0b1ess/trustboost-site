@@ -13,33 +13,28 @@
             background: var(--bg);
             padding: 2rem;
         }
-        
+
         .admin-header {
-            background: var(--gradient-primary);
-            color: white;
+            background: var(--accent);
+            color: #ffffff;
             padding: 1.5rem;
             border-radius: var(--radius-lg);
             margin-bottom: 2rem;
             text-align: center;
+            box-shadow: var(--shadow);
         }
-        
+
         .admin-header h1 {
             margin: 0;
             font-size: 2rem;
             font-weight: 800;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-        
+
         .admin-header p {
             margin: 0.5rem 0 0 0;
-            font-size: 1.1rem;
-            font-weight: 500;
+            font-size: 1.05rem;
+            font-weight: 600;
             color: rgba(255, 255, 255, 0.95);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-            background: rgba(0, 0, 0, 0.15);
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius);
-            backdrop-filter: blur(5px);
         }
         
         .admin-login {
@@ -96,10 +91,10 @@
         }
         
         .table-header {
-            background: var(--gradient-primary);
+            background: var(--accent);
             color: white;
             padding: 1rem 1.5rem;
-            font-weight: 600;
+            font-weight: 700;
         }
         
         .table-content {
@@ -117,7 +112,7 @@
         }
         
         .user-row:hover {
-            background: rgba(99, 102, 241, 0.05);
+            background: rgba(37, 99, 235, 0.06);
         }
         
         .plan-badge {
@@ -130,17 +125,17 @@
         
         .plan-starter {
             background: #e0e7ff;
-            color: #3730a3;
+            color: #1d4ed8;
         }
-        
+
         .plan-pro {
-            background: #fef3c7;
-            color: #92400e;
+            background: #dbeafe;
+            color: #0f172a;
         }
-        
+
         .plan-enterprise {
-            background: #d1fae5;
-            color: #065f46;
+            background: #ecfdf3;
+            color: #166534;
         }
         
         .status-badge {
@@ -152,18 +147,18 @@
         }
         
         .status-active {
-            background: #d1fae5;
-            color: #065f46;
+            background: #ecfdf3;
+            color: var(--success);
         }
-        
+
         .status-inactive {
             background: #fee2e2;
-            color: #991b1b;
+            color: var(--error);
         }
-        
+
         .status-pending {
-            background: #fef3c7;
-            color: #92400e;
+            background: #e5e7eb;
+            color: var(--text);
         }
         
         .usage-bar {
@@ -175,7 +170,7 @@
         
         .usage-fill {
             height: 100%;
-            background: var(--gradient-primary);
+            background: var(--accent);
             transition: width 0.3s ease;
         }
         
@@ -191,9 +186,9 @@
             gap: 0.4rem;
         }
         .action-btn {
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            color: #334155;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            color: var(--text);
             font-size: 0.7rem;
             padding: 0.35rem 0.6rem;
             border-radius: 6px;
@@ -203,10 +198,10 @@
             transition: var(--transition-fast);
         }
         .action-btn:hover { background:#e2e8f0; }
-        .action-btn.plan-starter { color:#3730a3; }
-        .action-btn.plan-pro { color:#92400e; }
-        .action-btn.plan-enterprise { color:#065f46; }
-        .action-btn.reset-btn { color:#991b1b; }
+        .action-btn.plan-starter { color: var(--accent); }
+        .action-btn.plan-pro { color: var(--accent); }
+        .action-btn.plan-enterprise { color: var(--accent); }
+        .action-btn.reset-btn { color: var(--error); }
         .action-btn:disabled { opacity:.5; cursor:not-allowed; }
         
         .admin-form {
@@ -225,19 +220,21 @@
         }
         
         .admin-btn {
-            background: var(--gradient-primary);
+            background: var(--accent);
             color: white;
-            border: none;
+            border: 1px solid var(--accent);
             padding: 0.8rem 1.5rem;
             border-radius: var(--radius);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .admin-btn:hover {
             transform: translateY(-1px);
             box-shadow: var(--shadow);
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
         }
         
         .admin-btn:disabled {
@@ -247,16 +244,16 @@
         }
         
         .error-message {
-            color: #ef4444;
+            color: var(--error);
             background: #fef2f2;
             padding: 0.8rem;
             border-radius: var(--radius);
             border: 1px solid #fecaca;
             margin-bottom: 1rem;
         }
-        
+
         .success-message {
-            color: #10b981;
+            color: var(--success);
             background: #f0fdf4;
             padding: 0.8rem;
             border-radius: var(--radius);
