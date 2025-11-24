@@ -17,6 +17,9 @@ if (!Element.prototype.closest) {
   };
 }
 
+const PROD_API_BASE = '/api';
+const DEV_API_BASE = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
+
 // === Utility functions ===
 function throttle(func, limit) {
   let inThrottle;
@@ -949,7 +952,7 @@ function initAIAssistant() {
   let isRequestPending = false;
 
   // === Persistent Usage Limit Banner Logic ===
-  const USAGE_ENDPOINT = API_BASE + '/usage/starter';
+  const USAGE_ENDPOINT = `${API_BASE}/usage/starter`;
   let bannerInjected = false;
 
   function createUsageLimitBanner() {
