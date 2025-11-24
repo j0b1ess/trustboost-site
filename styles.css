@@ -424,8 +424,8 @@ ul {
 }
 
 /* Enhanced Logo Group */
-.logo-group { 
-  display: flex; 
+.logo-group {
+  display: flex;
   align-items: center; 
   gap: 1rem;
   font-size: 1.5rem; 
@@ -638,7 +638,7 @@ nav a.active::after {
   .container {
     padding: 0 1rem; /* Reduce padding on small screens */
   }
-  
+
   .nav {
     padding: 0.75rem 1rem; /* Maintain padding for mobile */
   }
@@ -723,11 +723,20 @@ nav a.active::after {
     color: var(--text);
     transform: none; /* Remove transform for mobile */
   }
-  
-  .nav { 
+
+  .nav {
     position: relative;
   }
-  
+
+  .nav-right {
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    order: 2;
+    flex-wrap: wrap;
+  }
+
   .nav-ctas {
     gap: 0.75rem;
     width: 100%;
@@ -782,6 +791,7 @@ nav a.active::after {
     padding: 0.75rem;
     border-radius: 8px;
     font-size: 1.3rem;
+    margin-left: auto;
   }
   
   #mobile-nav-toggle.open {
