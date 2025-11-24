@@ -21,15 +21,6 @@ class AdminDashboard {
     init() {
         this.bindEvents();
         this.checkStoredToken();
-        
-        // Apply theme based on main site preference
-        const isDark = localStorage.getItem('theme') === 'dark';
-        if (isDark) {
-            document.body.classList.add('dark');
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
-
-        this.initThemeToggle();
     }
 
     bindEvents() {
@@ -352,33 +343,6 @@ class AdminDashboard {
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
             this.refreshInterval = null;
-        }
-    }
-
-    initThemeToggle() {
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = themeToggle?.querySelector('i');
-        
-        if (themeToggle && themeIcon) {
-            // Set initial theme state
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-            
-            themeToggle.addEventListener('click', () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                
-                document.documentElement.setAttribute('data-theme', newTheme);
-                document.body.classList.toggle('dark', newTheme === 'dark');
-                
-                // Update icon
-                themeIcon.className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-                
-                // Save preference
-                localStorage.setItem('theme', newTheme);
-                
-                console.log('Admin Dashboard: Theme changed to', newTheme);
-            });
         }
     }
 
