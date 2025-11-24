@@ -26,12 +26,12 @@
   --card-dark: #1f2937;
   --card-dark-border: #374151;
 
-  /* Advanced Gradients */
-  --gradient-primary: linear-gradient(135deg, #2563eb 0%, #2563eb 100%);
-  --gradient-secondary: linear-gradient(135deg, #2563eb 0%, #2563eb 100%);
-  --gradient-accent: linear-gradient(135deg, #2563eb 0%, #2563eb 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.95) 100%);
-  --gradient-dark-glass: linear-gradient(135deg, rgba(31,41,55,0.95) 0%, rgba(31,41,55,0.95) 100%);
+  /* Flat Accent Surfaces */
+  --gradient-primary: #2563eb;
+  --gradient-secondary: #2563eb;
+  --gradient-accent: #2563eb;
+  --gradient-glass: #ffffff;
+  --gradient-dark-glass: #1f2937;
   
   /* Professional Spacing & Sizing */
   --radius: 16px;
@@ -45,8 +45,8 @@
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-glass: 0 8px 32px rgba(99, 102, 241, 0.15);
-  --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
+  --shadow-glass: 0 8px 32px rgba(37, 99, 235, 0.12);
+  --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.18);
   
   /* Enhanced Transitions */
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -715,8 +715,7 @@ nav a:hover::before, nav a.active::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.08), transparent 35%),
-    radial-gradient(circle at 80% 40%, rgba(37, 99, 235, 0.06), transparent 35%);
+  background: none;
   pointer-events: none;
 }
 
@@ -1092,9 +1091,7 @@ nav a:hover::before, nav a.active::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background:
-    radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.04) 0%, transparent 50%);
+  background: none;
   pointer-events: none;
 }
 
@@ -1143,21 +1140,21 @@ nav a:hover::before, nav a.active::before {
   transition: var(--transition);
 }
 
-.feature-card:focus, .feature-card:hover { 
+.feature-card:focus, .feature-card:hover {
   transform: translateY(-10px);
   box-shadow: var(--shadow-glow);
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: rgba(37, 99, 235, 0.26);
 }
 
 .feature-card:hover::before {
   transform: scaleX(1);
 }
 
-.feature-lottie { 
-  height: 100px; 
-  width: 100px; 
+.feature-lottie {
+  height: 100px;
+  width: 100px;
   margin: 0 auto 1.5rem auto;
-  filter: drop-shadow(0 4px 8px rgba(99, 102, 241, 0.2));
+  filter: drop-shadow(0 4px 8px rgba(37, 99, 235, 0.2));
 }
 
 .feature-card h3 { 
@@ -1189,8 +1186,7 @@ nav a:hover::before, nav a.active::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(6, 182, 212, 0.02) 100%);
+  background: none;
   pointer-events: none;
 }
 /* Modern Billing Toggle */
@@ -1288,7 +1284,7 @@ nav a:hover::before, nav a.active::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--gradient-glass);
+  background: var(--card);
   opacity: 0;
   transition: var(--transition);
 }
@@ -1296,7 +1292,7 @@ nav a:hover::before, nav a.active::before {
 .pricing-card:hover {
   transform: translateY(-10px);
   box-shadow: var(--shadow-glow);
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: rgba(37, 99, 235, 0.26);
 }
 
 .pricing-card:hover::before {
@@ -1317,21 +1313,21 @@ nav a:hover::before, nav a.active::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--gradient-primary);
+  background: var(--primary);
   opacity: 0.03;
   pointer-events: none;
 }
 
-.pricing-card .badge { 
-  position: absolute; 
+.pricing-card .badge {
+  position: absolute;
   bottom: 6rem;  /* Moved up to create space above button */
-  left: 50%; 
-  transform: translateX(-50%); 
-  background: var(--gradient-primary); 
-  color: var(--text-white); 
-  font-size: 0.9rem; 
-  padding: 0.5rem 1.5rem; 
-  border-radius: 20px; 
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: var(--text-white);
+  font-size: 0.9rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
   font-weight: 700;
   box-shadow: var(--shadow);
   z-index: 2;
@@ -1346,14 +1342,13 @@ nav a:hover::before, nav a.active::before {
   z-index: 2;
 }
 
-.price { 
-  font-size: 2.5rem; 
-  font-weight: 800; 
+.price {
+  font-size: 2.5rem;
+  font-weight: 800;
   margin-bottom: 1rem;
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
+  background: none;
+  -webkit-text-fill-color: currentColor;
   position: relative;
   z-index: 2;
 }
@@ -1388,6 +1383,30 @@ nav a:hover::before, nav a.active::before {
   min-height: 54px;
 }
 
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-white);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
 /* Enhanced Pricing Button Styles */
 .pricing-btn {
   width: 100%;
@@ -1408,7 +1427,7 @@ nav a:hover::before, nav a.active::before {
 }
 
 .pricing-btn.btn-primary {
-  background: var(--gradient-primary);
+  background: var(--primary);
   color: var(--text-white);
   border-color: transparent;
   box-shadow: var(--shadow-lg);
@@ -1417,7 +1436,7 @@ nav a:hover::before, nav a.active::before {
 .pricing-btn.btn-primary:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-xl);
-  filter: brightness(1.1);
+  background: var(--primary-dark);
 }
 
 .pricing-btn.btn-outline {
@@ -1446,10 +1465,9 @@ nav a:hover::before, nav a.active::before {
   font-size: 3rem;
   font-weight: 800;
   margin-bottom: 2rem;
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
+  background: none;
+  -webkit-text-fill-color: currentColor;
   position: relative;
   z-index: 2;
 }
@@ -1497,20 +1515,20 @@ nav a:hover::before, nav a.active::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--gradient-primary);
+  background: var(--primary);
   opacity: 0.03;
   pointer-events: none;
 }
 
 .pricing-card.popular .pricing-btn {
-  background: var(--gradient-secondary);
+  background: var(--primary);
   border-color: transparent;
   color: var(--text-white);
   box-shadow: var(--shadow-glow);
 }
 
 .pricing-card.popular .pricing-btn:hover {
-  filter: brightness(1.15);
+  background: var(--primary-dark);
   transform: translateY(-3px) scale(1.02);
 }
 
@@ -1590,9 +1608,9 @@ nav a:hover::before, nav a.active::before {
   margin-top: 1.5rem;
 }
 
-.carousel-controls button { 
-  background: var(--gradient-primary); 
-  color: var(--text-white); 
+.carousel-controls button {
+  background: var(--gradient-primary);
+  color: var(--text-white);
   border: none; 
   border-radius: 50%; 
   width: 44px; 
@@ -1606,8 +1624,8 @@ nav a:hover::before, nav a.active::before {
   justify-content: center;
 }
 
-.carousel-controls button:hover { 
-  filter: brightness(0.85);
+.carousel-controls button:hover {
+  background: var(--primary-dark);
   transform: translateY(-2px);
 }
 @media (max-width: 700px) {
@@ -1661,10 +1679,10 @@ body.dark .testimonial {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.cta-gradient { 
-  background: var(--gradient-primary); 
-  color: var(--text-white); 
-  padding: 80px 0; 
+.cta-gradient {
+  background: var(--primary);
+  color: var(--text-white);
+  padding: 80px 0;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -1677,9 +1695,7 @@ body.dark .testimonial {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.3) 0%, transparent 50%);
+  background: none;
   pointer-events: none;
 }
 
@@ -1850,7 +1866,7 @@ body.dark .checkout {
 
 .footer-admin-link:hover {
   color: var(--primary) !important;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(37, 99, 235, 0.1);
   opacity: 1;
   text-decoration: none;
 }
@@ -1907,9 +1923,7 @@ body.dark .footer {
 
 body.dark .features::before,
 body.dark .pricing::before {
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+  background: none;
 }
 
 /* Dark Mode Cards */
@@ -1923,17 +1937,17 @@ body.dark .testimonial {
 
 body.dark .feature-card:hover,
 body.dark .pricing-card:hover {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.25);
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 25px 50px -12px rgba(37, 99, 235, 0.2);
 }
 
 body.dark .popular {
   border-color: var(--primary-light);
-  box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(37, 99, 235, 0.25);
 }
 
 body.dark .popular::after {
-  background: var(--gradient-secondary);
+  background: var(--primary);
   opacity: 0.05;
 }
 
@@ -1956,21 +1970,21 @@ body.dark .testimonial .user {
 }
 
 /* Dark Mode Buttons */
-body.dark .btn-outline { 
-  color: var(--text-white); 
+body.dark .btn-outline {
+  color: var(--text-white);
   border-color: var(--primary-light);
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(37, 99, 235, 0.12);
 }
 
-body.dark .btn-outline:hover { 
-  background: var(--primary-light); 
+body.dark .btn-outline:hover {
+  background: var(--primary-light);
   color: var(--text-white);
 }
 
 /* Dark Mode Testimonials are handled above */
 
 body.dark .carousel-controls button {
-  background: var(--gradient-secondary);
+  background: var(--primary);
 }
 
 /* Dark Mode Scrollbar */
@@ -1978,8 +1992,8 @@ body.dark ::-webkit-scrollbar {
   background: var(--bg-dark);
 }
 
-body.dark ::-webkit-scrollbar-thumb { 
-  background: var(--primary-light);
+body.dark ::-webkit-scrollbar-thumb {
+  background: var(--primary);
   border-radius: 12px;
 }
 
@@ -2331,7 +2345,7 @@ body.calendly-overlay-is-open * {
   left: 0;
   right: 0;
   height: 100px;
-  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, var(--bg) 100%);
+  background: var(--bg);
   pointer-events: none;
 }
 
@@ -2385,7 +2399,7 @@ body.calendly-overlay-is-open * {
 
 /* Enhanced AI Assistant Section Styling */
 .ai-assistant {
-  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+  background: var(--bg);
   position: relative;
   overflow: hidden;
 }
@@ -2397,9 +2411,7 @@ body.calendly-overlay-is-open * {
   left: 0;
   right: 0;
   bottom: 0;
-  background:
-    radial-gradient(circle at 15% 30%, rgba(37, 99, 235, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 85% 70%, rgba(37, 99, 235, 0.05) 0%, transparent 50%);
+  background: none;
   pointer-events: none;
 }
 
@@ -2480,7 +2492,7 @@ body.calendly-overlay-is-open * {
 .ai-input-group textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .ai-submit-btn {
@@ -2496,7 +2508,7 @@ body.calendly-overlay-is-open * {
 }
 
 .contact {
-  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+  background: var(--bg);
   position: relative;
   overflow: hidden;
 }
@@ -2508,9 +2520,7 @@ body.calendly-overlay-is-open * {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 15% 30%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 85% 70%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+  background: none;
   pointer-events: none;
 }
 
@@ -2588,7 +2598,7 @@ body.calendly-overlay-is-open * {
 .newsletter-form input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .contact-form textarea {
@@ -2650,7 +2660,7 @@ body.calendly-overlay-is-open * {
 .contact-info a {
   color: var(--primary);
   text-decoration: underline;
-  text-decoration-color: rgba(99, 102, 241, 0.3);
+  text-decoration-color: rgba(37, 99, 235, 0.4);
   transition: var(--transition);
 }
 
@@ -2825,7 +2835,7 @@ body.calendly-overlay-is-open * {
 
 /* Dark mode support for memory indicator */
 [data-theme="dark"] #memory-indicator {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: #1f2937;
   border-color: #475569;
   color: var(--text-white);
 }
@@ -2885,9 +2895,9 @@ body.calendly-overlay-is-open * {
 
 /* Usage Limit Popup Styling */
 .usage-limit-popup {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  background: var(--card);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.25);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   margin: 1rem 0;
@@ -2952,13 +2962,13 @@ body.calendly-overlay-is-open * {
   text-decoration: none;
   font-weight: 600;
   padding: 0.3rem 0.8rem;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(37, 99, 235, 0.1);
   border-radius: 6px;
   transition: all 0.2s ease;
 }
 
 .upgrade-link:hover {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(37, 99, 235, 0.2);
   transform: translateY(-1px);
 }
 
@@ -2983,25 +2993,25 @@ body.calendly-overlay-is-open * {
 
 /* Dark Mode Support for Usage Popup */
 [data-theme="dark"] .usage-limit-popup {
-  background: linear-gradient(135deg, rgba(30, 27, 46, 0.95) 0%, rgba(15, 15, 26, 0.95) 100%);
+  background: var(--card-dark);
   border-color: rgba(239, 68, 68, 0.3);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] .usage-warning {
-  color: #fbbf24;
+  color: var(--primary);
 }
 
 [data-theme="dark"] .usage-limit-reached {
-  color: #f87171;
+  color: #dc2626;
 }
 
 [data-theme="dark"] .upgrade-link {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(37, 99, 235, 0.2);
 }
 
 [data-theme="dark"] .upgrade-link:hover {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(37, 99, 235, 0.3);
 }
 
 [data-theme="dark"] .close-usage-message:hover {
