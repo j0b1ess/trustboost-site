@@ -1379,11 +1379,13 @@ nav a:hover::before, nav a.active::before {
   align-items: center;
   justify-content: center;
   transition: var(--transition);
-  border: 2px solid transparent;
+  border: 2px solid var(--border);
   cursor: pointer;
   letter-spacing: -0.01em;
   min-height: 44px;
   line-height: 1.2;
+  background: var(--bg-card);
+  color: var(--text);
 }
 
 .btn.big {
