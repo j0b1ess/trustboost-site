@@ -188,6 +188,13 @@ body.dark .usage-limit-banner button.upgrade-btn:hover {
   }
 }
 
+/* Ensure dark mode hero text remains flat and legible */
+body.dark .cta-header {
+  color: #e5e7eb;
+  background: none;
+  -webkit-text-fill-color: #e5e7eb;
+}
+
 .cta-header {
   color: var(--text);
   font-family: 'Inter', sans-serif;
