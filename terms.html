@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service - TrustBoost AI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="main-header">
+    <div class="nav container">
+      <div class="logo-group">
+        <img src="public/logo.png" alt="TrustBoost AI logo" class="logo" />
+        <span class="site-title">TrustBoost AI</span>
+      </div>
+      <a href="index.html" class="btn btn-outline">Back to Home</a>
+    </div>
+  </header>
+  <main class="container reveal" style="padding: 3rem 1.5rem; max-width: 900px;">
+    <h1>Terms of Service</h1>
+    <p>Welcome to TrustBoost AI. By using our service you agree to the terms below.</p>
+
+    <h2>Use of Service</h2>
+    <p>You may use TrustBoost AI to manage reviews and reputation for lawful purposes. Do not misuse the service or attempt to disrupt availability.</p>
+
+    <h2>Accounts and Billing</h2>
+    <p>You are responsible for maintaining account security. Paid subscriptions are billed via Stripe using the plan you select on the site.</p>
+
+    <h2>Content</h2>
+    <p>You retain ownership of your content. You grant us permission to process it to provide AI responses and platform functionality.</p>
+
+    <h2>Availability</h2>
+    <p>We strive for high uptime but do not guarantee uninterrupted access. Planned maintenance or external provider outages may impact availability.</p>
+
+    <h2>Liability</h2>
+    <p>The service is provided “as is.” To the fullest extent permitted by law, TrustBoost AI is not liable for indirect or consequential damages arising from use of the service.</p>
+
+    <h2>Contact</h2>
+    <p>For questions about these terms, email <a href="mailto:trustboostaicontact@gmail.com">trustboostaicontact@gmail.com</a>.</p>
+  </main>
+  <script>
+    (function() {
+      const revealEls = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        revealEls.forEach((el) => el.classList.add('reveal-visible'));
+        return;
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      revealEls.forEach((el) => observer.observe(el));
+    })();
+  </script>
+</body>
+</html>
