@@ -16,7 +16,7 @@
       <a href="index.html" class="btn btn-outline">Back to Home</a>
     </div>
   </header>
-  <main class="container reveal" style="padding: 3rem 1.5rem; max-width: 900px;">
+  <main class="container" style="padding: 3rem 1.5rem; max-width: 900px;">
     <h1>Privacy Policy</h1>
     <p>We value your trust. This privacy policy explains how TrustBoost AI collects, uses, and protects your information.</p>
 
@@ -38,23 +38,5 @@
     <h2>Contact</h2>
     <p>Questions? Email <a href="mailto:trustboostaicontact@gmail.com">trustboostaicontact@gmail.com</a>.</p>
   </main>
-  <script>
-    (function() {
-      const revealEls = document.querySelectorAll('.reveal');
-      if (!('IntersectionObserver' in window)) {
-        revealEls.forEach((el) => el.classList.add('reveal-visible'));
-        return;
-      }
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('reveal-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.12 });
-      revealEls.forEach((el) => observer.observe(el));
-    })();
-  </script>
 </body>
 </html>
