@@ -284,11 +284,56 @@ ul {
 }
 
 /* Professional Container */
-.container { 
-  max-width: var(--max-width); 
-  margin: 0 auto; 
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
   padding: 0 2rem;
   position: relative;
+}
+
+.section-shell {
+  padding: 5rem 0;
+  background: var(--bg);
+}
+
+.section-shell.alt {
+  background: #eef2f7;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-width: 760px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--primary);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.85rem;
+}
+
+.section-title-modern {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
 }
 
 /* Enhanced Skip Link */
@@ -1043,9 +1088,9 @@ nav a:hover::before, nav a.active::before {
 }
 
 /* Modern Features Section */
-.features { 
-  background: var(--bg-secondary);
-  padding: 6rem 0;
+.features {
+  background: var(--bg-main);
+  padding: 0;
   position: relative;
 }
 
@@ -1136,10 +1181,9 @@ nav a:hover::before, nav a.active::before {
 }
 
 /* Professional Pricing Section */
-.pricing { 
+.pricing {
   background: var(--bg);
-  padding: 6rem 0;
-  padding-top: 8rem;  /* Extra padding to accommodate badges */
+  padding: 0;
   position: relative;
   overflow: visible;  /* Allow badges to be visible */
 }
