@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TrustBoost Admin</title>
+  <title>TrustBoostAI Admin</title>
   <link rel="stylesheet" href="../styles.css" />
   <!-- Tailwind via CDN (scoped usage) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -33,97 +33,49 @@
     .usage-fill { height:100%; background:#2563eb; }
   </style>
 </head>
-<body class="font-sans text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900">
-  <!-- whoami status strip -->
-  <div id="whoami-strip" class="text-[11px] px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono tracking-tight flex items-center gap-2" style="border-bottom:1px solid rgba(0,0,0,0.05);"></div>
-  <div class="admin-wrapper">
-    <!-- Login Panel -->
-    <div id="login-panel" class="max-w-md mx-auto bg-white dark:bg-slate-800 shadow rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-      <h1 class="text-2xl font-bold mb-2 flex items-center gap-2"><span>Admin Login</span></h1>
-      <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Restricted access. Authorized email only.</p>
-      <div id="unauthorized-msg" class="hidden text-sm rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 px-3 py-2 mb-3"></div>
-      <div id="login-error" class="hidden text-sm rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 px-3 py-2 mb-3"></div>
-      <!-- Login Diagnostics (always visible after an attempt) -->
-      <div id="login-diagnostics" class="hidden mb-4 text-[11px] leading-snug bg-slate-100 dark:bg-slate-800/60 rounded p-2 border border-slate-200 dark:border-slate-700">
-        <div><span class="font-semibold">API Base:</span> <span id="diag-api-base" class="font-mono"></span></div>
-        <div><span class="font-semibold">HTTP Status:</span> <span id="diag-http-status" class="font-mono">—</span></div>
-        <div><span class="font-semibold">Reason:</span> <span id="diag-reason" class="font-mono">—</span></div>
-        <div><span class="font-semibold">Req ID:</span> <span id="diag-reqid" class="font-mono">—</span></div>
-  <div><span class="font-semibold">Auth Mode:</span> <span id="diag-auth-mode" class="font-mono">—</span></div>
+<body class="admin-body">
+  <div class="admin-frame">
+    <header class="admin-topbar reveal" aria-label="Admin navigation">
+      <div>
+        <p class="eyebrow">Control Center</p>
+        <h1 class="admin-title">TrustBoostAI Admin</h1>
+        <p class="admin-subtitle">Manage plans, usage, and access in one secure place.</p>
       </div>
-      <!-- Advanced Diagnostics Panel -->
-      <div id="adv-diagnostics" class="mb-4 text-[11px] bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded">
-        <button type="button" id="adv-diag-toggle" class="w-full text-left px-3 py-2 font-semibold flex items-center justify-between">
-          <span>Diagnostics</span>
-          <span id="adv-diag-caret" class="text-xs">▾</span>
-        </button>
-        <div id="adv-diag-body" class="px-3 pb-3 pt-0 space-y-2">
-          <div class="mt-1"><span class="font-semibold">API Base (prod):</span> <span id="adv-api-base" class="font-mono"></span></div>
-          <div id="diag-echo" class="p-2 rounded bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-600">
-            <div class="font-semibold mb-1">1) login-echo</div>
-            <div class="space-y-0.5">
-              <div>Request: <span id="echo-req" class="font-mono"></span></div>
-              <div>Email(masked): <span id="echo-email" class="font-mono"></span></div>
-              <div>Status: <span id="echo-status" class="font-mono"></span></div>
-              <div>normalizedEmail: <span id="echo-normalized" class="font-mono"></span></div>
-              <div>Error: <span id="echo-error" class="font-mono text-rose-600"></span></div>
-            </div>
-          </div>
-          <div id="diag-login-diagnose" class="p-2 rounded bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-600">
-            <div class="font-semibold mb-1">2) login-diagnose</div>
-            <div class="space-y-0.5 text-[10px] leading-snug">
-              <div>Status: <span id="diag-status" class="font-mono"></span></div>
-              <div>userFound: <span id="diag-userFound" class="font-mono"></span></div>
-              <div>hasHash: <span id="diag-hash" class="font-mono"></span></div>
-              <div>passwordMatch: <span id="diag-passmatch" class="font-mono"></span></div>
-              <div>isAdmin: <span id="diag-isadmin" class="font-mono"></span></div>
-              <div>reason: <span id="diag-reason2" class="font-mono"></span></div>
-              <div>backendPath: <span id="diag-backendpath" class="font-mono"></span></div>
-              <div>cors.originSeen: <span id="diag-origin" class="font-mono"></span></div>
-              <div>cors.allowCreds: <span id="diag-allowcreds" class="font-mono"></span></div>
-              <div>mode: <span id="diag-mode" class="font-mono"></span></div>
-              <div>Error: <span id="diag-error" class="font-mono text-rose-600"></span></div>
-            </div>
-          </div>
-          <div id="diag-token" class="p-2 rounded bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-600">
-            <div class="font-semibold mb-1">3) token-diagnose</div>
-            <div class="space-y-0.5 text-[10px] leading-snug">
-              <div>Status: <span id="token-status" class="font-mono"></span></div>
-              <div>tokenPresent: <span id="token-present" class="font-mono"></span></div>
-              <div>tokenValid: <span id="token-valid" class="font-mono"></span></div>
-              <div>email: <span id="token-email" class="font-mono"></span></div>
-              <div>isAdmin: <span id="token-isadmin" class="font-mono"></span></div>
-              <div>Note/Error: <span id="token-error" class="font-mono text-rose-600"></span></div>
-            </div>
-          </div>
-        </div>
+      <div class="admin-topbar-actions">
+        <span id="authed-email" class="admin-chip">Validating access…</span>
+        <button id="logout-btn" class="btn btn-outline">Logout</button>
       </div>
-  <form id="login-form" class="space-y-4" autocomplete="off">
+    </header>
+
+    <div id="whoami-strip" class="admin-strip reveal">Checking session…</div>
+
+    <section class="admin-summary reveal" aria-labelledby="summary-title">
+      <div class="section-header">
         <div>
-          <label class="block text-sm font-medium mb-1" for="admin-email">Email</label>
-          <input id="admin-email" type="email" required class="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" placeholder="you@example.com" />
-          <div id="email-normalized-hint" class="mt-1 text-[11px] text-slate-500 dark:text-slate-400 italic hidden"></div>
+          <p class="eyebrow">Overview</p>
+          <h2 id="summary-title">System snapshot</h2>
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-1" for="admin-password">Password</label>
-          <input id="admin-password" type="password" required autocomplete="new-password" class="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" placeholder="Password" />
-        </div>
-        <button id="login-btn" type="submit" class="w-full bg-brand text-white font-semibold py-2 rounded hover:opacity-90 transition">Login</button>
-        <button id="run-auth-test-btn" type="button" class="w-full mt-2 text-xs font-semibold py-2 rounded border border-indigo-300 text-indigo-600 bg-white dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-600 transition">Run Admin Auth Test</button>
-      </form>
-  <div id="dev-reason" class="hidden mt-3 text-[11px] text-slate-400 dark:text-slate-500 italic"></div>
-      <div id="auth-test-output" class="hidden mt-3 text-[11px] font-mono whitespace-pre-wrap bg-slate-100 dark:bg-slate-800/50 rounded p-2 border border-slate-200 dark:border-slate-700"></div>
-      <!-- Deployment Checklist (always visible for verification) -->
-      <div id="admin-checklist" class="mt-6 text-xs leading-relaxed">
-        <div class="font-semibold mb-1">Deployment Checklist</div>
-        <ul class="space-y-1">
-          <li id="chk-api-base" class="chk-item" data-status="pending">1. API Base: <span class="value">(pending)</span></li>
-          <li id="chk-login" class="chk-item" data-status="pending">2. Login Result: <span class="value">(waiting)</span></li>
-          <li id="chk-whoami" class="chk-item" data-status="pending">3. whoami: <span class="value">(waiting)</span></li>
-          <li id="chk-users" class="chk-item" data-status="pending">4. /api/admin/users: <span class="value">(waiting)</span></li>
-        </ul>
+        <div id="table-status" class="text-muted"></div>
       </div>
-    </div>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <p class="summary-label">Total users</p>
+          <p class="summary-value" id="metric-total-users">—</p>
+        </div>
+        <div class="summary-card">
+          <p class="summary-label">Starter</p>
+          <p class="summary-value" id="metric-starter">—</p>
+        </div>
+        <div class="summary-card">
+          <p class="summary-label">Pro</p>
+          <p class="summary-value" id="metric-pro">—</p>
+        </div>
+        <div class="summary-card">
+          <p class="summary-label">Enterprise</p>
+          <p class="summary-value" id="metric-enterprise">—</p>
+        </div>
+      </div>
+    </section>
 
     <!-- Dashboard -->
     <div id="dashboard" class="hidden">
@@ -132,29 +84,53 @@
           <h2 class="text-3xl font-extrabold text-indigo-700">Admin Dashboard</h2>
           <div id="authed-email" class="text-xs mt-1 text-slate-500 dark:text-slate-400"></div>
         </div>
-        <button id="logout-btn" class="text-sm font-semibold px-3 py-2 h-fit rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600">Logout</button>
-      </div>
-      <div id="table-wrapper" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow overflow-hidden">
-        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-          <h3 class="font-semibold text-sm tracking-wide uppercase">Users</h3>
-          <div id="table-status" class="text-xs text-slate-500"></div>
+        <div class="control-group">
+          <label for="plan-filter">Plan</label>
+          <select id="plan-filter">
+            <option value="all">All plans</option>
+            <option value="starter">Starter</option>
+            <option value="pro">Pro</option>
+            <option value="enterprise">Enterprise</option>
+          </select>
         </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-sm">
-            <thead class="bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300">
-              <tr>
-                <th class="text-left px-4 py-2 font-semibold">Email</th>
-                <th class="text-left px-4 py-2 font-semibold">Plan</th>
-                <th class="text-left px-4 py-2 font-semibold">Messages Used</th>
-                <th class="text-left px-4 py-2 font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="users-tbody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
-          </table>
+        <div class="control-actions">
+          <button id="refresh-users" class="btn btn-outline">Refresh</button>
+          <button id="clear-filters" class="btn btn-ghost">Clear filters</button>
         </div>
       </div>
-    </div>
+      <div id="admin-inline-message" class="inline-message hidden" role="status"></div>
+    </section>
+
+    <section class="admin-table reveal" aria-labelledby="users-title">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Directory</p>
+          <h2 id="users-title">Users</h2>
+        </div>
+      </div>
+      <div class="table-container">
+        <table class="admin-users-table">
+          <thead>
+            <tr>
+              <th scope="col">Email</th>
+              <th scope="col">Plan</th>
+              <th scope="col">Usage</th>
+              <th scope="col">Created</th>
+              <th scope="col">Update plan</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="6" class="table-placeholder">Loading users…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="load-error" class="inline-message error hidden" role="alert">
+        <span id="load-error-text"></span>
+        <button id="retry-load" class="btn btn-outline btn-xs">Retry</button>
+      </div>
+    </section>
   </div>
-  <script src="./admin-route.js" defer></script>
+  <script src="admin-route.js" defer></script>
 </body>
 </html>

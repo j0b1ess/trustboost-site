@@ -46,6 +46,59 @@ function setAriaLive(msg) {
   live.textContent = msg;
 }
 
+function initRevealAnimations() {
+  const revealEls = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    revealEls.forEach((el) => el.classList.add('reveal-visible'));
+    return;
+  }
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12 }
+  );
+  revealEls.forEach((el) => observer.observe(el));
+}
+
+function initApiStatusChip() {
+  const chip = document.getElementById('api-status-chip');
+  if (!chip) return;
+  const PROD_FALLBACK = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
+  const locHost = (typeof window !== 'undefined' && window.location ? window.location.host : '');
+  let API_BASE = (typeof window !== 'undefined' && (window.__API_BASE__ || window.VITE_API_BASE_URL || window.NEXT_PUBLIC_API_URL)) || '';
+  if (!API_BASE) {
+    if (/localhost|127\./.test(locHost)) {
+      API_BASE = PROD_FALLBACK;
+    } else if (!/replit/i.test(locHost)) {
+      API_BASE = '/api';
+    } else {
+      API_BASE = PROD_FALLBACK;
+    }
+  }
+  chip.textContent = 'Checking API connectivity…';
+  chip.classList.remove('ok', 'error');
+  fetch(`${API_BASE}/usage/starter`, { method: 'GET', credentials: 'include' })
+    .then((resp) => {
+      if (resp.ok) {
+        chip.textContent = 'API online and responding';
+        chip.classList.add('ok');
+      } else {
+        chip.textContent = `API reachable but returned ${resp.status}`;
+        chip.classList.add('error');
+      }
+    })
+    .catch(() => {
+      chip.textContent = 'API unreachable. Please retry soon.';
+      chip.classList.add('error');
+    });
+}
+
 // === Lottie Animations ===
 const lottieFiles = {
   "lottie-hero": "public/ai-response.json",
@@ -2139,6 +2192,8 @@ document.addEventListener("DOMContentLoaded", function() {
   initAIAssistant();
   initSkipLink();
   initFocusManagement();
+  initRevealAnimations();
+  initApiStatusChip();
   animateStats();
   
   // Initialize Lottie animations with delay to ensure library is loaded

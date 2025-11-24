@@ -190,17 +190,10 @@ class AdminDashboard {
             console.error('Error fetching dashboard stats:', error);
             return null;
         }
-    }
-
-    async fetchUsers() {
-        try {
-            // Use real backend API
-            const response = await fetch(`${this.apiBaseUrl}/admin/users`, {
-                headers: {
-                    'Authorization': `Bearer ${this.adminToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach((el) => observer.observe(el));
+  }
 
             if (response.ok) {
                 return await response.json();
@@ -412,9 +405,5 @@ class AdminDashboard {
     }
 }
 
-// Initialize admin dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('TrustBoost AI Admin Dashboard: Initializing...');
-    new AdminDashboard();
-    console.log('TrustBoost AI Admin Dashboard: Initialized successfully');
-});
+  document.addEventListener('DOMContentLoaded', initReveal);
+})();

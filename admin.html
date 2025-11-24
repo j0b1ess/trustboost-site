@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrustBoost AI - Admin Dashboard</title>
+    <title>TrustBoostAI – Admin Login</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -327,92 +327,30 @@
         }
     </style>
 </head>
-<body>
-    <div class="admin-container">
-        <!-- Login Form -->
-        <div id="admin-login" class="admin-login">
-            <div class="admin-header">
-                <h1><i class="fa-solid fa-shield-halved"></i> Admin Access</h1>
-                <p>Enter your admin credentials to access the dashboard</p>
-            </div>
-            
-            <div id="login-error" class="error-message" style="display: none;"></div>
-            
-            <form id="admin-login-form" class="admin-form">
-                <input 
-                    type="email" 
-                    id="admin-username" 
-                    class="admin-input" 
-                    placeholder="Admin Email" 
-                    required
-                >
-                <input 
-                    type="password" 
-                    id="admin-password" 
-                    class="admin-input" 
-                    placeholder="Admin Password" 
-                    required
-                >
-                <button type="submit" id="login-btn" class="admin-btn">
-                    <i class="fa-solid fa-sign-in-alt"></i> Login
-                </button>
-            </form>
-            <div id="unauthorized-message" class="error-message" style="display:none; margin-top:1rem;">Unauthorized: This email is not permitted to access the admin dashboard.</div>
+<body class="admin-login-body">
+    <div class="admin-login-shell reveal">
+        <div class="admin-header-card">
+            <p class="eyebrow">Restricted access</p>
+            <h1>Admin Login</h1>
+            <p class="admin-subtitle">Only the authorized admin may access the dashboard.</p>
         </div>
-
-        <!-- Admin Dashboard -->
-        <div id="admin-dashboard" class="admin-dashboard">
-            <div class="admin-header" style="position: relative;">
-                <h1><i class="fa-solid fa-chart-line"></i> TrustBoost AI Admin Dashboard</h1>
-                <p>Monitor users, plans, and system usage</p>
-                <button id="logout-btn" class="logout-btn">
-                    <i class="fa-solid fa-sign-out-alt"></i> Logout
-                </button>
+        <form id="admin-login-form" class="admin-form" autocomplete="off">
+            <div class="form-group">
+                <label for="admin-username">Email</label>
+                <input id="admin-username" type="email" required value="Jyehezkel10@gmail.com" />
+                <small class="helper-text">Use the authorized admin email.</small>
             </div>
-
-            <!-- Dashboard Stats -->
-            <div class="dashboard-stats">
-                <div class="stat-card">
-                    <h3>Total Users</h3>
-                    <div id="total-users" class="stat-value">-</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Active Subscriptions</h3>
-                    <div id="active-subs" class="stat-value">-</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Monthly Revenue</h3>
-                    <div id="monthly-revenue" class="stat-value">-</div>
-                </div>
-                <div class="stat-card">
-                    <h3>API Calls Today</h3>
-                    <div id="api-calls" class="stat-value">-</div>
-                </div>
+            <div class="form-group">
+                <label for="admin-password">Password</label>
+                <input id="admin-password" type="password" required value="Yonyon18" />
+                <small class="helper-text">Password is case sensitive.</small>
             </div>
-
-            <!-- Users Table -->
-            <div class="users-table">
-                <div class="table-header">
-                    <div class="user-row" style="font-weight: 600;">
-                        <div>User</div>
-                        <div>Plan</div>
-                        <div>Usage</div>
-                        <div>Status</div>
-                        <div>Revenue</div>
-                        <div>Actions</div>
-                    </div>
-                </div>
-                <div class="table-content">
-                    <div id="users-loading" class="loading">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Loading users...
-                    </div>
-                    <div id="users-list"></div>
-                </div>
-            </div>
-        </div>
+            <div id="unauthorized-message" class="inline-message error hidden">Only the authorized admin can sign in.</div>
+            <div id="login-error" class="inline-message error hidden"></div>
+            <button id="login-btn" type="submit" class="btn btn-primary w-full">Log in</button>
+        </form>
+        <div class="admin-login-note">Default credentials are prefilled for convenience.</div>
     </div>
-
-    <!-- Include mock API for testing (remove when backend is ready) -->
-    <script src="admin.js"></script>
+    <script src="admin.js" defer></script>
 </body>
 </html>

@@ -63,6 +63,33 @@
   --vh: 1vh;
 }
 
+/* Reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.6s ease;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.text-muted { color: var(--text-muted); }
+.w-full { width: 100%; }
+.eyebrow {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 0.35rem;
+}
+
 /* Persistent Usage Limit Banner */
 .usage-limit-banner {
   position: sticky;
@@ -2398,6 +2425,93 @@ body.calendly-overlay-is-open * {
   background: var(--bg);
   position: relative;
   overflow: hidden;
+  flex: 1 1 520px;
+  min-width: 320px;
+}
+
+.ai-assistant-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.personalization-card {
+  flex: 1 1 260px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  min-width: 260px;
+}
+
+.personalization-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.35rem;
+  color: var(--text);
+}
+
+.personalization-card p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+}
+
+.personalization-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.9rem;
+}
+
+.personalization-field label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+.personalization-field input,
+.personalization-field select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: var(--bg-main);
+  color: var(--text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.personalization-field input:focus,
+.personalization-field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+  background: #fff;
+}
+
+.personalization-summary {
+  margin-top: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  background: rgba(37, 99, 235, 0.05);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  color: var(--text);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.personalization-summary i {
+  color: var(--accent);
 }
 
 .ai-assistant::before {
@@ -2411,13 +2525,14 @@ body.calendly-overlay-is-open * {
   pointer-events: none;
 }
 
-.ai-assistant-main-title {
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(2.2rem, 4vw, 3.5rem);
+.usage-summary .usage-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.usage-summary .usage-label {
   font-weight: 800;
-  line-height: 1.2;
-  text-align: center;
-  margin-bottom: 3rem;
   color: var(--text);
   position: relative;
   z-index: 2;
@@ -2438,28 +2553,21 @@ body.calendly-overlay-is-open * {
   flex-wrap: wrap;
 }
 
-.ai-assistant-card {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-lg);
-  padding: 3rem;
-  box-shadow: var(--shadow-xl);
-  backdrop-filter: blur(20px);
-  position: relative;
+.usage-progress {
+  flex: 1 1 180px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  height: 10px;
   overflow: hidden;
   flex: 1 1 520px;
   min-width: 320px;
 }
 
-.ai-assistant-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--gradient-primary);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+.usage-progress .usage-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.3s ease;
 }
 
 .personalization-card {
