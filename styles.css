@@ -1,37 +1,37 @@
 :root {
   /* Modern AI Brand Colors */
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --primary-light: #8b5cf6;
-  --secondary: #06b6d4;
-  --secondary-dark: #0891b2;
-  --accent: #f59e0b;
-  --accent-light: #fbbf24;
-  
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-light: #3b82f6;
+  --secondary: #4b5563;
+  --secondary-dark: #374151;
+  --accent: #2563eb;
+  --accent-light: #1d4ed8;
+
   /* Sophisticated Text Colors */
   --text: #0f172a;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
+  --text-muted: #4b5563;
+  --text-light: #6b7280;
   --text-white: #ffffff;
-  
+
   /* Modern Background System */
-  --bg: #fafaff;
-  --bg-secondary: #f8fafc;
-  --bg-dark: #0f0f1a;
-  --bg-dark-secondary: #1e1b2e;
-  
+  --bg: #f9fafb;
+  --bg-secondary: #ffffff;
+  --bg-dark: #0f172a;
+  --bg-dark-secondary: #1f2937;
+
   /* Glass Morphism Cards */
-  --card: rgba(255, 255, 255, 0.95);
-  --card-border: rgba(255, 255, 255, 0.2);
-  --card-dark: rgba(30, 27, 46, 0.95);
-  --card-dark-border: rgba(255, 255, 255, 0.1);
-  
-  /* Advanced Gradients */
-  --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
-  --gradient-secondary: linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
-  --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-  --gradient-dark-glass: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  --card: #ffffff;
+  --card-border: #e5e7eb;
+  --card-dark: #1f2937;
+  --card-dark-border: #374151;
+
+  /* Flat Accent Surfaces */
+  --gradient-primary: #2563eb;
+  --gradient-secondary: #2563eb;
+  --gradient-accent: #2563eb;
+  --gradient-glass: #ffffff;
+  --gradient-dark-glass: #1f2937;
   
   /* Professional Spacing & Sizing */
   --radius: 16px;
@@ -45,8 +45,8 @@
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-glass: 0 8px 32px rgba(99, 102, 241, 0.15);
-  --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
+  --shadow-glass: 0 8px 32px rgba(37, 99, 235, 0.12);
+  --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.18);
   
   /* Enhanced Transitions */
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -69,7 +69,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  background: linear-gradient(90deg, #ef4444, #f59e0b);
+  background: #dc2626;
   color: #fff;
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
@@ -144,8 +144,8 @@ body.dark .usage-limit-banner .banner-close-btn:hover {
 
 .usage-limit-banner button.upgrade-btn {
   background: #fff;
-  color: #ef4444;
-  border: none;
+  color: #dc2626;
+  border: 1px solid #f3f4f6;
   font-weight: 600;
   padding: 0.55rem 1rem;
   border-radius: 999px;
@@ -159,21 +159,22 @@ body.dark .usage-limit-banner .banner-close-btn:hover {
 }
 
 .usage-limit-banner button.upgrade-btn:hover {
-  background: #ffe4e4;
+  background: #fee2e2;
   transform: translateY(-2px);
 }
 
 body.dark .usage-limit-banner {
-  background: linear-gradient(90deg, #b91c1c, #c2410c);
+  background: #b91c1c;
 }
 
 body.dark .usage-limit-banner button.upgrade-btn {
-  background: #1e1b2e;
-  color: #fca5a5;
+  background: #1f2937;
+  color: #fecdd3;
+  border-color: #374151;
 }
 
 body.dark .usage-limit-banner button.upgrade-btn:hover {
-  background: #312e44;
+  background: #111827;
   color: #fff;
 }
 
@@ -188,24 +189,16 @@ body.dark .usage-limit-banner button.upgrade-btn:hover {
 }
 
 .cta-header {
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text);
   font-family: 'Inter', sans-serif;
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.02em;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  margin-bottom: 1.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  margin-bottom: 2rem;
   position: relative;
   z-index: 2;
   animation: fadeInUp 0.8s ease-out;
-}
-
-.cta-header {
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  margin-bottom: 2rem;
 }
 
 @keyframes fadeInUp {
@@ -223,10 +216,6 @@ body.dark .usage-limit-banner button.upgrade-btn:hover {
 @media (max-width: 900px) {
   .cta-header {
     text-align: center;
-    background: var(--gradient-primary);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
   }
 }
 
@@ -376,28 +365,25 @@ ul {
   box-shadow: var(--shadow);
 }
 
-.site-title { 
-  font-size: 1.4rem; 
-  font-weight: 800; 
+.site-title {
+  font-size: 1.4rem;
+  font-weight: 800;
   letter-spacing: -0.02em;
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text);
 }
 
-.ai-badge { 
-  background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%) !important;
-  color: #ffffff !important; 
-  border-radius: var(--radius); 
-  padding: 0.3rem 0.8rem; 
-  font-size: 0.75em; 
+.ai-badge {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  border-radius: var(--radius);
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75em;
   font-weight: 900 !important;
   margin-left: 0.5rem;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
   animation: pulse 2s infinite;
-  border: 2px solid rgba(255, 255, 255, 0.4) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8), 0 0 0 #fff !important;
+  border: 2px solid #e5e7eb !important;
+  text-shadow: none !important;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   position: relative;
@@ -451,7 +437,7 @@ nav a::before {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: var(--gradient-primary);
+  background: var(--primary);
   transition: var(--transition);
   z-index: -1;
   border-radius: var(--radius);
@@ -711,14 +697,14 @@ nav a:hover::before, nav a.active::before {
   
   #mobile-nav-toggle.open {
     transform: rotate(90deg);
-    background: rgba(108, 71, 255, 0.1);
+    background: rgba(37, 99, 235, 0.1);
   }
-  
+
   #mobile-nav-toggle:hover,
   #mobile-nav-toggle:focus,
   #mobile-nav-toggle:active {
     color: var(--primary);
-    background: rgba(108, 71, 255, 0.1);
+    background: rgba(37, 99, 235, 0.1);
   }
 }
 /* Modern Hero Section */
@@ -1064,75 +1050,14 @@ nav a:hover::before, nav a.active::before {
   }
 }
 
-/* Modern Gradient Text System with Better Contrast */
+/* Modern Accent Text System */
 .gradient-text {
-  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 50%, #f59e0b 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: var(--primary);
   position: relative;
   font-weight: 800;
   text-shadow: none;
-  /* Ensure crisp rendering */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Fallback for browsers that don't support background-clip: text */
-  background-color: #4f46e5;
-}
-
-/* Force sharp text rendering in light mode */
-body:not(.dark) .gradient-text {
-  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 50%, #f59e0b 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: contrast(1.2) brightness(1.1);
-}
-
-/* Ensure text is visible on gradient backgrounds */
-.gradient-text::before {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: rgba(255, 255, 255, 0.9);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  opacity: 0;
-  transition: var(--transition);
-  z-index: -1;
-}
-
-/* On sections with gradient backgrounds, ensure text contrast */
-.hero .gradient-text,
-.features .gradient-text,
-.pricing .gradient-text {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.gradient-text::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  opacity: 0;
-  transition: var(--transition);
-}
-
-.gradient-text:hover::after {
-  opacity: 1;
 }
 
 /* Professional Section Headers */
@@ -1175,9 +1100,7 @@ body:not(.dark) .gradient-text {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+  background: none;
   pointer-events: none;
 }
 
@@ -1226,21 +1149,21 @@ body:not(.dark) .gradient-text {
   transition: var(--transition);
 }
 
-.feature-card:focus, .feature-card:hover { 
+.feature-card:focus, .feature-card:hover {
   transform: translateY(-10px);
   box-shadow: var(--shadow-glow);
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: rgba(37, 99, 235, 0.26);
 }
 
 .feature-card:hover::before {
   transform: scaleX(1);
 }
 
-.feature-lottie { 
-  height: 100px; 
-  width: 100px; 
+.feature-lottie {
+  height: 100px;
+  width: 100px;
   margin: 0 auto 1.5rem auto;
-  filter: drop-shadow(0 4px 8px rgba(99, 102, 241, 0.2));
+  filter: drop-shadow(0 4px 8px rgba(37, 99, 235, 0.2));
 }
 
 .feature-card h3 { 
@@ -1272,8 +1195,7 @@ body:not(.dark) .gradient-text {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(6, 182, 212, 0.02) 100%);
+  background: none;
   pointer-events: none;
 }
 /* Modern Billing Toggle */
@@ -1371,7 +1293,7 @@ body:not(.dark) .gradient-text {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--gradient-glass);
+  background: var(--card);
   opacity: 0;
   transition: var(--transition);
 }
@@ -1379,7 +1301,7 @@ body:not(.dark) .gradient-text {
 .pricing-card:hover {
   transform: translateY(-10px);
   box-shadow: var(--shadow-glow);
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: rgba(37, 99, 235, 0.26);
 }
 
 .pricing-card:hover::before {
@@ -1400,21 +1322,21 @@ body:not(.dark) .gradient-text {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--gradient-primary);
+  background: var(--primary);
   opacity: 0.03;
   pointer-events: none;
 }
 
-.pricing-card .badge { 
-  position: absolute; 
+.pricing-card .badge {
+  position: absolute;
   bottom: 6rem;  /* Moved up to create space above button */
-  left: 50%; 
-  transform: translateX(-50%); 
-  background: var(--gradient-primary); 
-  color: var(--text-white); 
-  font-size: 0.9rem; 
-  padding: 0.5rem 1.5rem; 
-  border-radius: 20px; 
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: var(--text-white);
+  font-size: 0.9rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
   font-weight: 700;
   box-shadow: var(--shadow);
   z-index: 2;
@@ -1429,14 +1351,13 @@ body:not(.dark) .gradient-text {
   z-index: 2;
 }
 
-.price { 
-  font-size: 2.5rem; 
-  font-weight: 800; 
+.price {
+  font-size: 2.5rem;
+  font-weight: 800;
   margin-bottom: 1rem;
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
+  background: none;
+  -webkit-text-fill-color: currentColor;
   position: relative;
   z-index: 2;
 }
@@ -1471,6 +1392,30 @@ body:not(.dark) .gradient-text {
   min-height: 54px;
 }
 
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-white);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
 /* Enhanced Pricing Button Styles */
 .pricing-btn {
   width: 100%;
@@ -1491,7 +1436,7 @@ body:not(.dark) .gradient-text {
 }
 
 .pricing-btn.btn-primary {
-  background: var(--gradient-primary);
+  background: var(--primary);
   color: var(--text-white);
   border-color: transparent;
   box-shadow: var(--shadow-lg);
@@ -1500,7 +1445,7 @@ body:not(.dark) .gradient-text {
 .pricing-btn.btn-primary:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-xl);
-  filter: brightness(1.1);
+  background: var(--primary-dark);
 }
 
 .pricing-btn.btn-outline {
@@ -1529,10 +1474,9 @@ body:not(.dark) .gradient-text {
   font-size: 3rem;
   font-weight: 800;
   margin-bottom: 2rem;
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
+  background: none;
+  -webkit-text-fill-color: currentColor;
   position: relative;
   z-index: 2;
 }
@@ -1580,20 +1524,20 @@ body:not(.dark) .gradient-text {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--gradient-primary);
+  background: var(--primary);
   opacity: 0.03;
   pointer-events: none;
 }
 
 .pricing-card.popular .pricing-btn {
-  background: var(--gradient-secondary);
+  background: var(--primary);
   border-color: transparent;
   color: var(--text-white);
   box-shadow: var(--shadow-glow);
 }
 
 .pricing-card.popular .pricing-btn:hover {
-  filter: brightness(1.15);
+  background: var(--primary-dark);
   transform: translateY(-3px) scale(1.02);
 }
 
@@ -1673,9 +1617,9 @@ body:not(.dark) .gradient-text {
   margin-top: 1.5rem;
 }
 
-.carousel-controls button { 
-  background: var(--gradient-primary); 
-  color: var(--text-white); 
+.carousel-controls button {
+  background: var(--gradient-primary);
+  color: var(--text-white);
   border: none; 
   border-radius: 50%; 
   width: 44px; 
@@ -1689,8 +1633,8 @@ body:not(.dark) .gradient-text {
   justify-content: center;
 }
 
-.carousel-controls button:hover { 
-  filter: brightness(0.85);
+.carousel-controls button:hover {
+  background: var(--primary-dark);
   transform: translateY(-2px);
 }
 @media (max-width: 700px) {
@@ -1744,10 +1688,10 @@ body.dark .testimonial {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.cta-gradient { 
-  background: var(--gradient-primary); 
-  color: var(--text-white); 
-  padding: 80px 0; 
+.cta-gradient {
+  background: var(--primary);
+  color: var(--text-white);
+  padding: 80px 0;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -1760,9 +1704,7 @@ body.dark .testimonial {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.3) 0%, transparent 50%);
+  background: none;
   pointer-events: none;
 }
 
@@ -1776,14 +1718,11 @@ body.dark .testimonial {
   z-index: 2;
 }
 
-.cta-flex h2 { 
-  font-size: clamp(2rem, 4vw, 2.8rem); 
+.cta-flex h2 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: 800;
   margin: 0;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text);
 }
 
 .cta-flex .btn { 
@@ -1936,7 +1875,7 @@ body.dark .checkout {
 
 .footer-admin-link:hover {
   color: var(--primary) !important;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(37, 99, 235, 0.1);
   opacity: 1;
   text-decoration: none;
 }
@@ -1963,10 +1902,7 @@ body.dark .main-header {
 }
 
 body.dark .site-title {
-  background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-white);
 }
 
 body.dark .nav a {
@@ -1996,9 +1932,7 @@ body.dark .footer {
 
 body.dark .features::before,
 body.dark .pricing::before {
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+  background: none;
 }
 
 /* Dark Mode Cards */
@@ -2012,17 +1946,17 @@ body.dark .testimonial {
 
 body.dark .feature-card:hover,
 body.dark .pricing-card:hover {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.25);
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 25px 50px -12px rgba(37, 99, 235, 0.2);
 }
 
 body.dark .popular {
   border-color: var(--primary-light);
-  box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(37, 99, 235, 0.25);
 }
 
 body.dark .popular::after {
-  background: var(--gradient-secondary);
+  background: var(--primary);
   opacity: 0.05;
 }
 
@@ -2045,21 +1979,21 @@ body.dark .testimonial .user {
 }
 
 /* Dark Mode Buttons */
-body.dark .btn-outline { 
-  color: var(--text-white); 
+body.dark .btn-outline {
+  color: var(--text-white);
   border-color: var(--primary-light);
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(37, 99, 235, 0.12);
 }
 
-body.dark .btn-outline:hover { 
-  background: var(--primary-light); 
+body.dark .btn-outline:hover {
+  background: var(--primary-light);
   color: var(--text-white);
 }
 
 /* Dark Mode Testimonials are handled above */
 
 body.dark .carousel-controls button {
-  background: var(--gradient-secondary);
+  background: var(--primary);
 }
 
 /* Dark Mode Scrollbar */
@@ -2067,8 +2001,8 @@ body.dark ::-webkit-scrollbar {
   background: var(--bg-dark);
 }
 
-body.dark ::-webkit-scrollbar-thumb { 
-  background: var(--primary-light);
+body.dark ::-webkit-scrollbar-thumb {
+  background: var(--primary);
   border-radius: 12px;
 }
 
@@ -2420,7 +2354,7 @@ body.calendly-overlay-is-open * {
   left: 0;
   right: 0;
   height: 100px;
-  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, var(--bg) 100%);
+  background: var(--bg);
   pointer-events: none;
 }
 
@@ -2474,7 +2408,7 @@ body.calendly-overlay-is-open * {
 
 /* Enhanced AI Assistant Section Styling */
 .ai-assistant {
-  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+  background: var(--bg);
   position: relative;
   overflow: hidden;
 }
@@ -2486,9 +2420,7 @@ body.calendly-overlay-is-open * {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 15% 30%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 85% 70%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+  background: none;
   pointer-events: none;
 }
 
@@ -2500,10 +2432,6 @@ body.calendly-overlay-is-open * {
   text-align: center;
   margin-bottom: 3rem;
   color: var(--text);
-  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 50%, #8b5cf6 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   position: relative;
   z-index: 2;
   max-width: 900px;
@@ -2573,7 +2501,7 @@ body.calendly-overlay-is-open * {
 .ai-input-group textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .ai-submit-btn {
@@ -2589,7 +2517,7 @@ body.calendly-overlay-is-open * {
 }
 
 .contact {
-  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+  background: var(--bg);
   position: relative;
   overflow: hidden;
 }
@@ -2601,9 +2529,7 @@ body.calendly-overlay-is-open * {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 15% 30%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 85% 70%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+  background: none;
   pointer-events: none;
 }
 
@@ -2681,7 +2607,7 @@ body.calendly-overlay-is-open * {
 .newsletter-form input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .contact-form textarea {
@@ -2743,7 +2669,7 @@ body.calendly-overlay-is-open * {
 .contact-info a {
   color: var(--primary);
   text-decoration: underline;
-  text-decoration-color: rgba(99, 102, 241, 0.3);
+  text-decoration-color: rgba(37, 99, 235, 0.4);
   transition: var(--transition);
 }
 
@@ -2756,14 +2682,14 @@ body.calendly-overlay-is-open * {
 .ai-avatar {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
+  background: var(--primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   animation: robotPulse 2s ease-in-out infinite;
-  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
 }
 
 .ai-avatar::before {
@@ -2778,7 +2704,7 @@ body.calendly-overlay-is-open * {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
+  background: var(--primary);
   opacity: 0.3;
   animation: robotRing 2s ease-out infinite;
   z-index: -1;
@@ -2788,11 +2714,11 @@ body.calendly-overlay-is-open * {
 @keyframes robotPulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 6px 30px rgba(79, 70, 229, 0.5);
+    box-shadow: 0 6px 30px rgba(37, 99, 235, 0.5);
   }
 }
 
@@ -2818,7 +2744,7 @@ body.calendly-overlay-is-open * {
 
 /* Enhanced Memory Indicator */
 #memory-indicator {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: #f9fafb;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   padding: 1rem 1.5rem;
@@ -2839,9 +2765,7 @@ body.calendly-overlay-is-open * {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #4f46e5, #8b5cf6, #4f46e5);
-  background-size: 200% 100%;
-  animation: memoryGlow 3s ease-in-out infinite;
+  background: #2563eb;
 }
 
 #memory-indicator:hover {
@@ -2850,14 +2774,14 @@ body.calendly-overlay-is-open * {
 }
 
 #memory-indicator .fa-brain {
-  color: #8b5cf6;
+  color: var(--primary);
   font-size: 1.2rem;
   animation: brainPulse 2s ease-in-out infinite;
 }
 
 /* Enhanced Clear Memory Button */
 .clear-memory-btn {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: #dc2626;
   color: white;
   border: none;
   border-radius: 8px;
@@ -2866,14 +2790,14 @@ body.calendly-overlay-is-open * {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
   margin-left: auto;
 }
 
 .clear-memory-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35);
+  background: #b91c1c;
 }
 
 .clear-memory-btn:active {
@@ -2898,11 +2822,11 @@ body.calendly-overlay-is-open * {
 @keyframes brainPulse {
   0%, 100% {
     transform: scale(1);
-    color: #8b5cf6;
+    color: #2563eb;
   }
   50% {
     transform: scale(1.1);
-    color: #7c3aed;
+    color: #1d4ed8;
   }
 }
 
@@ -2920,7 +2844,7 @@ body.calendly-overlay-is-open * {
 
 /* Dark mode support for memory indicator */
 [data-theme="dark"] #memory-indicator {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: #1f2937;
   border-color: #475569;
   color: var(--text-white);
 }
@@ -2980,9 +2904,9 @@ body.calendly-overlay-is-open * {
 
 /* Usage Limit Popup Styling */
 .usage-limit-popup {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  background: var(--card);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.25);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   margin: 1rem 0;
@@ -3008,7 +2932,7 @@ body.calendly-overlay-is-open * {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #f59e0b;
+  color: #2563eb;
   font-size: 1.1rem;
   margin-bottom: 0.8rem;
 }
@@ -3047,13 +2971,13 @@ body.calendly-overlay-is-open * {
   text-decoration: none;
   font-weight: 600;
   padding: 0.3rem 0.8rem;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(37, 99, 235, 0.1);
   border-radius: 6px;
   transition: all 0.2s ease;
 }
 
 .upgrade-link:hover {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(37, 99, 235, 0.2);
   transform: translateY(-1px);
 }
 
@@ -3078,25 +3002,25 @@ body.calendly-overlay-is-open * {
 
 /* Dark Mode Support for Usage Popup */
 [data-theme="dark"] .usage-limit-popup {
-  background: linear-gradient(135deg, rgba(30, 27, 46, 0.95) 0%, rgba(15, 15, 26, 0.95) 100%);
+  background: var(--card-dark);
   border-color: rgba(239, 68, 68, 0.3);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] .usage-warning {
-  color: #fbbf24;
+  color: var(--primary);
 }
 
 [data-theme="dark"] .usage-limit-reached {
-  color: #f87171;
+  color: #dc2626;
 }
 
 [data-theme="dark"] .upgrade-link {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(37, 99, 235, 0.2);
 }
 
 [data-theme="dark"] .upgrade-link:hover {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(37, 99, 235, 0.3);
 }
 
 [data-theme="dark"] .close-usage-message:hover {
