@@ -22,12 +22,12 @@
     }
     .newsletter-message.success, .contact-message.success {
       background-color: #ecfdf3;
-      color: var(--success);
+      color: #166534;
       border: 1px solid #bbf7d0;
     }
     .newsletter-message.error, .contact-message.error {
       background-color: #fee2e2;
-      color: var(--error);
+      color: #7f1d1d;
       border: 1px solid #fecdd3;
     }
     .newsletter-submit-btn:disabled, .contact-submit-btn:disabled {
@@ -84,7 +84,7 @@
     /* AI Assistant Styles */
     .ai-assistant {
       background: var(--bg);
-      padding: 0;
+      padding: 4rem 0;
     }
     
     .ai-assistant-header {
@@ -198,6 +198,26 @@
       text-align: center;
     }
 
+    /* Dark mode for suggestions */
+    body.dark .question-suggestions {
+      border-top-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark .suggestions-label {
+      color: #ccc;
+    }
+
+    body.dark .suggestion-btn {
+      background: rgba(37, 99, 235, 0.08);
+      border-color: rgba(37, 99, 235, 0.25);
+      color: var(--text-light);
+    }
+
+    body.dark .suggestion-btn:hover {
+      background: rgba(37, 99, 235, 0.12);
+      border-color: rgba(37, 99, 235, 0.35);
+    }
+    
     .ai-assistant-response {
       margin-top: 2rem;
       padding: 1.5rem;
@@ -251,6 +271,35 @@
     @keyframes loading-dot {
       0%, 80%, 100% { opacity: 0.3; }
       40% { opacity: 1; }
+    }
+    
+    /* Dark mode styles for AI assistant */
+    body.dark .ai-assistant {
+      background: #0f172a;
+    }
+    
+    body.dark .ai-assistant-card {
+      background: var(--card-dark);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    body.dark #user-input {
+      background: var(--card-dark);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-light);
+    }
+    
+    body.dark #user-input:focus {
+      border-color: var(--primary);
+    }
+    
+    body.dark .ai-assistant-response {
+      background: rgba(37, 99, 235, 0.08);
+      border-left-color: var(--primary);
+    }
+    
+    body.dark .ai-response-content {
+      color: var(--text-light);
     }
     
     /* Mobile responsiveness */
@@ -382,6 +431,26 @@
       border: 2px solid rgba(37, 99, 235, 0.12);
     }
 
+    /* Dark mode adjustments for tier styling */
+    body.dark .pro-response {
+      background: rgba(37, 99, 235, 0.1);
+    }
+
+    body.dark .enterprise-response {
+      background: rgba(37, 99, 235, 0.12);
+    }
+
+    body.dark .starter-response {
+      background: rgba(37, 99, 235, 0.08);
+    }
+
+    body.dark .response-footer {
+      border-top-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark .starter-footer {
+      color: #ccc;
+    }
   </style>
   <!-- Load Lottie first, then Stripe, then our app -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
@@ -427,8 +496,8 @@
             TrustBoostAI monitors your reviews, drafts on-brand responses, and highlights wins so your team can focus on service instead of screens.
           </p>
           <div class="hero-ctas">
-            <a href="#pricing" class="btn hero-primary" data-i18n="hero.cta1" data-analytics="hero-get-started">Get started</a>
-            <a href="#features" class="btn hero-secondary" data-i18n="hero.cta2" data-analytics="hero-schedule-demo">Schedule a demo</a>
+            <a href="#pricing" class="btn hero-primary" data-i18n="hero.cta1">Get started</a>
+            <a href="#features" class="btn hero-secondary" data-i18n="hero.cta2">Schedule a demo</a>
           </div>
           <div class="hero-stats" role="group" aria-label="Stats">
             <div class="stat-card">
@@ -448,91 +517,11 @@
               <span class="hero-pill">AI responses on autopilot</span>
             </div>
             <div class="hero-media-stack">
-              <div class="hero-visual">
-                <div class="hero-visual-row">
-                  <div class="hero-score-card">
-                    <div class="score-header">
-                      <span class="score-label">Reputation health</span>
-                      <span class="badge-soft">Live</span>
-                    </div>
-                    <div class="score-value">92</div>
-                    <p class="score-subtext">Up 12% this month</p>
-                    <div class="score-progress" aria-label="Reputation health score 92 out of 100">
-                      <div class="score-progress-bar" style="width: 92%"></div>
-                    </div>
-                  </div>
-                  <div class="hero-trend-card" aria-label="Key signals">
-                    <div class="trend-header">
-                      <span>Signals</span>
-                      <span class="trend-pill">Live updates</span>
-                    </div>
-                    <ul class="trend-list">
-                      <li><span>New 5-star reviews</span><strong>18</strong></li>
-                      <li><span>Average response time</span><strong>2m 14s</strong></li>
-                      <li><span>SEO posts queued</span><strong>6</strong></li>
-                      <li><span>Escalations handled</span><strong>0 open</strong></li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="hero-visual-row hero-visual-row-bottom">
-                  <div class="hero-inbox-card" aria-label="Inbox highlights">
-                    <div class="inbox-header">
-                      <span>Inbox</span>
-                      <span class="inbox-pill">AI drafted</span>
-                    </div>
-                    <ul class="inbox-list">
-                      <li>
-                        <div>
-                          <p class="inbox-title">"Amazing service, will return"</p>
-                          <p class="inbox-meta">Google • 2h ago</p>
-                        </div>
-                        <span class="inbox-status success">Ready</span>
-                      </li>
-                      <li>
-                        <div>
-                          <p class="inbox-title">"Issue fixed quickly"</p>
-                          <p class="inbox-meta">Yelp • 4h ago</p>
-                        </div>
-                        <span class="inbox-status warning">Needs review</span>
-                      </li>
-                      <li>
-                        <div>
-                          <p class="inbox-title">"Friendly staff and clean"</p>
-                          <p class="inbox-meta">Facebook • 6h ago</p>
-                        </div>
-                        <span class="inbox-status neutral">Scheduled</span>
-                      </li>
-                    </ul>
-                  </div>
-                  <div class="hero-summary-card" aria-label="Automation summary">
-                    <div class="summary-header">
-                      <span>Automation</span>
-                      <span class="summary-pill">On</span>
-                    </div>
-                    <div class="summary-metrics">
-                      <div>
-                        <p class="summary-label">Outreach sent</p>
-                        <p class="summary-value">124</p>
-                      </div>
-                      <div>
-                        <p class="summary-label">Replies approved</p>
-                        <p class="summary-value">98%</p>
-                      </div>
-                      <div>
-                        <p class="summary-label">Avg. rating</p>
-                        <p class="summary-value">4.8</p>
-                      </div>
-                    </div>
-                    <div class="summary-chart" aria-hidden="true">
-                      <span style="height: 78%"></span>
-                      <span style="height: 88%"></span>
-                      <span style="height: 64%"></span>
-                      <span style="height: 92%"></span>
-                      <span style="height: 86%"></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <video class="hero-video" autoplay muted loop playsinline poster="public/ai-human-touch.jpg" aria-label="TrustBoost AI in action">
+                <source src="public/hero.mp4" type="video/mp4"/>
+              </video>
+              <img class="hero-image" src="public/ai-human-touch.jpg" alt="AI Human Touch" />
+              <div id="lottie-hero" class="lottie-hero" aria-hidden="true"></div>
             </div>
             <ul class="hero-list">
               <li><i class="fa-solid fa-check"></i>Smart review outreach and reminders</li>
@@ -829,11 +818,7 @@
 
     <section class="cta-gradient section-shell" aria-labelledby="cta-title">
       <div class="container cta-flex">
-        <div class="section-header" style="margin-bottom: 0; text-align: left; align-items: flex-start;">
-          <span class="section-kicker">Launch</span>
-          <h2 id="cta-title" class="section-title-modern cta-header" data-i18n="cta.title">Ready to Boost Your Trust?</h2>
-          <p class="section-subtitle">Deploy a professional, on-brand reputation engine without changing your workflows.</p>
-        </div>
+        <h2 id="cta-title" class="section-title gradient-text cta-header" data-i18n="cta.title">Ready to Boost Your Trust?</h2>
         <a href="#pricing" class="btn btn-gradient big" data-i18n="cta.cta" data-analytics="cta-start-trial">Start My Free Trial</a>
       </div>
     </section>
