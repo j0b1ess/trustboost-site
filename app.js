@@ -104,39 +104,6 @@ function animateStats() {
 
 
 
-// === Theme Toggle ===
-function initThemeToggle() {
-  const themeBtn = document.getElementById("theme-toggle");
-  const themeIcon = themeBtn?.querySelector("i");
-  
-  if (themeBtn && themeIcon) {
-    themeBtn.addEventListener("click", ()=> {
-      document.body.classList.toggle("dark");
-      const isDark = document.body.classList.contains("dark");
-      
-      // Update icon - sun for light mode, moon for dark mode
-      if (isDark) {
-        themeIcon.className = 'fa-solid fa-moon';
-        themeBtn.setAttribute('aria-label', 'Switch to Light Mode');
-      } else {
-        themeIcon.className = 'fa-solid fa-sun';
-        themeBtn.setAttribute('aria-label', 'Switch to Dark Mode');
-      }
-      
-      // Debug log
-      console.log('Dark mode:', isDark ? 'enabled' : 'disabled');
-      
-      // Force repaint for testimonials
-      const testimonials = document.querySelectorAll('.testimonial');
-      testimonials.forEach(testimonial => {
-        testimonial.style.display = 'none';
-        testimonial.offsetHeight; // Force reflow
-        testimonial.style.display = '';
-      });
-    });
-  }
-}
-
 // === Mobile Nav Toggle ===
 function initMobileNav() {
   const navLinks = document.getElementById("nav-links");
@@ -767,7 +734,7 @@ function initMobileOptimizations() {
     
     // Add touch feedback for interactive elements
     const interactiveElements = document.querySelectorAll(
-      '.btn, button, [role="button"], .suggestion-btn, .pricing-btn, .carousel-controls button, #theme-toggle'
+      '.btn, button, [role="button"], .suggestion-btn, .pricing-btn, .carousel-controls button'
     );
     
     interactiveElements.forEach(element => {
@@ -2164,7 +2131,6 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Initialize all components
 
-  initThemeToggle();
   initMobileNav();
   initSmoothScroll();
   initPricingToggle();
