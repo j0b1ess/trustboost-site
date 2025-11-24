@@ -5,14 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TrustBoostAI Admin</title>
   <link rel="stylesheet" href="../styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Tailwind via CDN (scoped usage) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Minimal Tailwind config (optional custom colors)
+    tailwind.config = {
+      theme: { extend: { colors: { brand: { DEFAULT: '#2563eb', hover: '#1d4ed8' } } } }
+    }
+  </script>
+  <style>
+    .hidden { display: none; }
+    .admin-wrapper { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+    .badge { font-size: .75rem; font-weight:700; padding: .25rem .5rem; border-radius:9999px; display:inline-block; }
+    .badge-plan-starter { background:#e0e7ff; color:#1d4ed8; }
+    .badge-plan-pro { background:#dbeafe; color:#0f172a; }
+    .badge-plan-enterprise { background:#ecfdf3; color:#166534; }
+    [data-theme="dark"] .badge-plan-starter { background:#1f2a44; color:#c7d2fe; }
+    [data-theme="dark"] .badge-plan-pro { background:#1f2a44; color:#e2e8f0; }
+    [data-theme="dark"] .badge-plan-enterprise { background:#0f2e1c; color:#bbf7d0; }
+    .action-btn { font-size:.72rem; font-weight:700; padding:.38rem .55rem; border-radius:6px; border:1px solid #cbd5e1; background:#f8fafc; color:#0f172a; cursor:pointer; transition:.15s; }
+    .action-btn:hover { background:#eef2ff; border-color:#93c5fd; }
+    .action-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .action-btn.plan { border-color:#93c5fd; color:#1d4ed8; }
+    .action-btn.reset { border-color:#fecaca; color:#b91c1c; }
+    .action-btn.reset:hover { background:#fee2e2; }
+    .usage-bar { height:6px; background:#e5e7eb; border-radius:4px; overflow:hidden; }
+    .usage-fill { height:100%; background:#2563eb; }
+  </style>
 </head>
 <body class="admin-body">
-  <noscript>
-    <div class="inline-message error" style="margin:1rem auto; max-width:960px;">Enable JavaScript to load admin data. Static summary will remain visible.</div>
-  </noscript>
   <div class="admin-frame">
-    <header class="admin-topbar reveal reveal-visible" aria-label="Admin navigation">
+    <header class="admin-topbar reveal" aria-label="Admin navigation">
       <div>
         <p class="eyebrow">Control Center</p>
         <h1 class="admin-title">TrustBoostAI Admin</h1>
@@ -24,9 +47,9 @@
       </div>
     </header>
 
-    <div id="whoami-strip" class="admin-strip reveal reveal-visible">Checking session…</div>
+    <div id="whoami-strip" class="admin-strip reveal">Checking session…</div>
 
-    <section class="admin-summary reveal reveal-visible" aria-labelledby="summary-title">
+    <section class="admin-summary reveal" aria-labelledby="summary-title">
       <div class="section-header">
         <div>
           <p class="eyebrow">Overview</p>
@@ -54,11 +77,12 @@
       </div>
     </section>
 
-    <section class="admin-controls reveal reveal-visible" aria-label="Search and filters">
-      <div class="controls-bar">
-        <div class="control-group">
-          <label for="user-search">Search</label>
-          <input id="user-search" type="search" placeholder="Search by email" />
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden">
+      <div class="flex flex-wrap gap-4 items-center justify-between mb-6">
+        <div>
+          <h2 class="text-3xl font-extrabold text-indigo-700">Admin Dashboard</h2>
+          <div id="authed-email" class="text-xs mt-1 text-slate-500 dark:text-slate-400"></div>
         </div>
         <div class="control-group">
           <label for="plan-filter">Plan</label>
@@ -77,7 +101,7 @@
       <div id="admin-inline-message" class="inline-message hidden" role="status"></div>
     </section>
 
-    <section class="admin-table reveal reveal-visible" aria-labelledby="users-title">
+    <section class="admin-table reveal" aria-labelledby="users-title">
       <div class="section-header">
         <div>
           <p class="eyebrow">Directory</p>

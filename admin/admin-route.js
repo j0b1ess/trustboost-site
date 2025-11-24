@@ -95,18 +95,6 @@ function initReveal() {
   revealEls.forEach((el) => observer.observe(el));
 }
 
-function showFatalError(message) {
-  const strip = qs('whoami-strip');
-  if (strip) {
-    strip.textContent = message;
-    strip.className = 'admin-strip error reveal-visible';
-  }
-  const tbody = qs('users-tbody');
-  if (tbody) {
-    tbody.innerHTML = `<tr><td colspan="6" class="table-placeholder">${message}</td></tr>`;
-  }
-}
-
 function updateWhoamiStrip(text, variant = 'info') {
   const strip = qs('whoami-strip');
   if (!strip) return;
@@ -342,10 +330,5 @@ async function initAdminDashboard() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  try {
-    initAdminDashboard();
-  } catch (err) {
-    console.error('Admin dashboard init failed', err);
-    showFatalError('Unable to load admin dashboard. Please retry.');
-  }
+  initAdminDashboard();
 });
