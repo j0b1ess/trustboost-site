@@ -10,6 +10,8 @@
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" as="style"/>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Analytics hook: insert vendor script below when ready -->
+  <!-- <script src="https://analytics.example.com/script.js" data-site="trustboost"></script> -->
   <style>
     .newsletter-message, .contact-message {
       margin-top: 10px;
@@ -19,21 +21,21 @@
       text-align: center;
     }
     .newsletter-message.success, .contact-message.success {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+      background-color: #ecfdf3;
+      color: var(--success);
+      border: 1px solid #bbf7d0;
     }
     .newsletter-message.error, .contact-message.error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+      background-color: #fee2e2;
+      color: var(--error);
+      border: 1px solid #fecdd3;
     }
     .newsletter-submit-btn:disabled, .contact-submit-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
     .hero-contrast {
-      color: #ffd700 !important;
+      color: #2563eb !important;
     }
     #calendly-btn {
       font-size: 0.9rem;
@@ -76,13 +78,16 @@
     }
     @media (max-width: 768px) {
       #calendly-btn {
-        display: none;
+        font-size: 0.9rem;
+        padding: 0.65rem 1.1rem;
+        width: 100%;
+        justify-content: center;
       }
     }
     /* AI Assistant Styles */
     .ai-assistant {
-      background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
-      padding: 4rem 0;
+      background: var(--bg);
+      padding: 0;
     }
     
     .ai-assistant-header {
@@ -101,7 +106,7 @@
       padding: 2.5rem;
       max-width: 700px;
       width: 100%;
-      border: 1px solid rgba(108, 71, 255, 0.1);
+      border: 1px solid rgba(37, 99, 235, 0.12);
     }
 
     .ai-input-group {
@@ -125,7 +130,7 @@
     #user-input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.1);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
     
     .ai-submit-btn {
@@ -146,12 +151,12 @@
     .question-suggestions {
       margin-top: 1.5rem;
       padding-top: 1.5rem;
-      border-top: 1px solid rgba(108, 71, 255, 0.1);
+      border-top: 1px solid var(--card-border);
     }
 
     .suggestions-label {
       font-size: 0.9rem;
-      color: #666;
+      color: var(--text-muted);
       margin-bottom: 1rem;
       font-weight: 500;
     }
@@ -167,8 +172,8 @@
       align-items: center;
       gap: 0.8rem;
       padding: 0.8rem 1rem;
-      background: rgba(108, 71, 255, 0.05);
-      border: 1px solid rgba(108, 71, 255, 0.2);
+      background: rgba(37, 99, 235, 0.04);
+      border: 1px solid rgba(37, 99, 235, 0.16);
       border-radius: 8px;
       color: var(--text);
       font-size: 0.9rem;
@@ -180,8 +185,8 @@
     }
 
     .suggestion-btn:hover {
-      background: rgba(108, 71, 255, 0.1);
-      border-color: rgba(108, 71, 255, 0.3);
+      background: rgba(37, 99, 235, 0.08);
+      border-color: rgba(37, 99, 235, 0.22);
       transform: translateY(-1px);
     }
 
@@ -196,30 +201,10 @@
       text-align: center;
     }
 
-    /* Dark mode for suggestions */
-    body.dark .question-suggestions {
-      border-top-color: rgba(255, 255, 255, 0.1);
-    }
-
-    body.dark .suggestions-label {
-      color: #ccc;
-    }
-
-    body.dark .suggestion-btn {
-      background: rgba(108, 71, 255, 0.1);
-      border-color: rgba(108, 71, 255, 0.3);
-      color: var(--text-light);
-    }
-
-    body.dark .suggestion-btn:hover {
-      background: rgba(108, 71, 255, 0.15);
-      border-color: rgba(108, 71, 255, 0.4);
-    }
-    
     .ai-assistant-response {
       margin-top: 2rem;
       padding: 1.5rem;
-      background: #f8f9ff;
+      background: #f3f6fb;
       border-radius: 12px;
       border-left: 4px solid var(--primary);
     }
@@ -271,35 +256,6 @@
       40% { opacity: 1; }
     }
     
-    /* Dark mode styles for AI assistant */
-    body.dark .ai-assistant {
-      background: linear-gradient(135deg, #1a1635 0%, #23243a 100%);
-    }
-    
-    body.dark .ai-assistant-card {
-      background: var(--card-dark);
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    body.dark #user-input {
-      background: var(--card-dark);
-      border-color: rgba(255, 255, 255, 0.2);
-      color: var(--text-light);
-    }
-    
-    body.dark #user-input:focus {
-      border-color: var(--primary);
-    }
-    
-    body.dark .ai-assistant-response {
-      background: rgba(108, 71, 255, 0.1);
-      border-left-color: var(--primary);
-    }
-    
-    body.dark .ai-response-content {
-      color: var(--text-light);
-    }
-    
     /* Mobile responsiveness */
     @media (max-width: 768px) {
       .ai-assistant-card {
@@ -344,12 +300,12 @@
     }
 
     .pro-badge {
-      background: linear-gradient(135deg, #6c47ff 0%, #9c88ff 100%);
+      background: #2563eb;
       color: white;
     }
 
     .enterprise-badge {
-      background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+      background: #1f2937;
       color: white;
     }
 
@@ -359,24 +315,24 @@
     }
 
     .pro-response {
-      border-left: 4px solid #6c47ff;
+      border-left: 4px solid #2563eb;
       padding-left: 1rem;
-      background: rgba(108, 71, 255, 0.05);
+      background: rgba(37, 99, 235, 0.06);
       border-radius: 8px;
       padding: 1rem;
     }
 
     .enterprise-response {
-      border-left: 4px solid #ff6b6b;
+      border-left: 4px solid #1d4ed8;
       padding-left: 1rem;
-      background: rgba(255, 107, 107, 0.05);
+      background: rgba(29, 78, 216, 0.06);
       border-radius: 8px;
       padding: 1rem;
     }
 
     .starter-response {
       padding: 1rem;
-      background: rgba(108, 71, 255, 0.02);
+      background: rgba(37, 99, 235, 0.03);
       border-radius: 8px;
     }
 
@@ -387,16 +343,16 @@
       font-size: 0.85rem;
       margin-top: 1rem;
       padding-top: 1rem;
-      border-top: 1px solid rgba(108, 71, 255, 0.1);
+      border-top: 1px solid #e5e7eb;
     }
 
     .pro-footer {
-      color: #6c47ff;
+      color: #2563eb;
       font-weight: 500;
     }
 
     .enterprise-footer {
-      color: #ff6b6b;
+      color: #1d4ed8;
       font-weight: 500;
       justify-content: space-between;
     }
@@ -410,7 +366,7 @@
       display: flex;
       align-items: center;
       gap: 0.3rem;
-      background: rgba(255, 107, 107, 0.1);
+      background: rgba(37, 99, 235, 0.08);
       padding: 0.3rem 0.8rem;
       border-radius: 15px;
       font-size: 0.75rem;
@@ -418,37 +374,17 @@
 
     /* Tier-specific response box styling */
     .ai-assistant-response.pro-tier {
-      border: 2px solid rgba(108, 71, 255, 0.2);
+      border: 2px solid rgba(37, 99, 235, 0.2);
     }
 
     .ai-assistant-response.enterprise-tier {
-      border: 2px solid rgba(255, 107, 107, 0.2);
+      border: 2px solid rgba(37, 99, 235, 0.25);
     }
 
     .ai-assistant-response.starter-tier {
-      border: 2px solid rgba(108, 71, 255, 0.1);
+      border: 2px solid rgba(37, 99, 235, 0.12);
     }
 
-    /* Dark mode adjustments for tier styling */
-    body.dark .pro-response {
-      background: rgba(108, 71, 255, 0.1);
-    }
-
-    body.dark .enterprise-response {
-      background: rgba(255, 107, 107, 0.1);
-    }
-
-    body.dark .starter-response {
-      background: rgba(108, 71, 255, 0.05);
-    }
-
-    body.dark .response-footer {
-      border-top-color: rgba(255, 255, 255, 0.1);
-    }
-
-    body.dark .starter-footer {
-      color: #ccc;
-    }
   </style>
   <!-- Load Lottie first, then Stripe, then our app -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
@@ -457,74 +393,171 @@
 </head>
 <body>
   <a href="#main" class="skip-link" id="skip-link">Skip to main content</a>
+  <div class="revamp-banner" role="status">TRUSTBOOSTAI UI REVAMP ACTIVE</div>
   <header class="main-header" aria-label="Main navigation">
     <div class="container nav">
       <div class="logo-group">
         <img src="public/logo.png" alt="TrustBoost AI Logo" class="logo"/>
         <span class="site-title" aria-label="TrustBoost AI">TrustBoost <span class="ai-badge">AI</span></span>
       </div>
-      <nav aria-label="Main menu">
-        <ul id="nav-links">
-          <li><a href="#features" data-i18n="nav.features">Features</a></li>
-          <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
-          <li><a href="#ai-assistant" data-i18n="nav.ai-assistant">AI Assistant</a></li>
-          <li><a href="#testimonials" data-i18n="nav.testimonials">Testimonials</a></li>
-          <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
-        </ul>
-      </nav>
-      <div class="nav-ctas">
-        <button id="theme-toggle" aria-label="Toggle Dark/Light Mode">
-          <i class="fa-solid fa-sun"></i>
-        </button>
-        <a href="admin.html" class="admin-access-btn" aria-label="Admin Dashboard" title="Admin Dashboard">
-          <i class="fa-solid fa-shield-halved"></i>
-        </a>
-        <a href="https://calendly.com/jyehezkel10/30min" target="_blank" rel="noopener noreferrer" id="calendly-btn" class="btn btn-outline" aria-label="Schedule a Call">Schedule a Call</a>
-        <a href="#pricing" class="btn btn-primary" data-i18n="nav.cta">Start Free</a>
+      <div class="nav-right">
+        <div class="nav-group">
+          <nav aria-label="Main menu">
+            <ul id="nav-links">
+              <li><a href="#features" data-i18n="nav.features">Features</a></li>
+              <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
+              <li><a href="#ai-assistant" data-i18n="nav.ai-assistant">AI Assistant</a></li>
+              <li><a href="#testimonials" data-i18n="nav.testimonials">Testimonials</a></li>
+              <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+          </nav>
+          <div class="nav-ctas">
+            <a href="admin.html" class="admin-access-btn" aria-label="Admin Dashboard" title="Admin Dashboard">
+              <i class="fa-solid fa-shield-halved"></i>
+            </a>
+            <a href="https://calendly.com/jyehezkel10/30min" target="_blank" rel="noopener noreferrer" id="calendly-btn" class="btn btn-outline" aria-label="Schedule a Call" data-analytics="nav-schedule">Schedule a Call</a>
+            <a href="#pricing" class="btn btn-primary" data-i18n="nav.cta" data-analytics="nav-start-free">Start Free</a>
+          </div>
+        </div>
+        <button id="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links"><i class="fa-solid fa-bars"></i></button>
       </div>
-      <button id="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links"><i class="fa-solid fa-bars"></i></button>
     </div>
   </header>
   <main id="main" tabindex="-1">
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-bg"></div>
+      <div class="hero-bg" aria-hidden="true"></div>
       <div class="container hero-content">
         <div class="hero-left">
-          <h1 id="hero-title" class="section-title gradient-text hero-header">
-            <span class="hero-contrast" data-i18n="hero.title1">Grow Your Reputation</span><br>
-            <span data-i18n="hero.title2">Effortlessly, With AI</span>
-          </h1>
-          <p data-i18n="hero.subtitle">
-            Win more reviews, delight your customers, and dominate local search results – all from one playful, powerful dashboard.
+          <p class="hero-kicker">Reputation intelligence without the noise</p>
+          <h1 id="hero-title" class="hero-header">AI powered reputation management for modern businesses.</h1>
+          <p class="hero-subtitle">
+            TrustBoostAI monitors your reviews, drafts on-brand responses, and highlights wins so your team can focus on service instead of screens.
           </p>
           <div class="hero-ctas">
-            <a href="#pricing" class="btn btn-gradient big" data-i18n="hero.cta1">Start Free Trial</a>
-            <a href="#features" class="btn btn-outline" data-i18n="hero.cta2">See How It Works</a>
+            <a href="#pricing" class="btn hero-primary" data-i18n="hero.cta1" data-analytics="hero-get-started">Get started</a>
+            <a href="#features" class="btn hero-secondary" data-i18n="hero.cta2" data-analytics="hero-schedule-demo">Schedule a demo</a>
           </div>
           <div class="hero-stats" role="group" aria-label="Stats">
-            <div>
+            <div class="stat-card">
               <span class="stat-num" data-animate="5000">0</span>+
               <span class="stat-label" data-i18n="hero.stat1">5-Star Reviews</span>
             </div>
-            <div>
+            <div class="stat-card">
               <span class="stat-num" data-animate="92">0</span>%
               <span class="stat-label" data-i18n="hero.stat2">Avg. Google Rank Boost</span>
             </div>
           </div>
         </div>
         <div class="hero-right hero-media-wrapper">
-          <video class="hero-video" autoplay muted loop playsinline poster="public/ai-human-touch.jpg" aria-label="TrustBoost AI in action">
-            <source src="public/hero.mp4" type="video/mp4"/>
-          </video>
-          <img class="hero-image" src="public/ai-human-touch.jpg" alt="AI Human Touch" />
-          <div id="lottie-hero" class="lottie-hero" aria-hidden="true"></div>
+          <div class="hero-panel">
+            <div class="hero-panel-header">
+              <span class="badge-soft">Live preview</span>
+              <span class="hero-pill">AI responses on autopilot</span>
+            </div>
+            <div class="hero-media-stack">
+              <div class="hero-visual">
+                <div class="hero-visual-row">
+                  <div class="hero-score-card">
+                    <div class="score-header">
+                      <span class="score-label">Reputation health</span>
+                      <span class="badge-soft">Live</span>
+                    </div>
+                    <div class="score-value">92</div>
+                    <p class="score-subtext">Up 12% this month</p>
+                    <div class="score-progress" aria-label="Reputation health score 92 out of 100">
+                      <div class="score-progress-bar" style="width: 92%"></div>
+                    </div>
+                  </div>
+                  <div class="hero-trend-card" aria-label="Key signals">
+                    <div class="trend-header">
+                      <span>Signals</span>
+                      <span class="trend-pill">Live updates</span>
+                    </div>
+                    <ul class="trend-list">
+                      <li><span>New 5-star reviews</span><strong>18</strong></li>
+                      <li><span>Average response time</span><strong>2m 14s</strong></li>
+                      <li><span>SEO posts queued</span><strong>6</strong></li>
+                      <li><span>Escalations handled</span><strong>0 open</strong></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="hero-visual-row hero-visual-row-bottom">
+                  <div class="hero-inbox-card" aria-label="Inbox highlights">
+                    <div class="inbox-header">
+                      <span>Inbox</span>
+                      <span class="inbox-pill">AI drafted</span>
+                    </div>
+                    <ul class="inbox-list">
+                      <li>
+                        <div>
+                          <p class="inbox-title">"Amazing service, will return"</p>
+                          <p class="inbox-meta">Google • 2h ago</p>
+                        </div>
+                        <span class="inbox-status success">Ready</span>
+                      </li>
+                      <li>
+                        <div>
+                          <p class="inbox-title">"Issue fixed quickly"</p>
+                          <p class="inbox-meta">Yelp • 4h ago</p>
+                        </div>
+                        <span class="inbox-status warning">Needs review</span>
+                      </li>
+                      <li>
+                        <div>
+                          <p class="inbox-title">"Friendly staff and clean"</p>
+                          <p class="inbox-meta">Facebook • 6h ago</p>
+                        </div>
+                        <span class="inbox-status neutral">Scheduled</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="hero-summary-card" aria-label="Automation summary">
+                    <div class="summary-header">
+                      <span>Automation</span>
+                      <span class="summary-pill">On</span>
+                    </div>
+                    <div class="summary-metrics">
+                      <div>
+                        <p class="summary-label">Outreach sent</p>
+                        <p class="summary-value">124</p>
+                      </div>
+                      <div>
+                        <p class="summary-label">Replies approved</p>
+                        <p class="summary-value">98%</p>
+                      </div>
+                      <div>
+                        <p class="summary-label">Avg. rating</p>
+                        <p class="summary-value">4.8</p>
+                      </div>
+                    </div>
+                    <div class="summary-chart" aria-hidden="true">
+                      <span style="height: 78%"></span>
+                      <span style="height: 88%"></span>
+                      <span style="height: 64%"></span>
+                      <span style="height: 92%"></span>
+                      <span style="height: 86%"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ul class="hero-list">
+              <li><i class="fa-solid fa-check"></i>Smart review outreach and reminders</li>
+              <li><i class="fa-solid fa-check"></i>Human-sounding AI replies ready to send</li>
+              <li><i class="fa-solid fa-check"></i>Digestible analytics your team can trust</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="features" id="features" aria-labelledby="features-title">
+    <section class="features section-shell" id="features" aria-labelledby="features-title">
       <div class="container">
-        <h2 class="section-title gradient-text features-header" id="features-title" data-i18n="features.title">What Makes Us Different</h2>
+        <div class="section-header">
+          <span class="section-kicker">Platform</span>
+          <h2 class="section-title-modern features-header" id="features-title" data-i18n="features.title">What Makes Us Different</h2>
+          <p class="section-subtitle">One connected workspace to automate outreach, answer every review on-brand, and keep leadership aligned on reputation wins.</p>
+        </div>
         <div class="features-grid">
           <div class="feature-card" tabindex="0" aria-labelledby="feature1-title">
             <div class="feature-lottie" id="lottie-review"></div>
@@ -550,9 +583,13 @@
       </div>
     </section>
 
-    <section class="pricing" id="pricing" aria-labelledby="pricing-title">
+    <section class="pricing section-shell alt" id="pricing" aria-labelledby="pricing-title">
       <div class="container">
-        <h2 class="section-title gradient-text pricing-header" id="pricing-title" data-i18n="pricing.title">Simple, Honest Pricing</h2>
+        <div class="section-header">
+          <span class="section-kicker">Plans</span>
+          <h2 class="section-title-modern pricing-header" id="pricing-title" data-i18n="pricing.title">Simple, Honest Pricing</h2>
+          <p class="section-subtitle">Pick a tier that matches your pace—everything stays on-brand, secure, and ready to scale.</p>
+        </div>
         <div class="billing-toggle-row" role="group" aria-label="Toggle billing period">
           <span data-i18n="pricing.monthly">Monthly</span>
           <label class="switch">
@@ -575,7 +612,7 @@
               <li data-i18n="pricing.starter3">Email Support</li>
             </ul>
             <!-- CHANGED: Use button for Stripe checkout -->
-            <button type="button" class="btn btn-outline pricing-btn" data-plan="starter" data-i18n="pricing.cta">Choose Starter</button>
+            <button type="button" class="btn btn-outline pricing-btn" data-plan="starter" data-i18n="pricing.cta" data-analytics="pricing-starter">Choose Starter</button>
           </div>
           <div class="pricing-card popular" tabindex="0" aria-labelledby="pricing-pro-title">
             <div class="badge" data-i18n="pricing.popular">Most Popular</div>
@@ -592,7 +629,7 @@
               <li data-i18n="pricing.pro4">Priority Support</li>
             </ul>
             <!-- CHANGED: Use button for Stripe checkout -->
-            <button type="button" class="btn btn-primary pricing-btn" data-plan="pro" data-i18n="pricing.cta">Choose Pro</button>
+            <button type="button" class="btn btn-primary pricing-btn" data-plan="pro" data-i18n="pricing.cta" data-analytics="pricing-pro">Choose Pro</button>
           </div>
           <div class="pricing-card" tabindex="0" aria-labelledby="pricing-ent-title">
             <h3 id="pricing-ent-title">Enterprise</h3>
@@ -608,7 +645,7 @@
               <li data-i18n="pricing.ent4">Custom Onboarding</li>
             </ul>
             <!-- CHANGED: Use button for Stripe checkout (if you want "Contact Sales" to trigger Stripe, otherwise use anchor as before) -->
-            <button type="button" class="btn btn-outline pricing-btn" data-plan="enterprise" data-i18n="pricing.cta">Choose Enterprise</button>
+            <button type="button" class="btn btn-outline pricing-btn" data-plan="enterprise" data-i18n="pricing.cta" data-analytics="pricing-enterprise">Choose Enterprise</button>
             <!-- If you want "Contact Sales" to scroll to checkout section instead, use:
             <a href="#checkout" class="btn btn-outline" data-i18n="pricing.cta">Contact Sales</a>
             -->
@@ -617,17 +654,58 @@
       </div>
     </section>
 
-    <section class="ai-assistant" id="ai-assistant" aria-labelledby="ai-assistant-title">
+    <section class="ai-assistant section-shell" id="ai-assistant" aria-labelledby="ai-assistant-title">
       <div class="container">
-        <h2 class="ai-assistant-main-title" id="ai-assistant-title">Ask our AI assistant anything about TrustBoost, reviews, or reputation management!</h2>
+        <div class="section-header">
+          <span class="section-kicker">Guidance</span>
+          <h2 class="section-title-modern ai-assistant-main-title" id="ai-assistant-title">Ask our AI assistant anything about TrustBoost, reviews, or reputation management!</h2>
+          <p class="section-subtitle">Keep context, usage, and answers in one place so your team can move faster with confidence.</p>
+        </div>
         <div class="ai-assistant-wrapper">
+          <div class="personalization-card" aria-labelledby="personalization-title">
+            <h3 id="personalization-title">Personalize your guidance</h3>
+            <p>Set your business context so the assistant tailors replies to you.</p>
+            <div class="personalization-grid">
+              <div class="personalization-field">
+                <label for="personalization-name">Business name</label>
+                <input type="text" id="personalization-name" name="personalization-name" placeholder="e.g., Lunar Dental" data-analytics="personalization-name"/>
+              </div>
+              <div class="personalization-field">
+                <label for="personalization-industry">Industry</label>
+                <input type="text" id="personalization-industry" name="personalization-industry" placeholder="e.g., Healthcare" data-analytics="personalization-industry"/>
+              </div>
+              <div class="personalization-field">
+                <label for="personalization-tone">Tone</label>
+                <select id="personalization-tone" name="personalization-tone" data-analytics="personalization-tone">
+                  <option value="friendly">Friendly</option>
+                  <option value="formal">Formal</option>
+                  <option value="concise">Concise</option>
+                  <option value="luxury">Luxury</option>
+                  <option value="enthusiastic">Enthusiastic</option>
+                </select>
+              </div>
+            </div>
+            <div id="personalization-summary" class="personalization-summary">
+              <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+              <span>Tailoring responses for your business.</span>
+            </div>
+          </div>
           <div class="ai-assistant-card">
             <div id="memory-indicator" class="memory-indicator" style="display: none;">
               <!-- Memory indicator content will be dynamically populated -->
             </div>
+            <div id="usage-summary" class="usage-summary" aria-live="polite" style="display:none;">
+              <div class="usage-metrics">
+                <span class="usage-label">Usage overview</span>
+                <span class="usage-detail" id="usage-detail-text">Checking your message allowance...</span>
+              </div>
+              <div class="usage-progress" aria-hidden="true">
+                <div class="usage-progress-fill" id="usage-progress-fill"></div>
+              </div>
+            </div>
             <form id="ai-assistant-form" class="ai-assistant-form">
               <div class="ai-input-group">
-                <textarea 
+                <textarea
                   id="user-input" 
                   name="message" 
                   placeholder="Type your question here... (e.g., How does automated review generation work?)" 
@@ -635,7 +713,7 @@
                   required
                   aria-label="Ask the AI assistant a question"
                 ></textarea>
-                <button type="submit" id="ask-button" class="btn btn-primary ai-submit-btn" aria-label="Send message to AI assistant">
+                <button type="submit" id="ask-button" class="btn btn-primary ai-submit-btn" aria-label="Send message to AI assistant" data-analytics="ai-submit">
                   <i class="fa-solid fa-paper-plane"></i>
                   Ask AI
                 </button>
@@ -700,9 +778,13 @@
       </div>
     </section>
 
-    <section class="testimonials" id="testimonials" aria-labelledby="testimonials-title">
+    <section class="testimonials section-shell" id="testimonials" aria-labelledby="testimonials-title">
       <div class="container">
-        <h2 class="section-title gradient-text testimonials-header" id="testimonials-title" data-i18n="testimonials.title">What Our Customers Say</h2>
+        <div class="section-header">
+          <span class="section-kicker">Proof</span>
+          <h2 class="section-title-modern testimonials-header" id="testimonials-title" data-i18n="testimonials.title">What Our Customers Say</h2>
+          <p class="section-subtitle">Teams across services, healthcare, hospitality, and retail rely on TrustBoostAI to keep reviews on-brand.</p>
+        </div>
         <div class="testimonials-carousel" id="testimonials-carousel" tabindex="0">
           <div class="testimonial" tabindex="0">
             <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
@@ -752,23 +834,27 @@
       </div>
     </section>
 
-    <section class="cta-gradient" aria-labelledby="cta-title">
+    <section class="cta-gradient section-shell" aria-labelledby="cta-title">
       <div class="container cta-flex">
-        <h2 id="cta-title" class="section-title gradient-text cta-header" data-i18n="cta.title">Ready to Boost Your Trust?</h2>
-        <a href="#pricing" class="btn btn-gradient big" data-i18n="cta.cta">Start My Free Trial</a>
+        <div class="section-header" style="margin-bottom: 0; text-align: left; align-items: flex-start;">
+          <span class="section-kicker">Launch</span>
+          <h2 id="cta-title" class="section-title-modern cta-header" data-i18n="cta.title">Ready to Boost Your Trust?</h2>
+          <p class="section-subtitle">Deploy a professional, on-brand reputation engine without changing your workflows.</p>
+        </div>
+        <a href="#pricing" class="btn btn-gradient big" data-i18n="cta.cta" data-analytics="cta-start-trial">Start My Free Trial</a>
       </div>
     </section>
 
-    <section class="contact" id="contact" aria-labelledby="contact-title">
+    <section class="contact section-shell" id="contact" aria-labelledby="contact-title">
       <div class="container contact-flex">
         <div class="contact-form" tabindex="0">
-          <h3 id="contact-title" class="section-title gradient-text contact-header" data-i18n="contact.title">Contact Us</h3>
+          <h3 id="contact-title" class="section-title-modern contact-header" data-i18n="contact.title">Contact Us</h3>
           <form id="contact-form" action="mailto:trustboostaicontact@gmail.com" method="POST" enctype="text/plain">
             <input type="text" name="name" placeholder="Your Name" required/>
             <input type="email" name="email" placeholder="Your Email" required/>
             <input type="tel" name="phone" placeholder="Your Phone Number (Optional)"/>
             <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
-            <button type="submit" class="btn btn-gradient contact-submit-btn" data-i18n="contact.submit">Send Message</button>
+            <button type="submit" class="btn btn-gradient contact-submit-btn" data-i18n="contact.submit" data-analytics="contact-submit">Send Message</button>
           </form>
           <div id="contact-message" class="contact-message" style="display: none;"></div>
           <p class="contact-info">
@@ -777,14 +863,14 @@
           </p>
         </div>
         <div class="newsletter" tabindex="0">
-          <h3 class="section-title gradient-text newsletter-header" data-i18n="newsletter.title">Join Our Newsletter</h3>
+          <h3 class="section-title-modern newsletter-header" data-i18n="newsletter.title">Join Our Newsletter</h3>
           <form class="newsletter-form" id="newsletter-form" action="https://trustboostai.us18.list-manage.com/subscribe/post?u=6ffecacb71a9b264660bf0919&amp;id=f01f0b9606" method="post">
             <input type="email" name="EMAIL" id="newsletter-email" placeholder="Enter your email" required/>
             <!-- Hidden honeypot field to prevent spam -->
             <div style="position: absolute; left: -5000px;" aria-hidden="true">
               <input type="text" name="b_6ffecacb71a9b264660bf0919_f01f0b9606" tabindex="-1" value="">
             </div>
-            <button type="submit" class="btn btn-outline newsletter-submit-btn" data-i18n="newsletter.cta">Subscribe</button>
+            <button type="submit" class="btn btn-outline newsletter-submit-btn" data-i18n="newsletter.cta" data-analytics="newsletter-submit">Subscribe</button>
           </form>
           <div id="newsletter-message" class="newsletter-message" style="display: none;"></div>
           <p class="newsletter-desc" data-i18n="newsletter.desc">Get tips, tricks & growth hacks—no spam.</p>
@@ -794,7 +880,7 @@
 
     <section class="checkout" id="checkout" aria-labelledby="checkout-title">
       <div class="container">
-        <h2 class="section-title gradient-text checkout-header" id="checkout-title" data-i18n="checkout.title">Secure Stripe Checkout</h2>
+        <h2 class="section-title-modern checkout-header" id="checkout-title" data-i18n="checkout.title">Secure Stripe Checkout</h2>
         <div class="stripe-checkout">
           <!-- Stripe checkout iframe removed; will be handled dynamically by Stripe.js -->
           <div style="text-align:center;color:#888;font-size:1.1em;">
@@ -816,7 +902,9 @@
         </div>
         <div>
           <strong>Support:</strong> <a href="mailto:trustboostaihelp@gmail.com">trustboostaihelp@gmail.com</a><br/>
-          <strong>Contact:</strong> <a href="mailto:trustboostaicontact@gmail.com">trustboostaicontact@gmail.com</a>
+          <strong>Contact:</strong> <a href="mailto:trustboostaicontact@gmail.com">trustboostaicontact@gmail.com</a><br/>
+          <a href="privacy.html" class="footer-link" data-analytics="footer-privacy">Privacy Policy</a> ·
+          <a href="terms.html" class="footer-link" data-analytics="footer-terms">Terms of Service</a>
           <span class="footer-socials">
             <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
             <a href="#"><i class="fa-brands fa-linkedin"></i></a>
