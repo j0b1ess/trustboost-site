@@ -46,6 +46,59 @@ function setAriaLive(msg) {
   live.textContent = msg;
 }
 
+function initRevealAnimations() {
+  const revealEls = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    revealEls.forEach((el) => el.classList.add('reveal-visible'));
+    return;
+  }
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12 }
+  );
+  revealEls.forEach((el) => observer.observe(el));
+}
+
+function initApiStatusChip() {
+  const chip = document.getElementById('api-status-chip');
+  if (!chip) return;
+  const PROD_FALLBACK = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
+  const locHost = (typeof window !== 'undefined' && window.location ? window.location.host : '');
+  let API_BASE = (typeof window !== 'undefined' && (window.__API_BASE__ || window.VITE_API_BASE_URL || window.NEXT_PUBLIC_API_URL)) || '';
+  if (!API_BASE) {
+    if (/localhost|127\./.test(locHost)) {
+      API_BASE = PROD_FALLBACK;
+    } else if (!/replit/i.test(locHost)) {
+      API_BASE = '/api';
+    } else {
+      API_BASE = PROD_FALLBACK;
+    }
+  }
+  chip.textContent = 'Checking API connectivity…';
+  chip.classList.remove('ok', 'error');
+  fetch(`${API_BASE}/usage/starter`, { method: 'GET', credentials: 'include' })
+    .then((resp) => {
+      if (resp.ok) {
+        chip.textContent = 'API online and responding';
+        chip.classList.add('ok');
+      } else {
+        chip.textContent = `API reachable but returned ${resp.status}`;
+        chip.classList.add('error');
+      }
+    })
+    .catch(() => {
+      chip.textContent = 'API unreachable. Please retry soon.';
+      chip.classList.add('error');
+    });
+}
+
 // === Lottie Animations ===
 const lottieFiles = {
   "lottie-hero": "public/ai-response.json",
@@ -103,39 +156,6 @@ function animateStats() {
 
 
 
-
-// === Theme Toggle ===
-function initThemeToggle() {
-  const themeBtn = document.getElementById("theme-toggle");
-  const themeIcon = themeBtn?.querySelector("i");
-  
-  if (themeBtn && themeIcon) {
-    themeBtn.addEventListener("click", ()=> {
-      document.body.classList.toggle("dark");
-      const isDark = document.body.classList.contains("dark");
-      
-      // Update icon - sun for light mode, moon for dark mode
-      if (isDark) {
-        themeIcon.className = 'fa-solid fa-moon';
-        themeBtn.setAttribute('aria-label', 'Switch to Light Mode');
-      } else {
-        themeIcon.className = 'fa-solid fa-sun';
-        themeBtn.setAttribute('aria-label', 'Switch to Dark Mode');
-      }
-      
-      // Debug log
-      console.log('Dark mode:', isDark ? 'enabled' : 'disabled');
-      
-      // Force repaint for testimonials
-      const testimonials = document.querySelectorAll('.testimonial');
-      testimonials.forEach(testimonial => {
-        testimonial.style.display = 'none';
-        testimonial.offsetHeight; // Force reflow
-        testimonial.style.display = '';
-      });
-    });
-  }
-}
 
 // === Mobile Nav Toggle ===
 function initMobileNav() {
@@ -767,7 +787,7 @@ function initMobileOptimizations() {
     
     // Add touch feedback for interactive elements
     const interactiveElements = document.querySelectorAll(
-      '.btn, button, [role="button"], .suggestion-btn, .pricing-btn, .carousel-controls button, #theme-toggle'
+      '.btn, button, [role="button"], .suggestion-btn, .pricing-btn, .carousel-controls button'
     );
     
     interactiveElements.forEach(element => {
@@ -895,6 +915,10 @@ function initAIAssistant() {
     console.warn('AI Assistant: Required elements not found in DOM');
     return;
   }
+
+  // Initialize personalization fields and usage snapshot
+  initPersonalizationControls();
+  refreshUsageSummary();
   
   // Backend API endpoint base (dynamic w/ proxy support)
   const PROD_FALLBACK = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
@@ -910,10 +934,13 @@ function initAIAssistant() {
     }
   }
   const BACKEND_URL = API_BASE + '/chat';
-  
+
   // Conversation memory - stores last 3 user messages and AI responses
   let conversationHistory = [];
   const MAX_HISTORY_LENGTH = 6; // 3 user messages + 3 AI responses = 6 total
+
+  // Personalization storage key
+  const PERSONALIZATION_STORAGE_KEY = 'tb_personalization';
   
   // Starter plan limitations
   const STARTER_MESSAGE_LIMIT = 2; // Free limit for Starter plan users
@@ -1030,6 +1057,116 @@ function initAIAssistant() {
 
   // Defer banner check slightly to allow other init work
   setTimeout(checkStarterUsageAndShowBanner, 1200);
+
+  // === Personalization helpers ===
+  function getPersonalizationSettings() {
+    const defaults = { name: '', industry: '', tone: 'friendly' };
+    try {
+      const stored = localStorage.getItem(PERSONALIZATION_STORAGE_KEY);
+      if (!stored) return defaults;
+      const parsed = JSON.parse(stored);
+      return { ...defaults, ...parsed };
+    } catch (e) {
+      console.warn('Personalization: could not read storage', e);
+      return defaults;
+    }
+  }
+
+  function savePersonalizationSettings(settings) {
+    try {
+      localStorage.setItem(PERSONALIZATION_STORAGE_KEY, JSON.stringify(settings));
+    } catch (e) {
+      console.warn('Personalization: could not persist settings', e);
+    }
+    updatePersonalizationSummary(settings);
+  }
+
+  function updatePersonalizationSummary(settings = getPersonalizationSettings()) {
+    const summary = document.getElementById('personalization-summary');
+    if (!summary) return;
+
+    const parts = [];
+    if (settings.name) parts.push(settings.name);
+    if (settings.industry) parts.push(settings.industry);
+    if (settings.tone) parts.push(`${settings.tone} tone`);
+
+    summary.style.display = 'flex';
+    summary.querySelector('span').textContent = parts.length
+      ? `Tailoring responses for ${parts.join(' · ')}`
+      : 'Tailoring responses for your business.';
+  }
+
+  function buildPersonalizationSystemMessage(settings = getPersonalizationSettings()) {
+    const { name, industry, tone } = settings;
+    if (!name && !industry && !tone) return '';
+
+    const details = [
+      name ? `Business name: ${name}` : null,
+      industry ? `Industry: ${industry}` : null,
+      tone ? `Tone preference: ${tone}` : null
+    ].filter(Boolean).join('; ');
+
+    return `Use this context for responses: ${details}. Keep answers specific and actionable for this business.`;
+  }
+
+  function initPersonalizationControls() {
+    const nameInput = document.getElementById('personalization-name');
+    const industryInput = document.getElementById('personalization-industry');
+    const toneSelect = document.getElementById('personalization-tone');
+
+    if (!nameInput || !industryInput || !toneSelect) return;
+
+    const settings = getPersonalizationSettings();
+    nameInput.value = settings.name;
+    industryInput.value = settings.industry;
+    toneSelect.value = settings.tone || 'friendly';
+    updatePersonalizationSummary(settings);
+
+    const persist = () => {
+      savePersonalizationSettings({
+        name: nameInput.value.trim(),
+        industry: industryInput.value.trim(),
+        tone: toneSelect.value
+      });
+    };
+
+    nameInput.addEventListener('input', persist);
+    industryInput.addEventListener('input', persist);
+    toneSelect.addEventListener('change', persist);
+  }
+
+  // === Usage summary panel ===
+  async function refreshUsageSummary() {
+    const usagePanel = document.getElementById('usage-summary');
+    const usageDetail = document.getElementById('usage-detail-text');
+    const usageFill = document.getElementById('usage-progress-fill');
+    if (!usagePanel || !usageDetail || !usageFill) return;
+
+    usagePanel.style.display = 'flex';
+    usageDetail.textContent = 'Checking your message allowance...';
+    usageFill.style.width = '0%';
+
+    try {
+      const resp = await fetch(USAGE_ENDPOINT, { method: 'GET', credentials: 'include' });
+      if (!resp.ok) {
+        usageDetail.textContent = 'Usage status unavailable right now.';
+        return;
+      }
+      const data = await resp.json().catch(() => ({}));
+      const used = data.used ?? data.messageCount ?? data.count ?? 0;
+      const limit = data.limit ?? data.cap ?? STARTER_MESSAGE_LIMIT ?? 0;
+      const remaining = data.remaining ?? Math.max(limit - used, 0);
+      const percent = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+
+      usageDetail.textContent = limit
+        ? `${used} of ${limit} messages used · ${remaining} remaining`
+        : `${used} messages sent`;
+      usageFill.style.width = `${percent}%`;
+    } catch (e) {
+      console.warn('Usage summary: failed to fetch usage', e);
+      usageDetail.textContent = 'Usage status unavailable right now.';
+    }
+  }
   
   /**
    * Gets the current session message count for Starter plan users
@@ -1150,6 +1287,12 @@ function initAIAssistant() {
   function buildMessageHistory(currentMessage, tier) {
     // Start with conversation history
     let messages = [...conversationHistory];
+
+    // Apply personalization context as a system message
+    const personalizationPrompt = buildPersonalizationSystemMessage();
+    if (personalizationPrompt) {
+      messages.unshift({ role: 'system', content: personalizationPrompt });
+    }
     
     // Enhance the current message based on tier
     const enhancedMessage = enhanceMessageForTier(currentMessage, tier);
@@ -1866,11 +2009,12 @@ function initAIAssistant() {
         
         // Reset button state
         // updateSubmitButton(false); // Function not defined - removed to prevent ReferenceError
-        
+
         // Log success for debugging
         console.log('AI Assistant: Response processed and displayed successfully');
+        refreshUsageSummary();
       }, 500); // Small delay for smoother transition
-      
+
     } catch (error) {
       // Handle different types of errors with detailed console logging
       console.error('AI Assistant: Error occurred during request:', error);
@@ -2040,7 +2184,6 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Initialize all components
 
-  initThemeToggle();
   initMobileNav();
   initSmoothScroll();
   initPricingToggle();
@@ -2049,6 +2192,8 @@ document.addEventListener("DOMContentLoaded", function() {
   initAIAssistant();
   initSkipLink();
   initFocusManagement();
+  initRevealAnimations();
+  initApiStatusChip();
   animateStats();
   
   // Initialize Lottie animations with delay to ensure library is loaded
