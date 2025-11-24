@@ -10,6 +10,8 @@
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" as="style"/>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Analytics hook: insert vendor script below when ready -->
+  <!-- <script src="https://analytics.example.com/script.js" data-site="trustboost"></script> -->
   <style>
     .newsletter-message, .contact-message {
       margin-top: 10px;
@@ -480,8 +482,8 @@
         <a href="admin.html" class="admin-access-btn" aria-label="Admin Dashboard" title="Admin Dashboard">
           <i class="fa-solid fa-shield-halved"></i>
         </a>
-        <a href="https://calendly.com/jyehezkel10/30min" target="_blank" rel="noopener noreferrer" id="calendly-btn" class="btn btn-outline" aria-label="Schedule a Call">Schedule a Call</a>
-        <a href="#pricing" class="btn btn-primary" data-i18n="nav.cta">Start Free</a>
+        <a href="https://calendly.com/jyehezkel10/30min" target="_blank" rel="noopener noreferrer" id="calendly-btn" class="btn btn-outline" aria-label="Schedule a Call" data-analytics="nav-schedule">Schedule a Call</a>
+        <a href="#pricing" class="btn btn-primary" data-i18n="nav.cta" data-analytics="nav-start-free">Start Free</a>
       </div>
       <button id="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links"><i class="fa-solid fa-bars"></i></button>
     </div>
@@ -587,7 +589,7 @@
               <li data-i18n="pricing.starter3">Email Support</li>
             </ul>
             <!-- CHANGED: Use button for Stripe checkout -->
-            <button type="button" class="btn btn-outline pricing-btn" data-plan="starter" data-i18n="pricing.cta">Choose Starter</button>
+            <button type="button" class="btn btn-outline pricing-btn" data-plan="starter" data-i18n="pricing.cta" data-analytics="pricing-starter">Choose Starter</button>
           </div>
           <div class="pricing-card popular" tabindex="0" aria-labelledby="pricing-pro-title">
             <div class="badge" data-i18n="pricing.popular">Most Popular</div>
@@ -604,7 +606,7 @@
               <li data-i18n="pricing.pro4">Priority Support</li>
             </ul>
             <!-- CHANGED: Use button for Stripe checkout -->
-            <button type="button" class="btn btn-primary pricing-btn" data-plan="pro" data-i18n="pricing.cta">Choose Pro</button>
+            <button type="button" class="btn btn-primary pricing-btn" data-plan="pro" data-i18n="pricing.cta" data-analytics="pricing-pro">Choose Pro</button>
           </div>
           <div class="pricing-card" tabindex="0" aria-labelledby="pricing-ent-title">
             <h3 id="pricing-ent-title">Enterprise</h3>
@@ -620,7 +622,7 @@
               <li data-i18n="pricing.ent4">Custom Onboarding</li>
             </ul>
             <!-- CHANGED: Use button for Stripe checkout (if you want "Contact Sales" to trigger Stripe, otherwise use anchor as before) -->
-            <button type="button" class="btn btn-outline pricing-btn" data-plan="enterprise" data-i18n="pricing.cta">Choose Enterprise</button>
+            <button type="button" class="btn btn-outline pricing-btn" data-plan="enterprise" data-i18n="pricing.cta" data-analytics="pricing-enterprise">Choose Enterprise</button>
             <!-- If you want "Contact Sales" to scroll to checkout section instead, use:
             <a href="#checkout" class="btn btn-outline" data-i18n="pricing.cta">Contact Sales</a>
             -->
@@ -633,13 +635,50 @@
       <div class="container">
         <h2 class="ai-assistant-main-title" id="ai-assistant-title">Ask our AI assistant anything about TrustBoost, reviews, or reputation management!</h2>
         <div class="ai-assistant-wrapper">
+          <div class="personalization-card" aria-labelledby="personalization-title">
+            <h3 id="personalization-title">Personalize your guidance</h3>
+            <p>Set your business context so the assistant tailors replies to you.</p>
+            <div class="personalization-grid">
+              <div class="personalization-field">
+                <label for="personalization-name">Business name</label>
+                <input type="text" id="personalization-name" name="personalization-name" placeholder="e.g., Lunar Dental" data-analytics="personalization-name"/>
+              </div>
+              <div class="personalization-field">
+                <label for="personalization-industry">Industry</label>
+                <input type="text" id="personalization-industry" name="personalization-industry" placeholder="e.g., Healthcare" data-analytics="personalization-industry"/>
+              </div>
+              <div class="personalization-field">
+                <label for="personalization-tone">Tone</label>
+                <select id="personalization-tone" name="personalization-tone" data-analytics="personalization-tone">
+                  <option value="friendly">Friendly</option>
+                  <option value="formal">Formal</option>
+                  <option value="concise">Concise</option>
+                  <option value="luxury">Luxury</option>
+                  <option value="enthusiastic">Enthusiastic</option>
+                </select>
+              </div>
+            </div>
+            <div id="personalization-summary" class="personalization-summary">
+              <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+              <span>Tailoring responses for your business.</span>
+            </div>
+          </div>
           <div class="ai-assistant-card">
             <div id="memory-indicator" class="memory-indicator" style="display: none;">
               <!-- Memory indicator content will be dynamically populated -->
             </div>
+            <div id="usage-summary" class="usage-summary" aria-live="polite" style="display:none;">
+              <div class="usage-metrics">
+                <span class="usage-label">Usage overview</span>
+                <span class="usage-detail" id="usage-detail-text">Checking your message allowance...</span>
+              </div>
+              <div class="usage-progress" aria-hidden="true">
+                <div class="usage-progress-fill" id="usage-progress-fill"></div>
+              </div>
+            </div>
             <form id="ai-assistant-form" class="ai-assistant-form">
               <div class="ai-input-group">
-                <textarea 
+                <textarea
                   id="user-input" 
                   name="message" 
                   placeholder="Type your question here... (e.g., How does automated review generation work?)" 
@@ -647,7 +686,7 @@
                   required
                   aria-label="Ask the AI assistant a question"
                 ></textarea>
-                <button type="submit" id="ask-button" class="btn btn-primary ai-submit-btn" aria-label="Send message to AI assistant">
+                <button type="submit" id="ask-button" class="btn btn-primary ai-submit-btn" aria-label="Send message to AI assistant" data-analytics="ai-submit">
                   <i class="fa-solid fa-paper-plane"></i>
                   Ask AI
                 </button>
@@ -767,7 +806,7 @@
     <section class="cta-gradient" aria-labelledby="cta-title">
       <div class="container cta-flex">
         <h2 id="cta-title" class="section-title gradient-text cta-header" data-i18n="cta.title">Ready to Boost Your Trust?</h2>
-        <a href="#pricing" class="btn btn-gradient big" data-i18n="cta.cta">Start My Free Trial</a>
+        <a href="#pricing" class="btn btn-gradient big" data-i18n="cta.cta" data-analytics="cta-start-trial">Start My Free Trial</a>
       </div>
     </section>
 
@@ -780,7 +819,7 @@
             <input type="email" name="email" placeholder="Your Email" required/>
             <input type="tel" name="phone" placeholder="Your Phone Number (Optional)"/>
             <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
-            <button type="submit" class="btn btn-gradient contact-submit-btn" data-i18n="contact.submit">Send Message</button>
+            <button type="submit" class="btn btn-gradient contact-submit-btn" data-i18n="contact.submit" data-analytics="contact-submit">Send Message</button>
           </form>
           <div id="contact-message" class="contact-message" style="display: none;"></div>
           <p class="contact-info">
@@ -796,7 +835,7 @@
             <div style="position: absolute; left: -5000px;" aria-hidden="true">
               <input type="text" name="b_6ffecacb71a9b264660bf0919_f01f0b9606" tabindex="-1" value="">
             </div>
-            <button type="submit" class="btn btn-outline newsletter-submit-btn" data-i18n="newsletter.cta">Subscribe</button>
+            <button type="submit" class="btn btn-outline newsletter-submit-btn" data-i18n="newsletter.cta" data-analytics="newsletter-submit">Subscribe</button>
           </form>
           <div id="newsletter-message" class="newsletter-message" style="display: none;"></div>
           <p class="newsletter-desc" data-i18n="newsletter.desc">Get tips, tricks & growth hacks—no spam.</p>
@@ -828,7 +867,9 @@
         </div>
         <div>
           <strong>Support:</strong> <a href="mailto:trustboostaihelp@gmail.com">trustboostaihelp@gmail.com</a><br/>
-          <strong>Contact:</strong> <a href="mailto:trustboostaicontact@gmail.com">trustboostaicontact@gmail.com</a>
+          <strong>Contact:</strong> <a href="mailto:trustboostaicontact@gmail.com">trustboostaicontact@gmail.com</a><br/>
+          <a href="privacy.html" class="footer-link" data-analytics="footer-privacy">Privacy Policy</a> ·
+          <a href="terms.html" class="footer-link" data-analytics="footer-terms">Terms of Service</a>
           <span class="footer-socials">
             <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
             <a href="#"><i class="fa-brands fa-linkedin"></i></a>
