@@ -4,7 +4,6 @@
 const ADMIN_EMAIL = 'jyehezkel10@gmail.com';
 const TOKEN_KEY = 'adminToken';
 const RPL_BACKEND = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
-const PROD_BASE = '/api';
 
 const qs = (id) => document.getElementById(id);
 const show = (el) => el && el.classList.remove('hidden');
@@ -16,20 +15,17 @@ let allUsers = [];
 let filteredUsers = [];
 
 function resolveApiBase() {
-  const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
-  const envBase = (typeof window !== 'undefined' && (window.__API_BASE__ || window.VITE_API_BASE_URL || window.NEXT_PUBLIC_API_URL)) || '';
-  let base = envBase.trim();
-  if (base.endsWith('/')) base = base.replace(/\/+$/, '');
-
+  const host = (typeof window !== 'undefined' && window.location && window.location.host) ? window.location.host : '';
+  let base = (typeof window !== 'undefined' && (window.__API_BASE__ || window.VITE_API_BASE_URL || window.NEXT_PUBLIC_API_URL)) || '';
   if (!base) {
-    if (/localhost|127\.|0\.0\.0\.0/.test(host) || /replit/i.test(host)) {
+    if (/localhost|127\./.test(host)) {
       base = RPL_BACKEND;
+    } else if (/trustboost/i.test(host) && !/replit/i.test(host)) {
+      base = '/api';
     } else {
-      base = PROD_BASE;
+      base = RPL_BACKEND;
     }
   }
-
-  if (base.endsWith('/')) base = base.replace(/\/+$/, '');
   return base;
 }
 
@@ -97,18 +93,6 @@ function initReveal() {
     });
   }, { threshold: 0.12 });
   revealEls.forEach((el) => observer.observe(el));
-}
-
-function showFatalError(message) {
-  const strip = qs('whoami-strip');
-  if (strip) {
-    strip.textContent = message;
-    strip.className = 'admin-strip error reveal-visible';
-  }
-  const tbody = qs('users-tbody');
-  if (tbody) {
-    tbody.innerHTML = `<tr><td colspan="6" class="table-placeholder">${message}</td></tr>`;
-  }
 }
 
 function updateWhoamiStrip(text, variant = 'info') {
@@ -208,10 +192,7 @@ function applyFilters() {
 
 async function fetchAdminUsers() {
   const resp = await authFetch(`${API_BASE}/admin/users`, { method: 'GET' });
-  if (!resp.ok) {
-    console.error('Admin users fetch failed', resp.status, `${API_BASE}/admin/users`);
-    throw new Error(`Failed to load users (${resp.status})`);
-  }
+  if (!resp.ok) throw new Error(`Failed to load users (${resp.status})`);
   const data = await resp.json();
   if (!Array.isArray(data)) return [];
   return data;
@@ -232,10 +213,7 @@ async function handlePlanUpdate(btn) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, email, plan: newPlan })
     });
-    if (!resp.ok) {
-      console.error('Plan update failed', resp.status, `${API_BASE}/admin/update-plan`);
-      throw new Error(`Update failed (${resp.status})`);
-    }
+    if (!resp.ok) throw new Error(`Update failed (${resp.status})`);
     const message = qs('admin-inline-message');
     if (message) {
       message.textContent = `Updated ${email} to ${newPlan}.`;
@@ -268,10 +246,7 @@ async function handleReset(btn) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, email })
     });
-    if (!resp.ok) {
-      console.error('Usage reset failed', resp.status, `${API_BASE}/admin/reset-usage`);
-      throw new Error(`Reset failed (${resp.status})`);
-    }
+    if (!resp.ok) throw new Error(`Reset failed (${resp.status})`);
     const message = qs('admin-inline-message');
     if (message) {
       message.textContent = `Usage reset for ${email}.`;
@@ -355,10 +330,5 @@ async function initAdminDashboard() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  try {
-    initAdminDashboard();
-  } catch (err) {
-    console.error('Admin dashboard init failed', err);
-    showFatalError('Unable to load admin dashboard. Please retry.');
-  }
+  initAdminDashboard();
 });

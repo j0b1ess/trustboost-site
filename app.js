@@ -49,26 +49,6 @@ function setAriaLive(msg) {
   live.textContent = msg;
 }
 
-function resolveApiBase() {
-  const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
-  const envBase = (typeof window !== 'undefined' && (window.__API_BASE__ || window.VITE_API_BASE_URL || window.NEXT_PUBLIC_API_URL)) || '';
-  let base = envBase.trim();
-  if (base.endsWith('/')) base = base.replace(/\/+$/, '');
-
-  if (!base) {
-    if (/localhost|127\.|0\.0\.0\.0/.test(host) || /replit/i.test(host)) {
-      base = DEV_API_BASE;
-    } else {
-      base = PROD_API_BASE;
-    }
-  }
-
-  if (base.endsWith('/')) base = base.replace(/\/+$/, '');
-  return base;
-}
-
-const API_BASE = resolveApiBase();
-
 function initRevealAnimations() {
   const revealEls = document.querySelectorAll('.reveal');
   if (!('IntersectionObserver' in window)) {
@@ -92,17 +72,27 @@ function initRevealAnimations() {
 function initApiStatusChip() {
   const chip = document.getElementById('api-status-chip');
   if (!chip) return;
+  const PROD_FALLBACK = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
+  const locHost = (typeof window !== 'undefined' && window.location ? window.location.host : '');
+  let API_BASE = (typeof window !== 'undefined' && (window.__API_BASE__ || window.VITE_API_BASE_URL || window.NEXT_PUBLIC_API_URL)) || '';
+  if (!API_BASE) {
+    if (/localhost|127\./.test(locHost)) {
+      API_BASE = PROD_FALLBACK;
+    } else if (!/replit/i.test(locHost)) {
+      API_BASE = '/api';
+    } else {
+      API_BASE = PROD_FALLBACK;
+    }
+  }
   chip.textContent = 'Checking API connectivity…';
   chip.classList.remove('ok', 'error');
-  const statusUrl = `${API_BASE}/usage/starter`;
-  fetch(statusUrl, { method: 'GET', credentials: 'include' })
+  fetch(`${API_BASE}/usage/starter`, { method: 'GET', credentials: 'include' })
     .then((resp) => {
       if (resp.ok) {
         chip.textContent = 'API online and responding';
         chip.classList.add('ok');
       } else {
         chip.textContent = `API reachable but returned ${resp.status}`;
-        console.error('API status check failed', resp.status, statusUrl);
         chip.classList.add('error');
       }
     })
@@ -932,9 +922,21 @@ function initAIAssistant() {
   // Initialize personalization fields and usage snapshot
   initPersonalizationControls();
   refreshUsageSummary();
-
+  
   // Backend API endpoint base (dynamic w/ proxy support)
-  const BACKEND_URL = `${API_BASE}/chat`;
+  const PROD_FALLBACK = 'https://trustboost-ai-backend-jsyinvest7.replit.app/api';
+  const locHost = (typeof window !== 'undefined' && window.location ? window.location.host : '');
+  let API_BASE = (typeof window !== 'undefined' && (window.__API_BASE__ || window.VITE_API_BASE_URL || window.NEXT_PUBLIC_API_URL)) || '';
+  if(!API_BASE) {
+    if(/localhost|127\./.test(locHost)) {
+      API_BASE = PROD_FALLBACK; // dev directly hitting backend
+    } else if(!/replit/i.test(locHost)) {
+      API_BASE = '/api'; // production site expects proxy
+    } else {
+      API_BASE = PROD_FALLBACK;
+    }
+  }
+  const BACKEND_URL = API_BASE + '/chat';
 
   // Conversation memory - stores last 3 user messages and AI responses
   let conversationHistory = [];
@@ -1150,7 +1152,6 @@ function initAIAssistant() {
     try {
       const resp = await fetch(USAGE_ENDPOINT, { method: 'GET', credentials: 'include' });
       if (!resp.ok) {
-        console.error('Usage summary request failed', resp.status, `${USAGE_ENDPOINT}`);
         usageDetail.textContent = 'Usage status unavailable right now.';
         return;
       }
@@ -1165,7 +1166,7 @@ function initAIAssistant() {
         : `${used} messages sent`;
       usageFill.style.width = `${percent}%`;
     } catch (e) {
-      console.warn('Usage summary: failed to fetch usage', e, `${USAGE_ENDPOINT}`);
+      console.warn('Usage summary: failed to fetch usage', e);
       usageDetail.textContent = 'Usage status unavailable right now.';
     }
   }

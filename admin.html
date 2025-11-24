@@ -6,12 +6,329 @@
     <title>TrustBoostAI – Admin Login</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Admin-specific styles */
+        .admin-container {
+            min-height: 100vh;
+            background: var(--bg);
+            padding: 2rem;
+        }
+
+        .admin-header {
+            background: var(--accent);
+            color: #ffffff;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .admin-header p {
+            margin: 0.5rem 0 0 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .admin-login {
+            max-width: 400px;
+            margin: 2rem auto;
+            background: var(--card);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--card-border);
+        }
+        
+        .admin-dashboard {
+            display: none;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--card-border);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0;
+        }
+        
+        .users-table {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: var(--accent);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+        }
+        
+        .table-content {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .user-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.5fr; /* Added actions column */
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--card-border);
+            align-items: center;
+        }
+        
+        .user-row:hover {
+            background: rgba(37, 99, 235, 0.06);
+        }
+        
+        .plan-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .plan-starter {
+            background: #e0e7ff;
+            color: #1d4ed8;
+        }
+
+        .plan-pro {
+            background: #dbeafe;
+            color: #0f172a;
+        }
+
+        .plan-enterprise {
+            background: #ecfdf3;
+            color: #166534;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .status-active {
+            background: #ecfdf3;
+            color: var(--success);
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: var(--error);
+        }
+
+        .status-pending {
+            background: #e5e7eb;
+            color: var(--text);
+        }
+        
+        .usage-bar {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .usage-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .usage-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .actions-cell {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .action-btn {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 0.7rem;
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: .5px;
+            transition: var(--transition-fast);
+        }
+        .action-btn:hover { background:#e2e8f0; }
+        .action-btn.plan-starter { color: var(--accent); }
+        .action-btn.plan-pro { color: var(--accent); }
+        .action-btn.plan-enterprise { color: var(--accent); }
+        .action-btn.reset-btn { color: var(--error); }
+        .action-btn:disabled { opacity:.5; cursor:not-allowed; }
+        
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .admin-input {
+            padding: 0.8rem;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+        
+        .admin-btn {
+            background: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+        
+        .admin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-message {
+            color: var(--error);
+            background: #fef2f2;
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            border: 1px solid #fecaca;
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            color: var(--success);
+            background: #f0fdf4;
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            border: 1px solid #bbf7d0;
+            margin-bottom: 1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1rem;
+            }
+            
+            .user-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Dark mode support */
+        [data-theme="dark"] .plan-starter {
+            background: #312e81;
+            color: #c7d2fe;
+        }
+        
+        [data-theme="dark"] .plan-pro {
+            background: #92400e;
+            color: #fef3c7;
+        }
+        
+        [data-theme="dark"] .plan-enterprise {
+            background: #065f46;
+            color: #d1fae5;
+        }
+        
+        [data-theme="dark"] .status-active {
+            background: #065f46;
+            color: #d1fae5;
+        }
+        
+        [data-theme="dark"] .status-inactive {
+            background: #991b1b;
+            color: #fee2e2;
+        }
+        
+        [data-theme="dark"] .status-pending {
+            background: #92400e;
+            color: #fef3c7;
+        }
+    </style>
 </head>
 <body class="admin-login-body">
-    <noscript>
-        <div class="inline-message error" style="margin:1rem auto; max-width:480px;">Enable JavaScript to use the admin portal.</div>
-    </noscript>
-    <div class="admin-login-shell reveal reveal-visible">
+    <div class="admin-login-shell reveal">
         <div class="admin-header-card">
             <p class="eyebrow">Restricted access</p>
             <h1>Admin Login</h1>
