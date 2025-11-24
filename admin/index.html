@@ -10,27 +10,27 @@
   <script>
     // Minimal Tailwind config (optional custom colors)
     tailwind.config = {
-      theme: { extend: { colors: { brand: { DEFAULT: '#6366f1' } } } }
+      theme: { extend: { colors: { brand: { DEFAULT: '#2563eb', hover: '#1d4ed8' } } } }
     }
   </script>
   <style>
     .hidden { display: none; }
     .admin-wrapper { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
-    .badge { font-size: .75rem; font-weight:600; padding: .25rem .5rem; border-radius:9999px; display:inline-block; }
-    .badge-plan-starter { background:#e0e7ff; color:#3730a3; }
-    .badge-plan-pro { background:#fef3c7; color:#92400e; }
-    .badge-plan-enterprise { background:#d1fae5; color:#065f46; }
-    [data-theme="dark"] .badge-plan-starter { background:#312e81; color:#c7d2fe; }
-    [data-theme="dark"] .badge-plan-pro { background:#92400e; color:#fef3c7; }
-    [data-theme="dark"] .badge-plan-enterprise { background:#065f46; color:#d1fae5; }
-    .action-btn { font-size:.7rem; font-weight:600; padding:.35rem .5rem; border-radius:4px; border:1px solid #cbd5e1; background:#f8fafc; cursor:pointer; transition:.15s; }
-    .action-btn:hover { background:#f1f5f9; }
+    .badge { font-size: .75rem; font-weight:700; padding: .25rem .5rem; border-radius:9999px; display:inline-block; }
+    .badge-plan-starter { background:#e0e7ff; color:#1d4ed8; }
+    .badge-plan-pro { background:#dbeafe; color:#0f172a; }
+    .badge-plan-enterprise { background:#ecfdf3; color:#166534; }
+    [data-theme="dark"] .badge-plan-starter { background:#1f2a44; color:#c7d2fe; }
+    [data-theme="dark"] .badge-plan-pro { background:#1f2a44; color:#e2e8f0; }
+    [data-theme="dark"] .badge-plan-enterprise { background:#0f2e1c; color:#bbf7d0; }
+    .action-btn { font-size:.72rem; font-weight:700; padding:.38rem .55rem; border-radius:6px; border:1px solid #cbd5e1; background:#f8fafc; color:#0f172a; cursor:pointer; transition:.15s; }
+    .action-btn:hover { background:#eef2ff; border-color:#93c5fd; }
     .action-btn:disabled { opacity:.5; cursor:not-allowed; }
-    .action-btn.plan { border-color:#c7d2fe; }
+    .action-btn.plan { border-color:#93c5fd; color:#1d4ed8; }
     .action-btn.reset { border-color:#fecaca; color:#b91c1c; }
     .action-btn.reset:hover { background:#fee2e2; }
     .usage-bar { height:6px; background:#e5e7eb; border-radius:4px; overflow:hidden; }
-    .usage-fill { height:100%; background:linear-gradient(90deg,#6366f1,#8b5cf6); }
+    .usage-fill { height:100%; background:#2563eb; }
   </style>
 </head>
 <body class="font-sans text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900">
@@ -129,7 +129,7 @@
     <div id="dashboard" class="hidden">
       <div class="flex flex-wrap gap-4 items-center justify-between mb-6">
         <div>
-          <h2 class="text-3xl font-extrabold bg-gradient-to-r from-indigo-500 to-violet-500 text-transparent bg-clip-text">Admin Dashboard</h2>
+          <h2 class="text-3xl font-extrabold text-indigo-700">Admin Dashboard</h2>
           <div id="authed-email" class="text-xs mt-1 text-slate-500 dark:text-slate-400"></div>
         </div>
         <button id="logout-btn" class="text-sm font-semibold px-3 py-2 h-fit rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600">Logout</button>
